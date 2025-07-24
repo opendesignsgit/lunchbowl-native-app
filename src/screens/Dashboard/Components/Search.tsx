@@ -1,10 +1,11 @@
-import { View, TextInput, StyleSheet } from 'react-native';
-// import { Ionicons } from '@expo/vector-icons';
+import {View, TextInput, StyleSheet} from 'react-native';
+import {SvgXml} from 'react-native-svg';
+import {SearchIcon} from 'styles/svg-icons';
 
 const SearchBar = () => {
   return (
     <View style={styles.container}>
-      {/* <Ionicons name="search" size={20} color="#999" /> */}
+      <SvgXml xml={SearchIcon} style={styles.icon} />
       <TextInput
         placeholder="Search"
         placeholderTextColor="#999"
@@ -16,12 +17,11 @@ const SearchBar = () => {
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 16,
-    marginBottom: 12,
+    marginHorizontal: 15,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#F7F7F7',
-    padding: 10,
+    paddingHorizontal:14,
     borderRadius: 12,
   },
   input: {
@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
   },
+  icon: {},
 });
 
 export default SearchBar;
