@@ -3,11 +3,11 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 const PromoBanner = () => {
   return (
     <View style={styles.banner}>
-      <Image
-        source={require('../assets/banner.jpg')} // Use the image you used in design
+      {/* <Image
+        source={require('../assets/banner.jpg')} 
         style={styles.image}
         resizeMode="cover"
-      />
+      /> */}
       <TouchableOpacity style={styles.subscribeBtn}>
         <Text style={styles.btnText}>SUBSCRIBE NOW</Text>
       </TouchableOpacity>

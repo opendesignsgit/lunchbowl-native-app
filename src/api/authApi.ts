@@ -21,7 +21,7 @@ class AuthApi {
   async login(credentials: {
     mobile: string;
     otp: string;
-    path: string;
+   
   }): Promise<ApiResponseModel> {
     console.log(' Sending OTP verification request with:', credentials);
 

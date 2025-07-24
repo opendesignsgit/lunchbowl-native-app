@@ -7,12 +7,12 @@ export default function Header({ userName }: { userName: string }) {
         <Text style={styles.greeting}>Hello, {userName}!</Text>
         <Text style={styles.subtitle}>Welcome to Lunch Bowl</Text>
       </View>
-      <View style={styles.rightIcons}>
+      {/* <View style={styles.rightIcons}>
         <TouchableOpacity>
           <Image source={require('../assets/icons/bell.png')} style={styles.icon} />
         </TouchableOpacity>
         <Image source={require('../assets/icons/profile.png')} style={styles.profile} />
-      </View>
+      </View> */}
     </View>
   );
 }

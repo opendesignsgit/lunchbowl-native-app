@@ -71,8 +71,8 @@ const OtpVerificationScreen = () => {
      const formattedMobile = mobile.slice(2);
       const VerifyloginData: LoginForm = {
         mobile:formattedMobile,
-        path,
         otp: otpInput,
+        // path,
       };
       console.log("recieved otp",VerifyloginData)
       const response: ApiResponseModel = await login(VerifyloginData);

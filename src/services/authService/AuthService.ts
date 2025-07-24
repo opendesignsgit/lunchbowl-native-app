@@ -44,7 +44,11 @@ class AuthService {
 
   async doLogin(LoginData: LoginForm): Promise<ApiResponseModel> {
     try {
-      const response: any = await AuthApi.login(LoginData);
+      const response: any = await AuthApi.login({
+        mobile: LoginData.mobile,
+        otp: LoginData.otp ?? '',
+       
+      });
       if (response.status && response.data) {
         return response.data;
       }
@@ -59,6 +63,8 @@ class AuthService {
       return {success: false, message: errorMessage, data: null, error: error};
     }
   }
+
+
 
   async completeOnboarding(userId: string): Promise<ApiResponseModel> {
     try {

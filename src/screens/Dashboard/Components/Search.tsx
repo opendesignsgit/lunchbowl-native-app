@@ -1,10 +1,10 @@
 import { View, TextInput, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+// import { Ionicons } from '@expo/vector-icons';
 
 const SearchBar = () => {
   return (
     <View style={styles.container}>
-      <Ionicons name="search" size={20} color="#999" />
+      {/* <Ionicons name="search" size={20} color="#999" /> */}
       <TextInput
         placeholder="Search"
         placeholderTextColor="#999"
