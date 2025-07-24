@@ -53,31 +53,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
   const SendOtp = async (loginData: LoginForm): Promise<ApiResponseModel> => {
     try {
       const response: ApiResponseModel = await AuthService.doSendOtp(loginData);
-
       console.log('Login response', response);
-      // if (response.success && response.data) {
-      //   const loggedUser = response.data;
-
-      //   if (loggedUser && loggedUser.token) {
-      //     const {token, ...userWithoutToken} = loggedUser;
-      //     const isProfileSetupDone = userWithoutToken.isProfileSetupDone;
-      //     setIsProfileSetupDone(isProfileSetupDone);
-      //     setUser(userWithoutToken);
-      //     setUserId(userWithoutToken.userId);
-      //     setUserRole(userWithoutToken.role?.toString());
-      //     setAuthToken(token);
-      //     await AsyncStorage.setItem('user', JSON.stringify(userWithoutToken));
-      //     await AsyncStorage.setItem(TOKEN_KEY, token);
-      //     await AsyncStorage.setItem('userId', userWithoutToken.userId);
-      //     await AsyncStorage.setItem(
-      //       'userRole',
-      //       userWithoutToken.role?.toString(),
-      //     );
-
-      //     setisLoggedIn(true);
-      //     return response;
-      //   }
-      // }
       return response;
     } catch (error) {
       const errorMessage = handleApiError(error);
@@ -90,29 +66,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
     }
   };
 
-  const login = async (VerifyloginData: LoginForm): Promise<ApiResponseModel> => {
+  const login = async (
+    VerifyloginData: LoginForm,
+  ): Promise<ApiResponseModel> => {
     try {
-      const response: ApiResponseModel = await AuthService.doLogin(VerifyloginData);
+      const response: ApiResponseModel = await AuthService.doLogin(
+        VerifyloginData,
+      );
       console.log('from backend', response);
       if (response.success && response.token) {
-        const {token, _id, name, email, phone, freeTrial} = response;
+        const {token, _id, name, email, phone, freeTrial,role} = response;
+        const userRole = role ?? 'customer'; 
         const userWithoutToken = {
           userId: _id,
           name,
           email,
           phone,
           freeTrial,
+          role: userRole,
         };
 
         setUser(userWithoutToken);
         setUserId(_id);
-        setUserRole('customer'); // or from backend if needed
+        setUserRole(userRole);
         setAuthToken(token);
 
         await AsyncStorage.setItem('user', JSON.stringify(userWithoutToken));
         await AsyncStorage.setItem(TOKEN_KEY, token);
         await AsyncStorage.setItem('userId', _id);
-        await AsyncStorage.setItem('userRole', 'customer');
+        await AsyncStorage.setItem('userRole', userRole);
 
         setisLoggedIn(true);
 

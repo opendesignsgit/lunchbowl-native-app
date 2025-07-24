@@ -1,32 +1,46 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {Image, StyleSheet} from 'react-native';
-// import DashboardNavigator from './Dashboard/DashboardNavigator';
-// import ProfileStackNavigator from './SettingNavigator';
+import {StyleSheet} from 'react-native';
+import {SvgXml} from 'react-native-svg';
+
 import DashboardNavigator from './Dashboard/DashboardNavigator';
-// const dashboardIcon = require('../assets/icons/dashboard/dashboard.png');
-// const profileIcon = require('../assets/icons/dashboard/settings.png');
+import {HomeIcon, MenueIcon, MyPlanIcon, HistoryIcons} from 'styles/svg-icons';
+import MenueNavigator from 'screens/Menu/MenueNavigator';
+import MyPlanNavigator from 'screens/MyPlan/MyPlanNavigator';
+import HistoryNavigator from 'screens/History/MyPlanNavigator';
 
 const Tab = createBottomTabNavigator();
+
 const AppNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={({route}) => ({
-        // eslint-disable-next-line react/no-unstable-nested-components
         tabBarIcon: ({focused}) => {
-          let iconSource;
-          // if (route.name === 'Dashboard') {
-          //   iconSource = dashboardIcon;
-          // } else if (route.name === 'Profile') {
-          //   iconSource = profileIcon;
-          // }
+          let iconXml;
 
-          return (
-            <Image
-              source={iconSource}
-              style={[styles.icon, {tintColor: focused ? '#99671dff' : 'gray'}]}
-            />
-          );
+          if (route.name === 'Dashboard') {
+            iconXml = HomeIcon.replace(
+              '#4AB238',
+              focused ? '#99671dff' : 'gray',
+            );
+          } else if (route.name === 'Menu') {
+            iconXml = MenueIcon.replace(
+              '#4AB238',
+              focused ? '#99671dff' : 'gray',
+            );
+          } else if (route.name === 'MyPlan') {
+            iconXml = MyPlanIcon.replace(
+              '#4AB238',
+              focused ? '#99671dff' : 'gray',
+            );
+          } else if (route.name === 'History') {
+            iconXml = HistoryIcons.replace(
+              '#4AB238',
+              focused ? '#99671dff' : 'gray',
+            );
+          }
+
+          return <SvgXml xml={iconXml ?? ''} width={80} height={80} />;
         },
         tabBarActiveTintColor: '#94571dff',
         tabBarInactiveTintColor: 'gray',
@@ -35,22 +49,19 @@ const AppNavigator = () => {
         tabBarShowLabel: false,
       })}>
       <Tab.Screen name="Dashboard" component={DashboardNavigator} />
-      {/* <Tab.Screen name="Profile" component={ProfileStackNavigator} /> */}
+      <Tab.Screen name="Menu" component={MenueNavigator} />
+      <Tab.Screen name="MyPlan" component={MyPlanNavigator} />
+      <Tab.Screen name="History" component={HistoryNavigator} />
     </Tab.Navigator>
   );
 };
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: '#ffff',
+    backgroundColor: '#fff',
     elevation: 0,
     borderTopWidth: 0,
     height: 60,
-  },
-  icon: {
-    width: 40,
-    height: 40,
-    resizeMode: 'contain',
   },
 });
 

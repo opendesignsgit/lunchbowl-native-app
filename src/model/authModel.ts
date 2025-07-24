@@ -6,7 +6,7 @@ export interface SignupForm {
 
 export interface LoginForm {
    mobile: string
-   path: string
+  //  path: string
    otp?: string; 
 }
 
