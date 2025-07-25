@@ -1,16 +1,18 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {StyleSheet} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {SvgXml} from 'react-native-svg';
-
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 import DashboardNavigator from './Dashboard/DashboardNavigator';
-import {HomeIcon, MenueIcon, MyPlanIcon, HistoryIcons} from 'styles/svg-icons';
 import MenueNavigator from 'screens/Menu/MenueNavigator';
 import MyPlanNavigator from 'screens/MyPlan/MyPlanNavigator';
 import HistoryNavigator from 'screens/History/MyPlanNavigator';
 
+import {HomeIcon, MenueIcon, MyPlanIcon, HistoryIcons} from 'styles/svg-icons';
 const Tab = createBottomTabNavigator();
-
 const AppNavigator = () => {
   return (
     <Tab.Navigator
@@ -40,9 +42,17 @@ const AppNavigator = () => {
             );
           }
 
-          return <SvgXml xml={iconXml ?? ''} width={80} height={80} />;
+          return (
+            <View style={styles.iconContainer}>
+              <SvgXml
+                xml={iconXml ?? ''}
+                width={wp('20%')}
+                height={wp('20%')}
+              />
+            </View>
+          );
         },
-        tabBarActiveTintColor: '#94571dff',
+        tabBarActiveTintColor: '#ded6ceff',
         tabBarInactiveTintColor: 'gray',
         tabBarStyle: styles.tabBar,
         headerShown: false,
@@ -58,10 +68,25 @@ const AppNavigator = () => {
 
 const styles = StyleSheet.create({
   tabBar: {
+    position: 'absolute',
+    left: wp('0.5%'),
+    right: wp('0.5%'),
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+    borderTopLeftRadius: wp('5%'),
+    borderTopRightRadius: wp('5%'),
     backgroundColor: '#fff',
-    elevation: 0,
+    elevation: 10,
     borderTopWidth: 0,
-    height: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: hp('9%'),
+  },
+  iconContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+    marginTop: hp('5%'),
   },
 });
 

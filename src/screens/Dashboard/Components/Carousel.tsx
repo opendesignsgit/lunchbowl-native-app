@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -13,7 +13,7 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
-const { width: screenWidth } = Dimensions.get('window');
+const {width: screenWidth} = Dimensions.get('window');
 
 const banners = [
   {
@@ -22,11 +22,7 @@ const banners = [
   },
   {
     id: 2,
-    image: require('../../../assets/images/Banners/banner5.png'),
-  },
-  {
-    id: 3,
-    image: require('../../../assets/images/Banners/banner5.png'),
+    image: require('../../../assets/images/Banners/banner2.png'),
   },
 ];
 
@@ -64,7 +60,7 @@ const PromoBanners = () => {
         showsHorizontalScrollIndicator={false}
         scrollEventThrottle={16}
         contentContainerStyle={styles.scrollContainer}>
-        {banners.map((banner) => (
+        {banners.map(banner => (
           <View key={banner.id} style={styles.imageWrapper}>
             <Image
               source={banner.image}
@@ -80,10 +76,7 @@ const PromoBanners = () => {
         {banners.map((_, index) => (
           <View
             key={index}
-            style={[
-              styles.dot,
-              currentIndex === index ? styles.activeDot : {},
-            ]}
+            style={[styles.dot, currentIndex === index ? styles.activeDot : {}]}
           />
         ))}
       </View>
@@ -97,11 +90,11 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     alignItems: 'center',
-    paddingHorizontal: wp('2%'),
+    paddingHorizontal: wp('3%'),
   },
   imageWrapper: {
     width: screenWidth * 0.9,
-    height: hp('25%'),
+    height: hp('20%'),
     marginRight: wp('3%'),
     borderRadius: 12,
     overflow: 'hidden',
@@ -124,7 +117,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   activeDot: {
-    backgroundColor: '#333',
+    backgroundColor: '#FF6514',
+    width: 50,
+    height: 8,
   },
 });
 

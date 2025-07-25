@@ -1,33 +1,50 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import PrimaryButton from 'components/buttons/PrimaryButton';
+import {View, Text, StyleSheet} from 'react-native';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 
 export default function FreeTrialCard() {
+  function FreeTrail(): void {
+    throw new Error('Function not implemented.');
+  }
+
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>Kick Start your Free Trial</Text>
-      <Text style={styles.desc}>Delicious and nutritious food that meets the dietary needs of growing children.</Text>
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>GET FREE TRIAL</Text>
-      </TouchableOpacity>
+      <Text style={styles.desc}>
+        Delicious and nutritious food that meets the dietary needs of growing
+        children.
+      </Text>
+      <PrimaryButton
+        title="Next"
+        onPress={FreeTrail}
+        textColor="#FFFFFF"
+        borderRadius={wp('2%')}
+        paddingVertical={hp('1.5%')}
+        fontSize={wp('4%')}
+        textTransform="uppercase"
+        fontFamily="Poppins-SemiBold"
+        style={{width: '100%'}}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    margin: 16,
-    padding: 16,
+    padding: wp('4%'),
     backgroundColor: '#FFF6F0',
-    borderRadius: 12,
-    borderRightWidth: 4,
+    borderRadius: wp('3%'),
+    borderRightWidth: wp('1%'),
     borderColor: '#F37520',
+    width: '100%',
+    alignSelf: 'center',
+    marginVertical: hp('2%'),
   },
-  title: { fontWeight: 'bold', fontSize: 16 },
-  desc: { marginVertical: 8, fontSize: 14 },
-  button: {
-    backgroundColor: '#F37520',
-    paddingVertical: 10,
-    borderRadius: 6,
-    alignItems: 'center',
+  desc: {
+    marginVertical: hp('1%'),
+    fontSize: wp('4%'),
+    marginBottom: hp('2%'),
   },
-  buttonText: { color: '#fff', fontWeight: 'bold' },
 });
