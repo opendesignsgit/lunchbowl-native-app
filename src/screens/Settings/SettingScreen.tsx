@@ -12,9 +12,6 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import HeaderWithBackButton from 'screens/Dashboard/Components/HeaderWithBackButton';
-import BottomConfirmModal from 'components/Modal/BottomConfirmModal';
-import {notificationImage} from 'types/getAssets';
 
 /* --------------------------------------------Main Items   ------------------------------------------- */
 
@@ -24,8 +21,7 @@ const items = [
     name: 'Edit profile',
     routeName: 'EditProfile',
     routeParams: null,
-    image: notificationImage,
-    //  Example for svg Update  // image: <SvgXml xml={camaraIcon} width={30} height={30} />,
+    // image: notificationImage,
   },
   {
     id: '2',
@@ -114,11 +110,7 @@ const SettingsScreen: React.FC<{navigation: any}> = ({navigation}) => {
     <ScrollView
       contentContainerStyle={styles.mainScrollContainer}
       keyboardShouldPersistTaps="handled">
-      {/* -------------------------------------------- Header  ------------------------------------------- */}
-      <HeaderWithBackButton
-        title="Settings"
-        onBackPress={() => navigation.goBack()}
-      />
+   
 
       {/* -------------------------------------------- Main Container  ------------------------------------------- */}
 
@@ -185,13 +177,13 @@ const SettingsScreen: React.FC<{navigation: any}> = ({navigation}) => {
         </View>
       </View>
       {/* -------------------------------------------- Modal section  ------------------------------------------- */}
-
+{/* 
       <BottomConfirmModal
         visible={modalVisible}
         message="Are you sure you want to log out?"
         onConfirm={handleSignOut}
         onCancel={() => setModalVisible(false)}
-      />
+      /> */}
     </ScrollView>
   );
 };
