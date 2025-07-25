@@ -1,321 +1,370 @@
-import React, {useEffect, useState} from 'react';
+import PrimaryButton from 'components/buttons/PrimaryButton';
+import ErrorMessage from 'components/Error/BoostrapStyleError';
+import {LoadingModal} from 'components/LoadingModal/LoadingModal';
+import React, {useEffect, useRef, useState} from 'react';
 import {
-  View,
-  Text,
-  Alert,
-  TouchableOpacity,
-  Image,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
-  TouchableWithoutFeedback,
   ScrollView,
-  Keyboard,
   StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from 'react-native';
-import CheckBox from '@react-native-community/checkbox';
-
-import {
-  GradientButton,
-  GradientContinueButton,
-} from '../../../components/Button/Button';
-import GlobalStyles from '../../../styles/GlobalStyles';
-import AuthService from '../../../services/authService/AuthService';
-import {SignupForm} from '../../../models/authModel';
-import {validateEmail} from '../../../utils/validators';
-import {validatePassword} from '../../../utils/validators';
-import {
-  PasswordInput,
-  ThemeInputStyleThree,
-} from '../../../components/Input/Input';
 import LinearGradient from 'react-native-linear-gradient';
-import {useAuth} from '../../../context/AuthContext';
-import {LoadingModal} from 'components/LoadingModal/LoadingModal';
-import ErrorModal from 'components/Error/ErrorModal';
-import GradientCheckbox from 'components/CheckBox/GradientCheckBox';
-
+import PhoneInput from 'react-native-phone-number-input';
 import {
-  widthPercentageToDP as wp,
   heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import ErrorMessage from 'components/Error/BoostrapStyleError';
-import {ApiResponseModel} from 'src/models/apiResponseModel';
+import {SvgXml} from 'react-native-svg';
+import {facebookIcon, googleIcon, logo} from 'styles/svg-icons';
+import {useAuth} from '../../../context/AuthContext';
+import ThemeInputPrimary from 'components/inputs/ThemeInputPrimary';
 
-const SignupScreen = ({navigation}: {navigation: any}) => {
-  // ----------------------------------------------  1. State Variables --------------------------------------------------
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+const SignUpScreen = ({navigation, route}: {navigation: any; route: any}) => {
   const [error, setError] = useState<string | null>(null);
-  const [password, setPassword] = useState('');
-  const {signup} = useAuth();
-
-  const [isChecked, setIsChecked] = useState(false);
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const {SendOtp, isProfileSetupDone, userId} = useAuth();
   const [loading, setLoading] = useState(false);
+  const {message, success} = route.params || {message: null, success: null};
+  const [loginSuccess, setLoginSuccess] = useState(false);
+  const phoneInputRef = useRef<PhoneInput>(null);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneKey, setPhoneKey] = useState(Date.now());
+  const [formattedValue, setFormattedValue] = useState('');
+  const [isPrivacyChecked, setIsPrivacyChecked] = useState(false);
+  const [firstName, setFullName] = useState('');
 
-  const formValid =
-    name !== '' &&
-    email !== '' &&
-    password !== '' &&
-    confirmPassword !== '' &&
-    password === confirmPassword;
-  // ----------------------------------------------  2. UseEffects Hooks -------------------------------------------------
 
   useEffect(() => {
     if (error) {
       const timer = setTimeout(() => {
-        handleClose();
-      }, 5000); // Clear the error after 5 seconds
+        handleCloseError();
+      }, 5000);
 
-      return () => clearTimeout(timer); // Cleanup the timer if the component unmounts or error changes
+      return () => clearTimeout(timer);
     }
   }, [error]);
 
-  // ----------------------------------------------  3. Functions ------------------------------------------------
+  const halndleSignUp = async () => {
+    if (!firstName || firstName.trim().length < 2) {
+      setError('Please enter your full name.');
+      return;
+    }
 
-  // ----------------------------------------------  4. Event Handlers --------------------------------------------------
-  const handleCloseError = () => {
-    setError(null);
-  };
-  const handleCheckboxChange = (checked: any) => {
-    console.log('Checkbox state:', checked ? 'Checked' : 'Unchecked');
-  };
-
-  const handleSignup = async () => {
+    if (!isPrivacyChecked) {
+      setError('Please agree to the privacy policy to continue.');
+      return;
+    }
+    if (!formattedValue) {
+      setError('Please enter a valid phone number.');
+      return;
+    }
+    const mobile = formattedValue.replace('+', '');
+    const path = 'logIn';
     try {
-      setLoading(true); // Show loading modal when login starts
-      validateEmail(email);
-      // validatePassword(password);
-      if (password !== confirmPassword) {
-        throw new Error('Passwords do not match');
-      }
-
-      const signupData: SignupForm = {
-        fullname: name,
-        email,
-        password,
-      };
-
-      const response: ApiResponseModel = await signup(signupData);
-      console.log('Signup response:', response);
-      if (response.success && response.data) {
-        const userId = response.data.userId;
-        console.log('User ID:', userId);
-        if (!userId) {
-          setError('User ID not found in the response');
-          return;
-        }
-        navigation.navigate('ProfileSetup', {
-          userId,
+      setLoading(true);
+      const LoginData = {mobile, path, firstName};
+      console.log('Login Data:', LoginData);
+      const response = await SendOtp(LoginData);
+      if (response && response.message && response.otp) {
+        navigation.navigate('OtpVerificationScreen', {
+          firstName,
+          mobile,
+          path: 'logIn-otp',
+          otp: response.otp,
         });
       } else {
-        setError(response.message || 'An unknown error occurred');
+        setError('Something went wrong while sending OTP.');
       }
-    } catch (error: any) {
+    } catch (error) {
       console.log('Error:', error);
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError('An unknown error occurred');
-      }
+      setError(
+        error instanceof Error ? error.message : 'Something went wrong.',
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCheckBoxToggle = (newValue: boolean) => {
-    setIsChecked(newValue);
-  };
-  // ----------------------------------------------  5. Helper Functions ------------------------------------------------
-  const handleClose = () => {
-    setError(null); // Clear the error
+  const handleGoogleLogin = () => {
+    navigation.navigate('GoogleAuth');
   };
 
-  // ----------------------------------------------  6. Render UI ------------------------------------------------
-
-  // ----------------------------------------------  7. API: Handle States ------------------------------------------------
-
-  // 1. Handle loading
-  if (loading) {
-    return <LoadingModal loading={loading} setLoading={setLoading} />;
-  }
-
-  // 2. Handle Error
-  // {error && <ErrorMessage error={error} onClose={handleCloseError} />}
-  // 3. Handle Empty response
-  // if (!data) {
-  //   return <Alert type="error" message="No data is available. Please try again later" />
-  // }
-  // 4. Handle Success
+  const handleCloseError = () => {
+    setError(null);
+  };
 
   return (
-    <KeyboardAvoidingView style={{flex: 1}}>
-      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <ScrollView
-          contentContainerStyle={{flexGrow: 1}}
-          keyboardShouldPersistTaps="handled">
-          <View style={SignupScreenStyles.container}>
-            <Image
-              source={require('assets/images/logo.png')}
-              style={SignupScreenStyles.logo}
-            />
-            <Text style={SignupScreenStyles.title}>Sign up with my App</Text>
+    <LinearGradient
+      colors={['#FF651429', '#4AB23814', '#FAFAFA00']}
+      start={{x: 0.5, y: 0}}
+      end={{x: 0.5, y: 1}}
+      style={styles.gradientContainer}>
+      <KeyboardAvoidingView
+        style={{flex: 1}}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+          <ScrollView
+            contentContainerStyle={{flexGrow: 1}}
+            keyboardShouldPersistTaps="handled">
+            <View style={styles.container}>
+              <View style={styles.logoContainer}>
+                <SvgXml xml={logo} style={styles.logo} />
+              </View>
 
-            {error && <ErrorMessage error={error} onClose={handleCloseError} />}
-            <View style={SignupScreenStyles.inputContainer}>
-              <ThemeInputStyleThree
-                placeholder="Full Name"
-                value={name}
-                onChangeText={setName}
-              />
-              <ThemeInputStyleThree
-                placeholder="Email"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-              />
-
-              <PasswordInput
-                placeholder="Password"
-                value={password}
-                onChangeText={setPassword}
-              />
-              <PasswordInput
-                placeholder="Confirm Password"
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-              />
-
-              <View style={SignupScreenStyles.checkboxContainer}>
-                <GradientCheckbox />
-                <Text style={SignupScreenStyles.agreeText}>
-                  I agree to My App{' '}
-                  <Text style={SignupScreenStyles.termsText}>
-                    Terms & Conditions
-                  </Text>
+              <View style={styles.titleContainer}>
+                <Text style={styles.titleText}>sign up</Text>
+                <Text style={styles.subtitleText}>
+                  Enter your details to continue.{' '}
                 </Text>
               </View>
-            </View>
-            <GradientContinueButton
-              title="Sign Up"
-              onPress={handleSignup}
-              style={{height: 50, justifyContent: 'center'}}
-              disabled={!formValid}
-            />
-            <View style={SignupScreenStyles.SocialContainer}>
-              <LinearGradient
-                colors={['#EFEFEF', '#3231304F']}
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-                style={SignupScreenStyles.divider}
-              />
-              {/* Social Buttons */}
-              <TouchableOpacity style={SignupScreenStyles.socialButton}>
-                <Image
-                  source={require('assets/icons/SocialiconGoogle.png')}
-                  style={SignupScreenStyles.socialIcon}
+              {error && (
+                <ErrorMessage error={error} onClose={handleCloseError} />
+              )}
+              <View style={styles.inputContainer}>
+                <ThemeInputPrimary
+                  value={firstName}
+                  onChangeText={setFullName}
+                  label="Full Name* (with Initial or Surname)"
+                  placeholder="Enter Full name"
                 />
-                <Text style={SignupScreenStyles.socialButtonText}>
-                  Continue with Google
-                </Text>
-              </TouchableOpacity>
+              </View>
 
-              <TouchableOpacity style={SignupScreenStyles.socialButton}>
-                <Image
-                  source={require('assets/icons/SocialiconMicrosoft.png')}
-                  style={SignupScreenStyles.socialIcon}
+              {error && (
+                <ErrorMessage error={error} onClose={handleCloseError} />
+              )}
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Phone Number</Text>
+                <PhoneInput
+                  key={phoneKey}
+                  ref={phoneInputRef}
+                  defaultValue={phoneNumber}
+                  defaultCode="IN"
+                  layout="first"
+                  onChangeText={text => setPhoneNumber(text)}
+                  onChangeFormattedText={text => setFormattedValue(text)}
+                  withShadow
+                  autoFocus={false}
+                  placeholder="Enter Mobile Number"
+                  containerStyle={{
+                    width: '100%',
+                    borderWidth: 1,
+                    borderColor: '#ccc',
+                    borderRadius: 5,
+                    paddingVertical: 0,
+                    marginTop: 0,
+                    elevation: 0,
+                    marginBottom: 10,
+                  }}
+                  textContainerStyle={{
+                    backgroundColor: 'white',
+                    borderRadius: 5,
+                    height: 50,
+                    paddingVertical: 10,
+                  }}
+                  textInputStyle={{
+                    fontSize: 16,
+                    paddingVertical: 8,
+                    height: 40,
+                  }}
                 />
-                <Text style={SignupScreenStyles.socialButtonText}>
-                  Continue with Microsoft
-                </Text>
-              </TouchableOpacity>
-              <View style={SignupScreenStyles.createAccountContainer}>
-                <Text style={SignupScreenStyles.text}>
-                  Already have an account?
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate('Login')}>
-                    <Text style={SignupScreenStyles.createAccountText}>
-                      {' '}
-                      Sign in
+              </View>
+
+              <View style={styles.checkboxContainer}>
+                <TouchableOpacity
+                  style={styles.checkbox}
+                  onPress={() => setIsPrivacyChecked(!isPrivacyChecked)}>
+                  <View
+                    style={[
+                      styles.checkboxBox,
+                      isPrivacyChecked && styles.checkboxChecked,
+                    ]}
+                  />
+                  <Text style={styles.checkboxLabel}>
+                    I agree to the{' '}
+                    <Text
+                      style={styles.linkText}
+                      onPress={() => navigation.navigate('PrivacyPolicy')}>
+                      Privacy Policy
                     </Text>
-                  </TouchableOpacity>
-                </Text>
+                  </Text>
+                </TouchableOpacity>
               </View>
+
+              <PrimaryButton
+                title="Send One Time Password"
+                onPress={halndleSignUp}
+                style={styles.signInButton}
+                borderRadius={wp('2%')}
+                paddingVertical={hp('1.5%')}
+                fontSize={wp('4%')}
+                textTransform="uppercase"
+                fontFamily="Poppins-SemiBold"
+              />
+
+              <View style={styles.dividerContainer}>
+                <View style={styles.line} />
+                <Text style={styles.orText}>or Login with</Text>
+                <View style={styles.line} />
+              </View>
+
+              <View style={styles.socialButtonRow}>
+                <TouchableOpacity
+                  style={styles.socialButton}
+                  onPress={handleGoogleLogin}>
+                  <SvgXml xml={googleIcon} style={styles.socialIcon} />
+                  <Text style={styles.socialButtonText}>Google</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.socialButton}>
+                  <SvgXml xml={facebookIcon} style={styles.socialIcon} />
+                  <Text style={styles.socialButtonText}>Facebook</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.footer}>
+                <View style={styles.footerRow}>
+                  <Text style={styles.footerText}>Don’t have an Account?</Text>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('Signup')}>
+                    <Text style={styles.createAccountLink}>Signup</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+              <LoadingModal loading={loading} setLoading={setLoading} />
             </View>
-          </View>
-        </ScrollView>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+          </ScrollView>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </LinearGradient>
   );
 };
 
-const SignupScreenStyles = StyleSheet.create({
+const styles = StyleSheet.create({
+  gradientContainer: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: '#fff',
-    paddingLeft: wp('5%'),
-    paddingRight: wp('5%'),
+    alignItems: 'center',
+    padding: wp('8%'),
+  },
+  logoContainer: {
+    width: '100%',
+    alignItems: 'center',
+    marginBottom: hp('3%'),
   },
   logo: {
-    alignSelf: 'center',
-    height: wp('25%'),
-    width: wp('25%'),
-    marginBottom: hp('5%'),
-  },
-  inputContainer: {
-    gap: hp('2%'),
-  },
-  SocialContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  linkText: {
-    ...GlobalStyles.GlobalStyles,
-    textAlign: 'center',
-    fontSize: wp('4%'),
-  },
-  googleButton: {
-    marginTop: hp('3%'),
+    width: wp('30%'),
+    height: wp('30%'),
   },
   title: {
-    fontSize: wp('8%'),
-    fontWeight: '800',
-    color: '#A71D55',
     width: '100%',
-    marginBottom: hp('2%'),
-    textAlign: 'center',
+    alignItems: 'flex-end',
     fontFamily: 'Urbanist-Regular',
+    flexDirection: 'row',
   },
-  agreeText: {
-    fontSize: wp('3.5%'),
-    color: '#000000',
-    fontWeight: '400',
-    textAlign: 'center',
+  titleContainer: {
+    width: '100%',
+    marginBottom: hp('3%'),
   },
-  termsText: {
-    color: '#AB2959',
-    fontSize: wp('3.5%'),
+
+  titleText: {
+    fontSize: wp('8%'),
+    color: '#FF6514',
+    fontFamily: 'Urbanist-Bold',
+    marginBottom: hp('0.5%'),
+    textTransform: 'uppercase',
+  },
+
+  subtitleText: {
+    fontSize: wp('4%'),
+    color: '#666',
+    fontFamily: 'Poppins-Regular',
+  },
+  label: {
+    fontSize: wp('4%'),
+    color: '#000',
+    fontFamily: 'OpenSans-SemiBold',
+  },
+
+  inputContainer: {
+    width: '100%',
+    // marginBottom: hp('2%'),
+    marginVertical: hp('0.5%'),
+    gap: hp('1%'),
+    fontSize: wp('14%'),
+    fontFamily: 'Poppins-SemiBold',
+  },
+  descriptionContainer: {
+    fontSize: wp('4%'),
+    color: '#000',
+    fontWeight: 'bold',
+    marginBottom: hp('1%'),
   },
   checkboxContainer: {
+    width: '100%',
+    marginVertical: hp('1.5%'),
+    alignItems: 'flex-start',
+  },
+
+  checkbox: {
     flexDirection: 'row',
     alignItems: 'center',
-    left: wp('2%'),
-    paddingVertical: hp('0.1%'),
-    transform: [{translateY: -11}],
   },
-  checkbox: {
-    marginRight: wp('2%'),
+
+  checkboxBox: {
+    width: wp('4.5%'),
+    height: wp('4.5%'),
+    borderWidth: 1,
+    borderColor: '#999',
+    marginRight: wp('2.5%'),
+    borderRadius: 4,
+    backgroundColor: '#fff',
   },
-  socialIcon: {
-    width: wp('6%'),
-    height: wp('6%'),
-    marginRight: wp('3%'),
+
+  checkboxChecked: {
+    backgroundColor: '#FF6514',
+    borderColor: '#FF6514',
   },
-  socialButtonText: {
-    fontSize: wp('4%'),
-    color: '#121212',
-    fontWeight: 'bold',
-    fontFamily: 'Inter',
+
+  checkboxLabel: {
+    fontSize: wp('3.8%'),
+    color: '#333',
+    fontFamily: 'Poppins-Regular',
+    flexShrink: 1,
+  },
+
+  linkText: {
+    color: '#FF6514',
+    fontWeight: '600',
+    textDecorationLine: 'underline',
+  },
+
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: hp('2%'),
+    width: '100%',
+    gap: wp('2%'),
+    paddingHorizontal: wp('5%'),
+    paddingVertical: hp('1%'),
+  },
+  line: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#ccc',
+    marginHorizontal: wp('2%'),
+  },
+  orText: {
+    fontSize: hp('2%'),
+    color: '#333',
+    fontWeight: '500',
   },
   socialButton: {
     flexDirection: 'row',
@@ -324,36 +373,54 @@ const SignupScreenStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E0E0E0',
     borderRadius: 25,
-    width: '80%',
+    width: '48%',
     paddingVertical: hp('2%'),
     paddingHorizontal: wp('10%'),
     marginVertical: hp('0.3%'),
   },
-  createAccountContainer: {
+  socialButtonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    gap: wp('3%'),
+    marginBottom: hp('2%'),
+  },
+
+  socialIcon: {
+    width: wp('5%'),
+    height: wp('5%'),
+    marginRight: wp('3%'),
+  },
+  socialButtonText: {
+    fontSize: wp('4%'),
+    color: '#121212',
+    fontWeight: 'bold',
+    fontFamily: 'Inter',
+  },
+  signInButton: {
+    height: hp('6%'),
+    justifyContent: 'center',
+    width: '100%',
+  },
+  footer: {
+    marginTop: hp('5%'),
+  },
+  footerRow: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: hp('3%'),
   },
-  createAccountText: {
-    fontSize: wp('3.5%'),
-    color: '#AB2959',
-    fontWeight: '400',
-    fontFamily: 'Poppins',
-    transform: [{translateY: 3}],
+  footerText: {
+    fontSize: wp('4%'),
+    color: '#000',
   },
-  divider: {
-    width: '80%',
-    height: 1,
-    backgroundColor: '#E0E0E0',
-    marginVertical: hp('3%'),
-  },
-  text: {
-    fontSize: wp('3.5%'),
-    color: '#000000',
-    fontWeight: '400',
-    fontFamily: 'Poppins',
+  createAccountLink: {
+    fontSize: wp('4%'),
+    color: '#FF6514',
+    fontWeight: '500',
+    marginLeft: 5,
   },
 });
 
-export default SignupScreen;
+export default SignUpScreen;

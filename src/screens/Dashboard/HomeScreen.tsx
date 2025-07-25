@@ -94,9 +94,9 @@ const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
       style={styles.container}>
       <View style={styles.container}>
         <View style={styles.logoutContainer}></View>
-        {/* <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
           <Text style={styles.logoutText}>Logout</Text>
-        </TouchableOpacity> */}
+        </TouchableOpacity>
         <ScrollView showsVerticalScrollIndicator={false}>
           <Header userName={userName} />
           <SearchBar />

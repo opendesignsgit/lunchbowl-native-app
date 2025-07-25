@@ -40,14 +40,15 @@ const AuthNavigator = () => {
         component={OtpVerificationScreen}
         options={{headerShown: false}}
       />
-      {/*
-      <Stack.Screen name="GoogleAuth" component={GoogleAuthScreen} />
-      <Stack.Screen name="MicrosoftAuth" component={GoogleAuthScreen} />
-      <Stack.Screen
+        <Stack.Screen
         name="Signup"
         component={SignupScreen}
         options={{headerShown: false}}
       />
+      {/*
+      <Stack.Screen name="GoogleAuth" component={GoogleAuthScreen} />
+      <Stack.Screen name="MicrosoftAuth" component={GoogleAuthScreen} />
+    
       <Stack.Screen
         name="ForgotPassword"
         component={ForgotPasswordNavigator}
