@@ -17,7 +17,6 @@ const SearchBar = () => {
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 15,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#F7F7F7',

@@ -28,7 +28,7 @@ export default function PrimaryButton({
   title,
   onPress,
   backgroundColor = '#FF6514',
-  textColor = '#FFF',
+  textColor = '#ffffff',
   borderRadius = 8,
   paddingVertical = 12,
   fontSize = 16,

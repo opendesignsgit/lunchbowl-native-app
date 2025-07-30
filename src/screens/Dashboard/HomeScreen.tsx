@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   GestureResponderEvent,
   ScrollView,
@@ -52,15 +52,6 @@ export const mockChallenges = [
 const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
   const [userName, setUserName] = useState('User');
 
-  const handleLogout = async () => {
-    try {
-      await AsyncStorage.clear();
-      navigation.replace('Login');
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
-
   useEffect(() => {
     const getUserRole = async () => {
       try {
@@ -85,7 +76,6 @@ const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
   function onPressViewAll(event: GestureResponderEvent): void {
     throw new Error('Function not implemented.');
   }
-
   return (
     <LinearGradient
       colors={['#FF651429', '#4AB23814', '#FAFAFA00']}
@@ -94,11 +84,10 @@ const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
       style={styles.container}>
       <View style={styles.container}>
         <View style={styles.logoutContainer}></View>
-        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-          <Text style={styles.logoutText}>Logout</Text>
-        </TouchableOpacity>
+
         <ScrollView showsVerticalScrollIndicator={false}>
-          <Header userName={userName} />
+          <Header userName={userName ?? 'GuestUSer'} navigation={navigation} />
+
           <SearchBar />
           <PromoBanner />
           <Text style={styles.TextContainer}>Kick Start your Free Trial</Text>
@@ -128,12 +117,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: wp('1%'),
-    paddingTop: hp('2%'),
   },
   logoutContainer: {
     alignItems: 'flex-end',
   },
-   headerContainer: {
+  headerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -143,12 +131,13 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 20,
     color: '#000',
-    fontFamily:'Urbanist-SemiBold'
+    fontFamily: 'Urbanist-SemiBold',
+    textTransform: 'uppercase',
   },
   viewAll: {
     fontSize: 20,
     fontWeight: '500',
-    color: '#FF6B00', 
+    color: '#FF6B00',
   },
   logoutButton: {
     backgroundColor: '#FF6B6B',

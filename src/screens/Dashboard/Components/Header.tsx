@@ -1,9 +1,18 @@
-
+import React from 'react';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import {SvgXml} from 'react-native-svg';
 import {BellIcon, DefultProfilePic} from 'styles/svg-icons';
 
-export default function Header({userName}: {userName: string}) {
+interface HeaderProps {
+  userName: string;
+  navigation: any;
+}
+
+export default function Header({userName, navigation}: HeaderProps) {
+  const goToSettings = () => {
+    navigation.navigate('Settings'); 
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.textSection}>
@@ -11,8 +20,7 @@ export default function Header({userName}: {userName: string}) {
           style={styles.greeting}
           numberOfLines={1}
           ellipsizeMode="tail"
-          adjustsFontSizeToFit
-        >
+          adjustsFontSizeToFit>
           Hello, {userName}!
         </Text>
         <Text style={styles.subtitle}>Welcome to Lunch Bowl</Text>
@@ -21,7 +29,10 @@ export default function Header({userName}: {userName: string}) {
         <TouchableOpacity>
           <SvgXml xml={BellIcon} style={styles.icon} />
         </TouchableOpacity>
-        <SvgXml xml={DefultProfilePic} style={styles.profile} />
+
+        <TouchableOpacity onPress={goToSettings}>
+          <SvgXml xml={DefultProfilePic} style={styles.profile} />
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -36,7 +47,7 @@ const styles = StyleSheet.create({
   },
   textSection: {
     flex: 1,
-    paddingRight: 10, // space to avoid text overlapping with icons
+    paddingRight: 10, 
   },
   greeting: {
     fontSize: 37,

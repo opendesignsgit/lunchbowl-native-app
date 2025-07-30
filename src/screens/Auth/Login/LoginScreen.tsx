@@ -34,7 +34,6 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
   const [phoneKey, setPhoneKey] = useState(Date.now());
   const [formattedValue, setFormattedValue] = useState('');
   const [isPrivacyChecked, setIsPrivacyChecked] = useState(false);
-
   useEffect(() => {
     if (error) {
       const timer = setTimeout(() => {
@@ -45,40 +44,87 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
     }
   }, [error]);
 
+  // const halndleSendOtp = async () => {
+  //   if (!isPrivacyChecked) {
+  //     setError('Please agree to the privacy policy to continue.');
+  //     return;
+  //   }
+  //   if (!formattedValue) {
+  //     setError('Please enter a valid phone number.');
+  //     return;
+  //   }
+  //   const mobile = formattedValue.replace('+', '');
+  //   const path = 'logIn';
+  //   console.log('mobile',mobile)
+  //   try {
+  //     setLoading(true);
+  //     const LoginData = {mobile, path};
+  //     console.log('Login Data:', LoginData);
+  //     const response = await SendOtp(LoginData);
+       
+  //     if (response && response.message && response.otp) {
+  //       navigation.navigate('OtpVerificationScreen', {
+  //         mobile,
+  //         path: 'logIn-otp',
+  //         otp: response.otp,
+  //       });
+              
+
+  //     } else {
+  //       setError('Something went wrong while sending OTP.');
+  //     }
+  //   } catch (error) {
+  //     console.log('Error:', error);
+  //     setError(
+  //       error instanceof Error ? error.message : 'Something went wrong.',
+  //     );
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const halndleSendOtp = async () => {
-    if (!isPrivacyChecked) {
-      setError('Please agree to the privacy policy to continue.');
-      return;
+  if (!isPrivacyChecked) {
+    setError('Please agree to the privacy policy to continue.');
+    return;
+  }
+  if (!formattedValue) {
+    setError('Please enter a valid phone number.');
+    return;
+  }
+
+  let mobile = formattedValue.replace('+', ''); 
+
+  if (mobile.startsWith('91') && mobile.length === 12) {
+    mobile = mobile.slice(2); 
+  }
+
+  const path = 'logIn';
+  console.log('mobile', mobile);
+
+  try {
+    setLoading(true);
+    const LoginData = { mobile, path };
+    console.log('Login Data:', LoginData);
+
+    const response = await SendOtp(LoginData);
+
+    if (response && response.message && response.otp) {
+      navigation.navigate('OtpVerificationScreen', {
+        mobile,
+        path: 'logIn-otp',
+        otp: response.otp,
+      });
+    } else {
+      setError('Something went wrong while sending OTP.');
     }
-    if (!formattedValue) {
-      setError('Please enter a valid phone number.');
-      return;
-    }
-    const mobile = formattedValue.replace('+', '');
-    const path = 'logIn';
-    try {
-      setLoading(true);
-      const LoginData = {mobile, path};
-      console.log('Login Data:', LoginData);
-      const response = await SendOtp(LoginData);
-      if (response && response.message && response.otp) {
-        navigation.navigate('OtpVerificationScreen', {
-          mobile,
-          path: 'logIn-otp',
-          otp: response.otp,
-        });
-      } else {
-        setError('Something went wrong while sending OTP.');
-      }
-    } catch (error) {
-      console.log('Error:', error);
-      setError(
-        error instanceof Error ? error.message : 'Something went wrong.',
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+  } catch (error) {
+    console.log('Error:', error);
+    setError(error instanceof Error ? error.message : 'Something went wrong.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleGoogleLogin = () => {
     navigation.navigate('GoogleAuth');
@@ -108,7 +154,7 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
               <View style={styles.titleContainer}>
                 <Text style={styles.titleText}>Log in</Text>
                 <Text style={styles.subtitleText}>
-                  Enter your mobile number to continue.
+                  Enter your mobile number to continue. sample 7428730894
                 </Text>
               </View>
 

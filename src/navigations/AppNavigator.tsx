@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 0,
     borderTopLeftRadius: wp('5%'),
     borderTopRightRadius: wp('5%'),
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
     elevation: 10,
     borderTopWidth: 0,
     justifyContent: 'center',

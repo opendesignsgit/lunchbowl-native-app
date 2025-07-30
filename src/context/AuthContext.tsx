@@ -106,29 +106,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
         };
       }
 
-      // if (response.success && response.data) {
-      //   const loggedUser = response.data;
-
-      //   if (loggedUser && loggedUser.token) {
-      //     const {token, ...userWithoutToken} = loggedUser;
-      //     const isProfileSetupDone = userWithoutToken.isProfileSetupDone;
-      //     setIsProfileSetupDone(isProfileSetupDone);
-      //     setUser(userWithoutToken);
-      //     setUserId(userWithoutToken.userId);
-      //     setUserRole(userWithoutToken.role?.toString());
-      //     setAuthToken(token);
-      //     await AsyncStorage.setItem('user', JSON.stringify(userWithoutToken));
-      //     await AsyncStorage.setItem(TOKEN_KEY, token);
-      //     await AsyncStorage.setItem('userId', userWithoutToken.userId);
-      //     await AsyncStorage.setItem(
-      //       'userRole',
-      //       userWithoutToken.role?.toString(),
-      //     );
-
-      //     setisLoggedIn(true);
-      //     return response;
-      //   }
-      // }
       return response;
     } catch (error) {
       const errorMessage = handleApiError(error);

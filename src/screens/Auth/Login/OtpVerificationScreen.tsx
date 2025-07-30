@@ -37,6 +37,7 @@ import {
 type OtpVerificationRouteParams = {
   mobile: string;
   path: string;
+  otp?: string; 
 };
 
 type AuthStackParamList = {
@@ -55,7 +56,7 @@ const OtpVerificationScreen = () => {
   const [loading, setLoading] = useState(false);
   const {login, isProfileSetupDone, userId} = useAuth();
   const route = useRoute<RouteProp<AuthStackParamList, 'OtpVerification'>>();
-  const {mobile, path} = route.params;
+  const {mobile, path,otp} = route.params;
 
   // HANDLER FUNCTIONS API CALL ###########################
   const handleVerify = async () => {
@@ -70,12 +71,15 @@ const OtpVerificationScreen = () => {
       // Remove country code 
      const formattedMobile = mobile.slice(2);
       const VerifyloginData: LoginForm = {
-        mobile:formattedMobile,
+        // mobile:formattedMobile,
+        mobile,
         otp: otpInput,
         // path,
       };
-      console.log("recieved otp",VerifyloginData)
+       
+      console.log('recieved otp', VerifyloginData);
       const response: ApiResponseModel = await login(VerifyloginData);
+     
       if (response.success && response.data) {
         if (!isProfileSetupDone && userId) {
           navigation.navigate('ProfileSetup', {userId});
@@ -111,9 +115,9 @@ const OtpVerificationScreen = () => {
           <ScrollView
             contentContainerStyle={{flexGrow: 1}}
             keyboardShouldPersistTaps="handled">
-              {/*############### MAIN CONTAINER ############ */}
+            {/*############### MAIN CONTAINER ############ */}
             <View style={styles.container}>
-                            {/*############### LOGO CONTAINER ############ */}
+              {/*############### LOGO CONTAINER ############ */}
 
               <View style={styles.logoContainer}>
                 <SvgXml xml={logo} style={styles.logo} />
@@ -121,9 +125,11 @@ const OtpVerificationScreen = () => {
               {/*############### TITLE CONTAINER ############ */}
               <View style={styles.titleContainer}>
                 <Text style={styles.titleText}>verify otp</Text>
+
                 <Text style={styles.subtitleText}>
-                  We've sent an OTP to your Mobile number.
+                  We've sent an OTP to your Mobile number. OTP: {otp}
                 </Text>
+               
               </View>
 
               {/*############### OTP INPUT CONTAINER ############ */}
@@ -136,7 +142,6 @@ const OtpVerificationScreen = () => {
                 <OtpInput code={otpInput} setCode={setOtpInput} length={4} />
                 {error ? <Text>{error}</Text> : null}
               </View>
-
 
               <PrimaryButton
                 title="Send One Time Password"

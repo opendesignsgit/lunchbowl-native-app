@@ -25,6 +25,7 @@ class AuthService {
   }
 
   async doSendOtp(LoginData: LoginForm): Promise<ApiResponseModel> {
+    
     try {
       const response: any = await AuthApi.SendOtp(LoginData);
       if (response.status && response.data) {

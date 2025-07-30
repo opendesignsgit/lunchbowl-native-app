@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#cfe9a6ff',
+    backgroundColor: '#ffffff',
   },
   logo: {
     width: wp('40%'),

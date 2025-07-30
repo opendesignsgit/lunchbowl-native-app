@@ -1,6 +1,5 @@
-
-import UserApi from 'api/userApi';
-import { ApiResponseModel } from 'src/model/apiResponseModel';
+import UserApi from './userApi';
+import { ApiResponseModel } from './apiResponseModel';
 import { handleApiError } from 'utils/handleError';
 
 class UserService {
