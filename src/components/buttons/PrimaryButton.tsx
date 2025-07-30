@@ -31,10 +31,10 @@ export default function PrimaryButton({
   textColor = '#ffffff',
   borderRadius = 8,
   paddingVertical = 12,
-  fontSize = 16,
+  fontSize = 14,
   icon = null,
-  textTransform = 'none',
-  fontFamily = 'System',
+  textTransform = 'uppercase',
+  fontFamily = 'Urbanist-Bold',
   style = {},
 }: PrimaryButtonProps) {
   return (
@@ -71,11 +71,11 @@ export default function PrimaryButton({
 
 const styles = StyleSheet.create({
   button: {
-    paddingHorizontal: wp(15),
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: hp(1.2),
     alignSelf: 'center',
+    width: wp('90%'),
   },
   text: {
     fontWeight: '600',

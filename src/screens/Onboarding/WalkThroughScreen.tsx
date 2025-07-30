@@ -1,19 +1,12 @@
+import ThemeGradientBackground from 'components/Backgrounds/GradientBackground';
+import SecondaryButton from 'components/buttons/SecondaryButton';
 import React, {useEffect, useRef, useState} from 'react';
-import {
-  Animated,
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import {Animated, StyleSheet, Text, View} from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import PrimaryButton from '../../components/buttons/PrimaryButton';
-import SecondaryButton from 'components/buttons/SecondaryButton';
+import PrimaryButton from 'components/buttons/PrimaryButton';
 
 // #################### SLIDE DATA ##################
 
@@ -98,12 +91,7 @@ const WalkThroughScreen: React.FC<{navigation: any}> = ({navigation}) => {
   };
 
   return (
-    <LinearGradient
-      colors={['#FF651429', '#4AB23814', '#FAFAFA00']}
-      start={{x: 0.5, y: 0}}
-      end={{x: 0.5, y: 1}}
-      style={styles.container}>
-      {/*############### MAIN CONTAINER  ################## */}
+    <ThemeGradientBackground>
       <View style={styles.mainContent}>
         {/*############### SKIP CONTAINER  ################ */}
         <View style={styles.topSection}>
@@ -112,7 +100,7 @@ const WalkThroughScreen: React.FC<{navigation: any}> = ({navigation}) => {
               Skip
             </Text>
           )}
-          {/*############ PAGINATION CONTAINER  ############ */}
+          {/*############### PAGINATION CONTAINER  ############ */}
 
           <View style={styles.pagination}>
             {Walkslides.map((_, index) => (
@@ -126,7 +114,7 @@ const WalkThroughScreen: React.FC<{navigation: any}> = ({navigation}) => {
             ))}
           </View>
         </View>
-        {/*############ IMAGE  CONTAINER  ################## */}
+        {/*############ IMAGE  CONTAINER  #################### */}
 
         <View style={styles.imageContainer}>
           <Animated.Image
@@ -142,7 +130,7 @@ const WalkThroughScreen: React.FC<{navigation: any}> = ({navigation}) => {
           />
         </View>
 
-        {/*############ BOTTOM CONTAINER  ################## */}
+        {/*############ BOTTOM CONTAINER  #################### */}
         <View style={styles.buttonWithTextContainer}>
           <Text style={styles.title}>
             {Walkslides[currentSlideIndex].title.map((word, index) => (
@@ -168,29 +156,20 @@ const WalkThroughScreen: React.FC<{navigation: any}> = ({navigation}) => {
               <SecondaryButton
                 title="Back"
                 onPress={handleBack}
-                borderRadius={wp('2%')}
-                paddingVertical={hp('1.5%')}
-                fontSize={wp('4%')}
-                textTransform="uppercase"
-                fontFamily="Poppins-SemiBold"
-                backgroundColor="transparent"
               />
-            )}
+              
+            )}   
             <PrimaryButton
               title="Next"
               onPress={handleNext}
-              textColor="#FFFFFF"
-              borderRadius={wp('2%')}
-              paddingVertical={hp('1.5%')}
-              fontSize={wp('4%')}
-              textTransform="uppercase"
-              fontFamily="Poppins-SemiBold"
-              style={currentSlideIndex === 0 ? {width: '100%'} : {}}
+              style={{
+                width: currentSlideIndex === 0 ? wp('90%') : wp('40%'), 
+              }}
             />
           </View>
         </View>
       </View>
-    </LinearGradient>
+    </ThemeGradientBackground>
   );
 };
 
@@ -200,20 +179,12 @@ const styles = StyleSheet.create({
     width: wp('100%'),
     justifyContent: 'space-between',
   },
-  container: {
-    flex: 1,
-    width: wp('100%'),
-    paddingHorizontal: wp('5%'),
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   topSection: {
     marginTop: hp('4%'),
     width: '100%',
     alignItems: 'flex-end',
     paddingHorizontal: wp('5%'),
   },
-
   skipText: {
     color: '#FF6514',
     fontSize: wp('3.5%'),
@@ -300,6 +271,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     columnGap: wp('4%'),
     flexWrap: 'wrap',
+     gap: wp('4%'),
   },
 });
 

@@ -6,11 +6,10 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { logo } from 'styles/svg-icons';
-
-
+import {logo} from 'styles/svg-icons';
 
 const SplashScreen: React.FC<{navigation: any}> = ({navigation}) => {
+  //############### HOOKS ####################
   useEffect(() => {
     if (navigation) {
       const timeout = setTimeout(() => {
@@ -50,7 +49,7 @@ const styles = StyleSheet.create({
     right: wp('5%'),
     width: wp('6%'),
     height: wp('6%'),
-    color: '#000',
+    color: '#000000',
   },
 });
 
