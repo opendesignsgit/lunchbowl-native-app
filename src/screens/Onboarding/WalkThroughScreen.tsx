@@ -1,5 +1,12 @@
-import React, {useState} from 'react';
-import {Image, ScrollView, StyleSheet, Text, View} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {
+  Animated,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {
   heightPercentageToDP as hp,
@@ -7,6 +14,8 @@ import {
 } from 'react-native-responsive-screen';
 import PrimaryButton from '../../components/buttons/PrimaryButton';
 import SecondaryButton from 'components/buttons/SecondaryButton';
+
+// #################### SLIDE DATA ##################
 
 const Walkslides = [
   {
@@ -44,7 +53,31 @@ const Walkslides = [
 ];
 
 const WalkThroughScreen: React.FC<{navigation: any}> = ({navigation}) => {
+  //############ STATE VARAIBLES ####################
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const imageOpacity = useRef(new Animated.Value(0)).current;
+  const imageScale = useRef(new Animated.Value(0.95)).current;
+
+  //################# HOOKS #########################
+
+  useEffect(() => {
+    imageOpacity.setValue(0);
+    imageScale.setValue(0.95);
+    Animated.parallel([
+      Animated.timing(imageOpacity, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.spring(imageScale, {
+        toValue: 1,
+        useNativeDriver: true,
+        friction: 5,
+      }),
+    ]).start();
+  }, [currentSlideIndex]);
+
+  //############## HELPER FUNCTIONS #################
 
   const handleNext = () => {
     if (currentSlideIndex < Walkslides.length - 1) {
@@ -70,16 +103,14 @@ const WalkThroughScreen: React.FC<{navigation: any}> = ({navigation}) => {
       start={{x: 0.5, y: 0}}
       end={{x: 0.5, y: 1}}
       style={styles.container}>
-      {/*############### MAIN CONTAINER  ############## */}
+      {/*############### MAIN CONTAINER  ################## */}
       <View style={styles.mainContent}>
-        {/*############### SKIP CONTAINER  ############## */}
+        {/*############### SKIP CONTAINER  ################ */}
         <View style={styles.topSection}>
-          {currentSlideIndex < Walkslides.length - 1 && (
-            <View style={styles.skipContainer}>
-              <Text style={styles.skipText} onPress={skipToLogin}>
-                Skip
-              </Text>
-            </View>
+          {currentSlideIndex < Walkslides.length - 0 && (
+            <Text style={styles.skipText} onPress={skipToLogin}>
+              Skip
+            </Text>
           )}
           {/*############ PAGINATION CONTAINER  ############ */}
 
@@ -95,35 +126,39 @@ const WalkThroughScreen: React.FC<{navigation: any}> = ({navigation}) => {
             ))}
           </View>
         </View>
-        {/*############ IMAGE  CONTAINER  ############ */}
+        {/*############ IMAGE  CONTAINER  ################## */}
 
         <View style={styles.imageContainer}>
-          <Image
+          <Animated.Image
             source={Walkslides[currentSlideIndex].image}
-            style={styles.welcomeImage}
+            style={[
+              styles.welcomeImage,
+              {
+                opacity: imageOpacity,
+                transform: [{scale: imageScale}],
+              },
+            ]}
             resizeMode="contain"
           />
         </View>
 
-        {/*############ BOTTOM CONTAINER  ############ */}
+        {/*############ BOTTOM CONTAINER  ################## */}
         <View style={styles.buttonWithTextContainer}>
-          <View style={styles.contentContainer}>
-            <Text style={styles.title}>
-              {Walkslides[currentSlideIndex].title.map((word, index) => (
-                <Text
-                  key={index}
-                  style={
-                    index === 0
-                      ? styles.boldText
-                      : index === 1
-                      ? styles.highlightText
-                      : {}
-                  }>
-                  {word}{' '}
-                </Text>
-              ))}
-            </Text>
-          </View>
+          <Text style={styles.title}>
+            {Walkslides[currentSlideIndex].title.map((word, index) => (
+              <Text
+                key={index}
+                style={
+                  index === 0
+                    ? styles.spanTittle
+                    : index === 1
+                    ? styles.highlightText
+                    : {}
+                }>
+                {word}{' '}
+              </Text>
+            ))}
+          </Text>
 
           <Text style={styles.description}>
             {Walkslides[currentSlideIndex].description}
@@ -178,7 +213,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     paddingHorizontal: wp('5%'),
   },
-  skipContainer: {},
 
   skipText: {
     color: '#FF6514',
@@ -203,7 +237,7 @@ const styles = StyleSheet.create({
     height: wp('1%'),
     borderRadius: wp('1.5%'),
     backgroundColor: '#666666',
-    marginHorizontal: wp('0.5%'),
+    marginHorizontal: wp('0.9%'),
   },
   activeDot: {
     backgroundColor: '#FF6514',
@@ -211,34 +245,32 @@ const styles = StyleSheet.create({
   imageContainer: {
     flex: 3,
     width: '100%',
-    height: hp('40%'),
-    justifyContent: 'flex-end',
+    height: hp('50%'),
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   welcomeImage: {
     width: wp('90%'),
-    height: '100%',
+    height: '90%',
     resizeMode: 'contain',
   },
-  contentContainer: {
-    flex: 0.8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: wp('5%'),
-  },
+
   title: {
     fontSize: wp('9%'),
     color: '#FF6514',
     fontFamily: 'Urbanist-SemiBold',
     textAlign: 'center',
-    width: wp('60%'),
+    width: wp('50%'),
+    marginBottom: hp('1.9%'),
   },
-  boldText: {
+  spanTittle: {
     fontSize: wp('9%'),
     color: '#FF6514',
     fontFamily: 'Urbanist-SemiBold',
     textAlign: 'center',
     width: wp('100%'),
   },
+
   highlightText: {
     color: '#FF6514',
   },
@@ -247,21 +279,27 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#666666',
     marginBottom: hp('3%'),
-    fontFamily: 'Urbanist',
+    fontFamily: 'Urbanist-Regular',
     lineHeight: wp('6%'),
     fontWeight: '500',
+    paddingHorizontal: wp('5%'),
+    maxWidth: wp('90%'),
   },
 
   buttonWithTextContainer: {
     width: '100%',
-    alignItems: 'flex-end',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: hp('4%'),
+    paddingHorizontal: wp('5%'),
   },
+
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: wp('4%'),
+    columnGap: wp('4%'),
+    flexWrap: 'wrap',
   },
 });
 
