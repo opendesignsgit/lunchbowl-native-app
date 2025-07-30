@@ -15,7 +15,7 @@ export default function ThemeGradientBackground({children, style}: Props) {
   return (
     <LinearGradient
       colors={['#FF651429', '#4AB23814', '#FAFAFA00']}
-      locations={[0, 0.4, 0.1]}
+      locations={[0, 0.4, 0.9]}
       start={{x: 0.5, y: 0}}
       end={{x: 0.5, y: 1}}
       style={[styles.gradient, style]}>
@@ -28,7 +28,6 @@ const styles = StyleSheet.create({
   gradient: {
     flex: 1,
     width: wp('100%'),
-    paddingHorizontal: wp('5%'),
     alignItems: 'center',
     justifyContent: 'center',
   },

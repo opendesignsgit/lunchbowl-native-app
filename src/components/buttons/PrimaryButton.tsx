@@ -30,7 +30,7 @@ export default function PrimaryButton({
   backgroundColor = '#FF6514',
   textColor = '#ffffff',
   borderRadius = 8,
-  paddingVertical = 12,
+  paddingVertical = 18,
   fontSize = 14,
   icon = null,
   textTransform = 'uppercase',

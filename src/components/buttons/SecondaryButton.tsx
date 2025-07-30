@@ -26,11 +26,11 @@ export default function SecondaryButton({
   textColor = '#8C8C8C',
   borderColor = '#8C8C8C',
   borderRadius = 8,
-  paddingVertical = 12,
-  fontSize = 16,
+  paddingVertical = 18,
+  fontSize = 14,
   icon = null,
-  textTransform = 'none',
-  fontFamily = 'OpenSans-ExtraBold',
+  textTransform = 'uppercase',
+  fontFamily = 'Urbanist-Bold',
 }: PrimaryButtonProps) {
   return (
     <TouchableOpacity

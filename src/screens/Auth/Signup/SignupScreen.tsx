@@ -62,7 +62,11 @@ const SignUpScreen = ({navigation, route}: {navigation: any; route: any}) => {
       setError('Please enter a valid phone number.');
       return;
     }
-    const mobile = formattedValue.replace('+', '');
+    let mobile = formattedValue.replace('+', '');
+
+    if (mobile.startsWith('91') && mobile.length === 12) {
+      mobile = mobile.slice(2);
+    }
     const path = 'logIn';
     try {
       setLoading(true);

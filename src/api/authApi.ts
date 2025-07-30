@@ -19,6 +19,7 @@ class AuthApi {
    * @returns A promise that resolves to the response of the login request.
    */
   async login(credentials: {
+    // firstName:string
     mobile: string;
     otp: string; 
   }): Promise<ApiResponseModel> {

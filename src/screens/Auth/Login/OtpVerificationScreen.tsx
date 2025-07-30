@@ -1,9 +1,9 @@
-  /**
-   * Method to handle user login.
-   *  - An object containing the user's Phone and Otp.
-   *  A promise that resolves to the response of the login request.
-   * DISCLIMAR --- DONT MODIFY THIS METHOD NAME  WORKING VERSION --BHARATHI 
-   */
+/**
+ * Method to handle user login.
+ *  - An object containing the user's Phone and Otp.
+ *  A promise that resolves to the response of the login request.
+ * DISCLIMAR --- DONT MODIFY THIS METHOD NAME  WORKING VERSION --BHARATHI
+ */
 
 import React, {useState} from 'react';
 import {
@@ -37,7 +37,7 @@ import {
 type OtpVerificationRouteParams = {
   mobile: string;
   path: string;
-  otp?: string; 
+  otp?: string;
 };
 
 type AuthStackParamList = {
@@ -56,7 +56,7 @@ const OtpVerificationScreen = () => {
   const [loading, setLoading] = useState(false);
   const {login, isProfileSetupDone, userId} = useAuth();
   const route = useRoute<RouteProp<AuthStackParamList, 'OtpVerification'>>();
-  const {mobile, path,otp} = route.params;
+  const {mobile, path, otp} = route.params;
 
   // HANDLER FUNCTIONS API CALL ###########################
   const handleVerify = async () => {
@@ -68,18 +68,18 @@ const OtpVerificationScreen = () => {
     try {
       setLoading(true);
       setError('');
-      // Remove country code 
-     const formattedMobile = mobile.slice(2);
+      // Remove country code
+      const formattedMobile = mobile.slice(2);
       const VerifyloginData: LoginForm = {
         // mobile:formattedMobile,
         mobile,
         otp: otpInput,
         // path,
       };
-       
+
       console.log('recieved otp', VerifyloginData);
       const response: ApiResponseModel = await login(VerifyloginData);
-     
+
       if (response.success && response.data) {
         if (!isProfileSetupDone && userId) {
           navigation.navigate('ProfileSetup', {userId});
@@ -97,7 +97,7 @@ const OtpVerificationScreen = () => {
     }
   };
   // HELPER FUNCTIONS #####################################
-    const handleCloseError = () => {
+  const handleCloseError = () => {
     // setError(null);
   };
   // RENDERING COMPONENTS #################################
@@ -129,7 +129,6 @@ const OtpVerificationScreen = () => {
                 <Text style={styles.subtitleText}>
                   We've sent an OTP to your Mobile number. OTP: {otp}
                 </Text>
-               
               </View>
 
               {/*############### OTP INPUT CONTAINER ############ */}
@@ -139,8 +138,15 @@ const OtpVerificationScreen = () => {
               )}
               <View style={styles.inputContainer}>
                 <Text style={styles.label}>Enter One Time Password*</Text>
-                <OtpInput code={otpInput} setCode={setOtpInput} length={4} />
-                {error ? <Text>{error}</Text> : null}
+                <View style={{alignItems: 'flex-start', width: '65%'}}>
+                  <View style={styles.otpWrapper}>
+                    <OtpInput
+                      code={otpInput}
+                      setCode={setOtpInput}
+                      length={4}
+                    />
+                  </View>
+                </View>
               </View>
 
               <PrimaryButton
@@ -205,12 +211,12 @@ const styles = StyleSheet.create({
 
   subtitleText: {
     fontSize: wp('4%'),
-    color: '#666',
+    color: '#9a8a8af2',
     fontFamily: 'Poppins-Regular',
   },
   label: {
     fontSize: wp('4%'),
-    color: '#000',
+    color: '#000000',
     fontFamily: 'OpenSans-SemiBold',
     marginBottom: hp('1%'),
   },
@@ -219,9 +225,12 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: hp('2%'),
     marginVertical: hp('1.5%'),
-    gap: hp('1%'),
     fontSize: wp('14%'),
-    fontFamily: 'Poppins-SemiBold',
+  },
+  otpWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: wp('4%'),
   },
   descriptionContainer: {
     fontSize: wp('4%'),
