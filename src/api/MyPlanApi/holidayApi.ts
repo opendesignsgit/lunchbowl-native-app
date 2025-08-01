@@ -5,7 +5,7 @@ class Holidays {
   private holidayEndpoint: string;
 
   constructor() {
-    this.holidayEndpoint = 'holidays/get-all-holidays';
+    this.holidayEndpoint = '/holidays/get-all-holidays';
   }
 
   async createHoliday(holidayData: any) {

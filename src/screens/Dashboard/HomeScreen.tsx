@@ -20,6 +20,7 @@ import Highlights from './Components/Highlights';
 import PopularMenus from './Components/PopularMenusMarquee';
 import SchoolMarquee from './Components/SchoolsServes';
 import SearchBar from './Components/Search';
+import ThemeGradientBackground from 'components/Backgrounds/GradientBackground';
 
 //############## BANNER MOCK DATA ################
 export const mockChallenges = [
@@ -77,11 +78,7 @@ const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
     throw new Error('Function not implemented.');
   }
   return (
-    <LinearGradient
-      colors={['#FF651429', '#4AB23814', '#FAFAFA00']}
-      start={{x: 0.1, y: 0}}
-      end={{x: 0.1, y: 1}}
-      style={styles.container}>
+    <ThemeGradientBackground>
       <View style={styles.container}>
         <View style={styles.logoutContainer}></View>
 
@@ -107,7 +104,7 @@ const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
           <Highlights />
         </ScrollView>
       </View>
-    </LinearGradient>
+    </ThemeGradientBackground>
   );
 };
 
@@ -116,7 +113,7 @@ export default HomeScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: wp('1%'),
+    paddingHorizontal: wp('2%'),
   },
   logoutContainer: {
     alignItems: 'flex-end',

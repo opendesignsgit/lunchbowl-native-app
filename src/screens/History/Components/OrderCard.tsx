@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, ImageSourcePropType } from 'react-native';
+import {View, Text, StyleSheet, Image, ImageSourcePropType} from 'react-native';
 
 type OrderData = {
   image: ImageSourcePropType;
@@ -13,7 +13,7 @@ type OrderCardProps = {
   data: OrderData;
 };
 
-const OrderCard: React.FC<OrderCardProps> = ({ data }) => {
+const OrderCard: React.FC<OrderCardProps> = ({data}) => {
   return (
     <View style={styles.card}>
       <Image source={data.image} style={styles.image} />
