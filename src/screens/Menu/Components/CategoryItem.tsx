@@ -8,7 +8,7 @@ import {
   GestureResponderEvent,
   ImageSourcePropType,
 } from 'react-native';
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 
 type CategoryItemProps = {
   title: string;
@@ -32,32 +32,44 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
 );
 
 const styles = StyleSheet.create({
-  wrapper: {alignItems: 'center', marginRight: wp('5%')},
+  wrapper: {
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    marginRight: wp('5%'),
+    height: wp('50%'),
+    width: wp('22%'),
+  },
   imageWrapper: {
-    backgroundColor: '#fff',
-    padding: 5,
-    borderRadius: 50,
-    borderWidth: 1,
-    borderColor: '#eee',
+    backgroundColor: '#ffffff',
+    borderRadius: 60,
+    borderWidth: 30,
+    borderColor: '#ffffff',
+    width: wp('20%'),
+    height: wp('20%'),
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   active: {
     borderColor: '#FF5B00',
-    borderWidth: 2,
+    borderWidth: 30,
+    fontFamily:'Urbanist-Regular'
   },
   image: {
     width: wp('12%'),
     height: wp('12%'),
-    borderRadius: 25,
+    borderRadius: 100,
   },
   title: {
     marginTop: 5,
     fontSize: 12,
-    color: '#444',
+    color: '#000000',
+    textAlign: 'center',
   },
   activeText: {
     color: '#FF5B00',
     fontWeight: '600',
   },
 });
+
 
 export default CategoryItem;

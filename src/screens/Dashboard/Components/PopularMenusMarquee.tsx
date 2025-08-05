@@ -1,5 +1,5 @@
 import PrimaryButton from 'components/buttons/PrimaryButton';
-import React, {useRef, useState} from 'react';
+import React, { useRef, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -15,9 +15,9 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
-const {width: screenWidth} = Dimensions.get('window');
+const { width: screenWidth } = Dimensions.get('window');
 
-const meals = [
+const popularMealsMenue = [
   {
     id: 1,
     name: 'Grilled Chicken',
@@ -62,7 +62,7 @@ const PopularMenus = () => {
         showsHorizontalScrollIndicator={false}
         scrollEventThrottle={16}
         contentContainerStyle={styles.scrollContainer}>
-        {meals.map(meal => (
+        {popularMealsMenue.map(meal => (
           <View key={meal.id} style={styles.card}>
             <View style={styles.imageWrapper}>
               <Image
@@ -70,20 +70,20 @@ const PopularMenus = () => {
                 style={styles.image}
                 resizeMode="cover"
               />
+
             </View>
-            <Text style={styles.title}>{meal.name}</Text>
-            <Text style={styles.description}>{meal.description}</Text>
+            <View style={styles.detailsContainer}>
+              <Text style={styles.title}>{meal.name}</Text>
+              <Text style={styles.description}>{meal.description}</Text>
+
+            </View>
             <PrimaryButton
               title="View Meal Info"
               onPress={GotoMenue}
-              textColor="#FFFFFF"
-              borderRadius={wp('2%')}
-              paddingVertical={hp('1.5%')}
-              fontSize={wp('4%')}
-              textTransform="uppercase"
-              fontFamily="Poppins-SemiBold"
-              style={{width: '100%'}}
+              style={{ width: '90%' }}
             />
+
+
           </View>
         ))}
       </ScrollView>
@@ -93,35 +93,45 @@ const PopularMenus = () => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: hp('2%'),
   },
   scrollContainer: {
-    paddingHorizontal: wp('2%'),
   },
   card: {
     width: screenWidth * 0.8,
-    marginRight: wp('4%'),
-    backgroundColor: '#fff',
+    marginRight: wp('2%'),
+    backgroundColor: '#ffffff',
     borderRadius: 12,
     overflow: 'hidden',
-    padding: wp('4%'),
     alignItems: 'flex-start',
   },
 
   imageWrapper: {
-    width: '100%',
-    height: hp('50%'),
+    width: wp('78%'),
+    height: hp('40%'),
     overflow: 'hidden',
-    marginBottom: hp('1%'),
+    marginTop: hp('2%'),
+    borderTopLeftRadius: wp('4%'),
+    borderTopRightRadius: wp('4%'),
+    alignSelf: 'center',
+    position: 'relative',
   },
 
   image: {
     width: '100%',
     height: '100%',
+    resizeMode: 'cover',
+  },
+
+  detailsContainer: {
+    alignItems: 'flex-start',
+
+
+    padding: wp('3%'),
+    zIndex: 10,
   },
   title: {
     fontSize: wp('4.5%'),
-    color: '#000',
+    color: '#000000',
     fontFamily: 'Urbanist-Bold',
   },
   description: {
@@ -130,11 +140,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Opensans-Regular',
   },
-  paginationContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: hp('1%'),
-  },
+
 });
 
 export default PopularMenus;

@@ -1,9 +1,12 @@
 import React from 'react';
 import {AuthProvider} from './src/context/AuthContext';
 import MainNavigator from './src/navigations/MainNavigator';
-import {StatusBar, Platform, SafeAreaView, StyleSheet} from 'react-native';
-
-const App = () => (
+import {StatusBar, Platform, SafeAreaView, StyleSheet, Alert} from 'react-native';
+import './src/utils/firebaseConfig';
+import useFirebaseNotifications from 'utils/Notifications';
+const App = () => {
+  useFirebaseNotifications();
+  return (
   <AuthProvider>
     <StatusBar
       barStyle="dark-content"
@@ -14,7 +17,8 @@ const App = () => (
       <MainNavigator />
     </SafeAreaView>
   </AuthProvider>
-);
+  )
+};
 
 const styles = StyleSheet.create({
   safeArea: {

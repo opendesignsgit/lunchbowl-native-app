@@ -3,7 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomerNavigator from './Child/CustomerNavigator';
 import AdminNavigator from './Child/AdminNavigator';
-import ViewNotifications from 'screens/Dashboard/Notification/Notifications';
+import ViewNotifications from 'screens/Notification/Notifications';
 
 const Stack = createStackNavigator();
 const DashboardNavigator = () => {

@@ -1,13 +1,17 @@
-import React, {useCallback, useState} from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
   Alert,
+  Dimensions,
+  FlatList,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import {LinearGradient} from 'react-native-linear-gradient';
+import { LinearGradient } from 'react-native-linear-gradient';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -15,21 +19,47 @@ import {
 import MenueCalendar from 'screens/MyPlan/Components/MenueCalender';
 import HolidayListCard from './Components/HolidayListCard';
 import HolidayService from 'services/MyPlansApi/HolidayService';
-import {useFocusEffect} from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import NoDataFound from 'components/Error/NoDataMessage';
 import PrimaryButton from 'components/buttons/PrimaryButton';
 import HeaderBackButton from 'screens/Dashboard/Components/BackButton';
+import SectionTitle from 'components/Titles/SectionHeading';
+import PlanCard from './Components/MyPlan';
+import ThemeGradientBackground from 'components/Backgrounds/GradientBackground';
 
-const mockPlan = {
-  userName: 'Sanjay',
-  plan: '30 Working Days',
-  amount: '₹ 6,000',
-  expiryDate: '31/04/2025',
-  status: 'Active',
-};
 
-const MyPlanScreen: React.FC<{navigation: any}> = ({navigation}) => {
+
+const plans = [
+  {
+    id: 1,
+    userName: 'Bharathi',
+    plan: 'Premium Plan',
+    amount: '₹499/month',
+    status: 'Active',
+    expiry: '31/04/2025 (Monday)',
+  },
+  {
+    id: 2,
+    userName: 'John',
+    plan: 'Basic Plan',
+    amount: '₹199/month',
+    status: 'Expired',
+    expiry: '01/07/2024 (Sunday)',
+  },
+  {
+    id: 3,
+    userName: 'Meena',
+    plan: 'Pro Plan',
+    amount: '₹299/month',
+    status: 'Active',
+    expiry: '15/12/2024 (Friday)',
+  },
+];
+
+
+const MyPlanScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   //######### STATE VARIABLES  ##############################
+  const screenWidth = wp('90%');
 
   const [selectedDate, setSelectedDate] = useState('08');
   const [holidays, setHolidays] = useState([]);
@@ -65,119 +95,102 @@ const MyPlanScreen: React.FC<{navigation: any}> = ({navigation}) => {
   function onViewFoodList(): void {
     navigation.navigate('FoodList');
   }
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const flatListRef = useRef<FlatList>(null);
 
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetX = event.nativeEvent.contentOffset.x;
+    const index = Math.round(offsetX / screenWidth);
+    setCurrentIndex(index);
+  };
   return (
-    <LinearGradient
-      colors={['#FF651429', '#4AB23814', '#FAFAFA00']}
-      start={{x: 0.5, y: 0}}
-      end={{x: 0.5, y: 1}}
-      style={styles.container}>
+    <ThemeGradientBackground>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <HeaderBackButton title="My Plan" />
-        <View style={styles.card}>
-          <View style={styles.cardHeader}>
-            <Text style={styles.planTitle}>
-              {mockPlan.userName}’s Current Plan
-            </Text>
-            <Text style={styles.status}>{mockPlan.status}</Text>
+        <View style={styles.container}>
+          <HeaderBackButton title="My Plan" />
+          <FlatList
+            data={plans}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <View style={{ width: screenWidth }}>
+                <PlanCard
+                  userName={item.userName}
+                  plan={item.plan}
+                  amount={item.amount}
+                  status={item.status}
+                  expiry={item.expiry}
+                />
+              </View>
+            )}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onScroll={handleScroll}
+            scrollEventThrottle={16}
+            ref={flatListRef}
+          />
+          <View style={styles.pagination}>
+            {plans.map((_, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.dot,
+                  index === currentIndex && styles.activeDot,
+                ]}
+              />
+            ))}
           </View>
-          <Text style={styles.planSubText}>
-            {mockPlan.plan} – {mockPlan.amount}
-          </Text>
-          <Text style={styles.expiryText}>Expires on:</Text>
-          <Text style={styles.expiryDate}>31/04/2025 (Monday)</Text>
+          <SectionTitle>Select your Food Plan</SectionTitle>
+          <MenueCalendar
+            onDateChange={date => Alert.alert('Selected Date', date)}
+            holidays={holidays} 
+          />
 
-          <TouchableOpacity style={styles.upgradeButton}>
-            <Text style={styles.upgradeText}>UPGRADE PLAN</Text>
-          </TouchableOpacity>
+          <SectionTitle>Select your Food Plan</SectionTitle>
+          {holidays && holidays.length > 0 ? (
+            <HolidayListCard holidays={holidays} />
+          ) : (
+            <NoDataFound message="No holidays found" />
+          )}
+
+          <PrimaryButton
+            title="View food list"
+            onPress={onViewFoodList}
+            textColor="#FFFFFF"
+            borderRadius={wp('2%')}
+            paddingVertical={hp('1.5%')}
+            fontSize={wp('4%')}
+            textTransform="uppercase"
+            fontFamily="Poppins-SemiBold"
+            style={{ width: '100%' }}
+          />
         </View>
-        <MenueCalendar
-          onDateChange={date => Alert.alert('Selected Date', date)}
-        />
-        {holidays && holidays.length > 0 ? (
-          <HolidayListCard holidays={holidays} />
-        ) : (
-          <NoDataFound message="No holidays found" />
-        )}
-
-        <PrimaryButton
-          title="View food list"
-          onPress={onViewFoodList}
-          textColor="#FFFFFF"
-          borderRadius={wp('2%')}
-          paddingVertical={hp('1.5%')}
-          fontSize={wp('4%')}
-          textTransform="uppercase"
-          fontFamily="Poppins-SemiBold"
-          style={{width: '100%'}}
-        />
       </ScrollView>
-    </LinearGradient>
+    </ThemeGradientBackground>
   );
 };
 export default MyPlanScreen;
-
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: wp('5%'),
-    backgroundColor: '#fff',
-    marginBottom: 50,
+    paddingHorizontal: wp('4%'),
+    paddingBottom: hp('10%'),
   },
-
-  card: {
-    marginVertical: hp('2%'),
-    backgroundColor: '#fff4ee',
-    borderRadius: 12,
-    padding: wp('5%'),
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  cardHeader: {
+  pagination: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    marginTop: hp('1%'),
   },
-  planTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
+  dot: {
+    width: wp('2%'),
+    height: wp('1%'),
+    borderRadius: wp('1%'),
+    backgroundColor: '#ccc',
+    marginHorizontal: wp('1%'),
   },
-  planSubText: {
-    fontSize: 14,
-    color: '#555',
-    marginTop: 4,
-  },
-  status: {
-    backgroundColor: '#d3f9d8',
-    color: '#31a24c',
-    paddingHorizontal: 8,
-    borderRadius: 12,
-    fontSize: 12,
-    fontWeight: '500',
-    alignSelf: 'flex-start',
-  },
-  expiryText: {
-    marginTop: 10,
-    fontSize: 12,
-    color: '#999',
-  },
-  expiryDate: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#e0662a',
-  },
-  upgradeButton: {
-    marginTop: 12,
-    backgroundColor: '#ff733d',
-    padding: 10,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  upgradeText: {
-    color: '#ffffff',
-    fontWeight: '600',
+  activeDot: {
+    backgroundColor: '#FF6514',
+    width: wp('4%'),
+    height: wp('1%'),
   },
 
   calendarHeader: {
@@ -215,7 +228,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f3f3f3',
   },
   dateText: {
-    color: '#555',
+    color: '#222222',
   },
   dateSelected: {
     backgroundColor: '#ff733d',

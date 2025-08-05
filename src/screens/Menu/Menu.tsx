@@ -1,11 +1,14 @@
-import React, {useState} from 'react';
-import {ScrollView, StyleSheet, Text, View, FlatList} from 'react-native';
-import MealCard from './Components/MealCard';
-import CategoryItem from './Components/CategoryItem';
 import ThemeGradientBackground from 'components/Backgrounds/GradientBackground';
+import SectionTitle from 'components/Titles/SectionHeading';
+import React, { useState } from 'react';
+import { FlatList, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  widthPercentageToDP as wp
+} from 'react-native-responsive-screen';
 import SearchBar from 'screens/Dashboard/Components/Search';
-import Header from 'screens/Dashboard/Components/Header';
-import {useAuth} from 'context/AuthContext';
+import CategoryItem from './Components/CategoryItem';
+import MealCard from './Components/MealCard';
+
 const categories = [
   {
     id: '1',
@@ -39,51 +42,88 @@ const meals = [
     id: 1,
     image: require('../../assets/images/Dashboard/Menues/menue1.png'),
     title: '5 Spice Fried Rice',
-    description: 'Lorem ipsum dolor sit amet consectetur...',
+    description: 'Aromatic rice with bold spices and veggies.',
   },
   {
     id: 2,
     image: require('../../assets/images/Dashboard/Menues/menue1.png'),
     title: 'Veg Biriyani and Raita',
-    description: 'Lorem ipsum dolor sit amet consectetur...',
+    description: 'Classic Indian rice dish with cooling yogurt dip.',
   },
   {
     id: 3,
     image: require('../../assets/images/Dashboard/Menues/menue1.png'),
     title: 'Alfredo Pasta',
-    description: 'Lorem ipsum dolor sit amet consectetur...',
+    description: 'Creamy Italian-style pasta with herbs.',
+  },
+  {
+    id: 4,
+    image: require('../../assets/images/Dashboard/Menues/menue1.png'),
+    title: 'Paneer Butter Masala',
+    description: 'Rich gravy with soft paneer cubes.',
+  },
+  {
+    id: 5,
+    image: require('../../assets/images/Dashboard/Menues/menue1.png'),
+    title: 'Grilled Sandwich',
+    description: 'Toasted sandwich with veggies and cheese.',
+  },
+  {
+    id: 6,
+    image: require('../../assets/images/Dashboard/Menues/menue1.png'),
+    title: 'Vegetable Soup',
+    description: 'Healthy soup with seasonal vegetables.',
+  },
+  {
+    id: 7,
+    image: require('../../assets/images/Dashboard/Menues/menue1.png'),
+    title: 'Tomato Pasta',
+    description: 'Tangy tomato-based pasta with herbs.',
+  },
+  {
+    id: 8,
+    image: require('../../assets/images/Dashboard/Menues/menue1.png'),
+    title: 'Chilli Garlic Noodles',
+    description: 'Spicy noodles with garlic flavor.',
+  },
+  {
+    id: 9,
+    image: require('../../assets/images/Dashboard/Menues/menue1.png'),
+    title: 'Tandoori Roti & Curry',
+    description: 'Whole wheat roti served with spicy curry.',
+  },
+  {
+    id: 10,
+    image: require('../../assets/images/Dashboard/Menues/menue1.png'),
+    title: 'Schezwan Fried Rice',
+    description: 'Spicy Indo-Chinese rice with sauces.',
   },
 ];
 
-const MealCategoryScreen: React.FC<{navigation: any}> = ({navigation}) => {
+const MealCategoryScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [selectedCategory, setSelectedCategory] = useState('Fruits');
-  const {user} = useAuth();
-  const userName = user?.name ?? 'GuestUser';
-
   return (
-    // <ThemeGradientBackground>
+    <ThemeGradientBackground>
       <View style={styles.container}>
-        <Header userName={userName ?? 'GuestUSer'} navigation={navigation} />
         <SearchBar />
-        <Text style={styles.header}>Select your Category</Text>
-        <View style={{marginBottom: 20}}>
-          <FlatList
-            data={categories}
-            keyExtractor={item => item.id}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{paddingHorizontal: 16}}
-            renderItem={({item}) => (
-              <CategoryItem
-                title={item.title}
-                image={item.image}
-                selected={item.title === selectedCategory}
-                onPress={() => setSelectedCategory(item.title)}
-              />
-            )}
-          />
-        </View>
-        <ScrollView contentContainerStyle={styles.mealList}>
+        <SectionTitle>Select your Category</SectionTitle>
+        <FlatList
+          data={categories}
+          keyExtractor={item => item.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 16, marginBottom: 20 }}
+          renderItem={({ item }) => (
+            <CategoryItem
+              title={item.title}
+              image={item.image}
+              selected={item.title === selectedCategory}
+              onPress={() => setSelectedCategory(item.title)}
+            />
+          )}
+        />
+
+        <ScrollView contentContainerStyle={styles.mealList} showsVerticalScrollIndicator={false}>
           {meals.map(meal => (
             <MealCard
               key={meal.id}
@@ -95,21 +135,20 @@ const MealCategoryScreen: React.FC<{navigation: any}> = ({navigation}) => {
           ))}
         </ScrollView>
       </View>
-    // </ThemeGradientBackground>
+    </ThemeGradientBackground>
   );
 };
 
+
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: '#F7F7F7', paddingTop: 20},
-  header: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginHorizontal: 16,
-    marginBottom: 10,
+  container: {
+    flex: 1,
+    paddingHorizontal: wp('5%'),
+    marginBottom: '20%'
+
+
   },
   mealList: {
-    paddingHorizontal: 16,
-    paddingBottom: 80,
   },
 });
 

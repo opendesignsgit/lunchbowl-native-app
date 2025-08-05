@@ -25,7 +25,7 @@ import {camaraIcon} from 'styles/svg-icons';
 import HeaderBackButton from 'screens/Dashboard/Components/BackButton';
 import {ApiResponseModel} from 'src/model/apiResponseModel';
 import {UserInterface} from 'src/model/userSchema';
-import UserService from 'services/UserService';
+import UserService from 'services/userService';
 import IconInput from 'components/inputs/IconInput';
 
 const EditProfileScreen: React.FC<{navigation: any}> = ({navigation}) => {

@@ -20,33 +20,36 @@ const HeaderBackButton: React.FC<HeaderWithBackButtonDividerProps> = ({ title })
       <View style={[styles.firstRow, { width: '90%' }]}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          style={styles.backButtonContainer}>
+          style={styles.backWrapper}>
           <SvgXml xml={HeaderBackIcon} />
+          <Text style={styles.headerText}>{title}</Text>
         </TouchableOpacity>
-
-        <Text style={styles.headerText}>{title}</Text>
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  headerContainer: {},
+  headerContainer: {
+    marginLeft: 10
+  },
   firstRow: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: hp('2%'),
   },
-  headerText: {
-    fontSize: wp('4%'),
-    color: '#000',
-    textAlign: 'left',
-    fontFamily: 'Urbanist-Regular',
-    flex: 1,
-    textTransform: 'uppercase',
+  backWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    fontFamily: 'Urbanist-Bold',
+
   },
-  backButtonContainer: {
-    marginRight: wp('1%'),
+  headerText: {
+    fontSize: wp('5%'),
+    color: '#000000',
+    marginLeft: wp('2%'),
+    fontFamily: 'Urbanist-Bold',
+    textTransform: 'uppercase',
   },
 });
 

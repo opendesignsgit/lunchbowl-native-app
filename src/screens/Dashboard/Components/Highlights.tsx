@@ -1,41 +1,41 @@
 import React from 'react';
-import {Text, StyleSheet, TouchableOpacity, FlatList, View} from 'react-native';
-import {SvgXml} from 'react-native-svg';
+import { Text, StyleSheet, TouchableOpacity, FlatList, View } from 'react-native';
+import { SvgXml } from 'react-native-svg';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-import {Calender, Helthy, irrattaiilai, MultiCusine} from 'styles/svg-icons';
+import { Calender, Helthy, irrattaiilai, MultiCusine } from 'styles/svg-icons';
 
-const mockCardData = [
+const highlights = [
   {
     id: '1',
     title: 'Healthy',
     description: 'Relax and stretch your muscles.',
     icon: Helthy,
-    color: '#FFEBEE',
+    color: '#FFE4D7',
   },
   {
     id: '2',
     title: 'Diet Plan',
     description: 'Eat healthy, stay healthy.',
     icon: irrattaiilai,
-    color: '#E8F5E9',
+    color: '#DDFFD7',
   },
   {
     id: '3',
     title: 'Flexible Plans',
     description: 'Drink 8+ glasses daily.',
     icon: Calender,
-    color: '#E3F2FD',
+    color: '#FFE6E6',
   },
   {
     id: '4',
-    title: 'Sleep Tracker',
+    title: 'Multi Cuisine Food',
     description: 'Track your sleep schedule.',
     icon: MultiCusine,
-    color: '#F3E5F5',
+    color: '#FFF4D7',
   },
 ];
 
@@ -44,11 +44,11 @@ const Highlights = () => {
     console.log('Card pressed:', item.title);
   };
 
-  const renderCard = ({item}: {item: any}) => (
+  const renderCard = ({ item }: { item: any }) => (
     <TouchableOpacity
       activeOpacity={0.8}
       onPress={() => handleCardPress(item)}
-      style={[styles.card, {backgroundColor: item.color}]}>
+      style={[styles.card, { backgroundColor: item.color }]}>
       <SvgXml
         xml={item.icon}
         width={wp('15%')}
@@ -62,7 +62,7 @@ const Highlights = () => {
 
   return (
     <FlatList
-      data={mockCardData}
+      data={highlights}
       numColumns={2}
       renderItem={renderCard}
       keyExtractor={item => item.id}
@@ -76,35 +76,34 @@ export default Highlights;
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: wp('3%'),
-    paddingTop: hp('2%'),
   },
   row: {
     justifyContent: 'space-between',
     marginBottom: hp('2%'),
+    gap: 15
   },
   card: {
-    width: wp('44%'),
+    width: wp('43%'),
+    height: hp('20%'),
     padding: wp('3.5%'),
-    borderRadius: wp('3%'),
+    borderRadius: wp('5%'),
     elevation: 1,
     alignItems: 'flex-start',
-    
+
   },
   icon: {
     marginBottom: hp('1.2%'),
   },
   title: {
-    fontSize: wp('5.8%'),
-    fontWeight: '600',
+    fontSize: wp('4.8%'),
     marginBottom: hp('0.3%'),
-    color: '#222',
-    width:90,
-    fontFamily:'Urbanist-Bold'
+    color: '#222222',
+    width: 'auto',
+    fontFamily: 'Urbanist-SemiBold'
   },
   description: {
     fontSize: wp('3.2%'),
     color: '#555',
-    fontFamily:'OpenSans-Regular'
+    fontFamily: 'OpenSans-Regular'
   },
 });
