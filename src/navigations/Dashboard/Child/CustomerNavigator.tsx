@@ -1,6 +1,9 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import HomeScreen from 'screens/Dashboard/HomeScreen';
+import SettingsScreen from 'screens/Dashboard/Settings/SettingScreen';
+import EditProfileScreen from 'screens/Dashboard/Settings/EditProfile/EditProfileScreen';
+import Notifications from 'screens/Notification/Notifications';
 
 
 const Stack = createStackNavigator();
@@ -13,7 +16,22 @@ const CustomerNavigator = () => {
         component={HomeScreen}
         options={{headerShown: false}}
       />
-   
+      <Stack.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="EditProfile"
+        component={EditProfileScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="notifications"
+        component={Notifications}
+        options={{ headerShown: false }}
+      />
+     
     </Stack.Navigator>
   );
 };

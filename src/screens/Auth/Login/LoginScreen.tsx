@@ -1,3 +1,5 @@
+import CheckBox from '@react-native-community/checkbox';
+import ThemeGradientBackground from 'components/Backgrounds/GradientBackground';
 import PrimaryButton from 'components/buttons/PrimaryButton';
 import ErrorMessage from 'components/Error/BoostrapStyleError';
 import {LoadingModal} from 'components/LoadingModal/LoadingModal';
@@ -13,7 +15,6 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import PhoneInput from 'react-native-phone-number-input';
 import {
   heightPercentageToDP as hp,
@@ -34,7 +35,6 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
   const [phoneKey, setPhoneKey] = useState(Date.now());
   const [formattedValue, setFormattedValue] = useState('');
   const [isPrivacyChecked, setIsPrivacyChecked] = useState(false);
-
   useEffect(() => {
     if (error) {
       const timer = setTimeout(() => {
@@ -54,13 +54,23 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
       setError('Please enter a valid phone number.');
       return;
     }
-    const mobile = formattedValue.replace('+', '');
+
+    let mobile = formattedValue.replace('+', '');
+
+    if (mobile.startsWith('91') && mobile.length === 12) {
+      mobile = mobile.slice(2);
+    }
+
     const path = 'logIn';
+    console.log('mobile', mobile);
+
     try {
       setLoading(true);
       const LoginData = {mobile, path};
       console.log('Login Data:', LoginData);
+
       const response = await SendOtp(LoginData);
+
       if (response && response.message && response.otp) {
         navigation.navigate('OtpVerificationScreen', {
           mobile,
@@ -84,16 +94,12 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
     navigation.navigate('GoogleAuth');
   };
 
-    const handleCloseError = () => {
+  const handleCloseError = () => {
     setError(null);
   };
 
   return (
-    <LinearGradient
-      colors={['#FF651429', '#4AB23814', '#FAFAFA00']}
-      start={{x: 0.5, y: 0}}
-      end={{x: 0.5, y: 1}}
-      style={styles.gradientContainer}>
+    <ThemeGradientBackground>
       <KeyboardAvoidingView
         style={{flex: 1}}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
@@ -108,7 +114,7 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
               <View style={styles.titleContainer}>
                 <Text style={styles.titleText}>Log in</Text>
                 <Text style={styles.subtitleText}>
-                  Enter your mobile number to continue.
+                  Enter your mobile number to continue. sample 7428730894
                 </Text>
               </View>
 
@@ -116,7 +122,7 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
                 <ErrorMessage error={error} onClose={handleCloseError} />
               )}
               <View style={styles.inputContainer}>
-                <Text style={styles.label}>Phone Number</Text>
+                <Text style={styles.label}>Mobile Number*</Text>
                 <PhoneInput
                   key={phoneKey}
                   ref={phoneInputRef}
@@ -149,40 +155,30 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
                     height: 40,
                   }}
                 />
-              </View>
 
-              <View style={styles.checkboxContainer}>
-                <TouchableOpacity
-                  style={styles.checkbox}
-                  onPress={() => setIsPrivacyChecked(!isPrivacyChecked)}>
-                  <View
-                    style={[
-                      styles.checkboxBox,
-                      isPrivacyChecked && styles.checkboxChecked,
-                    ]}
+                <View style={[styles.checkboxContainer]}>
+                  <CheckBox
+                    value={isPrivacyChecked}
+                    onValueChange={setIsPrivacyChecked}
+                    tintColors={{true: '#FF6514', false: '#FF6514'}}
                   />
                   <Text style={styles.checkboxLabel}>
-                    I agree to the{' '}
+                    By clicking, I accept the{' '}
                     <Text
                       style={styles.linkText}
-                      onPress={() => navigation.navigate('PrivacyPolicy')}>
+                      onPress={() =>
+                        navigation.navigate('T&C & PrivacyPolicy')
+                      }>
                       Privacy Policy
                     </Text>
                   </Text>
-                </TouchableOpacity>
+                </View>
+
+                <PrimaryButton
+                  title="Send One Time Password"
+                  onPress={halndleSendOtp}
+                />
               </View>
-
-              <PrimaryButton
-                title="Send One Time Password"
-                onPress={halndleSendOtp}
-                style={styles.signInButton}
-                borderRadius={wp('2%')}
-                paddingVertical={hp('1.5%')}
-                fontSize={wp('4%')}
-                textTransform="uppercase"
-                fontFamily="Poppins-SemiBold"
-              />
-
               <View style={styles.dividerContainer}>
                 <View style={styles.line} />
                 <Text style={styles.orText}>or Login with</Text>
@@ -217,7 +213,7 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
           </ScrollView>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
-    </LinearGradient>
+    </ThemeGradientBackground>
   );
 };
 
@@ -226,9 +222,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     padding: wp('8%'),
   },
   logoContainer: {
@@ -241,13 +234,11 @@ const styles = StyleSheet.create({
     height: wp('30%'),
   },
   title: {
-    width: '100%',
     alignItems: 'flex-end',
     fontFamily: 'Urbanist-Regular',
     flexDirection: 'row',
   },
   titleContainer: {
-    width: '100%',
     marginBottom: hp('3%'),
   },
 
@@ -262,17 +253,16 @@ const styles = StyleSheet.create({
   subtitleText: {
     fontSize: wp('4%'),
     color: '#666',
-    fontFamily: 'Poppins-Regular',
+    fontFamily: 'OpensSans-Regular',
   },
   label: {
-    fontSize: wp('4%'),
+    fontSize: wp('5%'),
     color: '#000',
-    fontFamily: 'OpenSans-SemiBold',
+    fontFamily: 'Urbanist-SemiBold',
     marginBottom: hp('1%'),
   },
 
   inputContainer: {
-    width: '100%',
     marginBottom: hp('2%'),
     marginVertical: hp('1.5%'),
     gap: hp('1%'),
@@ -288,7 +278,8 @@ const styles = StyleSheet.create({
   checkboxContainer: {
     width: '100%',
     marginVertical: hp('1.5%'),
-    alignItems: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 
   checkbox: {
@@ -313,8 +304,8 @@ const styles = StyleSheet.create({
 
   checkboxLabel: {
     fontSize: wp('3.8%'),
-    color: '#333',
-    fontFamily: 'Poppins-Regular',
+    color: '#7f7f7fff',
+    fontFamily: 'OpensSans-Reugular',
     flexShrink: 1,
   },
 

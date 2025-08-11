@@ -1,3 +1,4 @@
+import PrimaryButton from 'components/buttons/PrimaryButton';
 import React from 'react';
 import {
   View,
@@ -45,6 +46,10 @@ const SchoolMarquee = () => {
     console.log('Pressed:', school.name);
   };
 
+  function RequestSchool(): void {
+    throw new Error('Function not implemented.');
+  }
+
   return (
     <View style={styles.wrapper}>
       <ScrollView
@@ -68,23 +73,25 @@ const SchoolMarquee = () => {
         Missing your school? Add it to our list with one tap!
       </Text>
 
-      <TouchableOpacity style={styles.ctaButton}>
-        <Text style={styles.ctaText}>REQUEST YOUR SCHOOL</Text>
-      </TouchableOpacity>
+      <PrimaryButton
+        title="Request Your school"
+        onPress={RequestSchool}
+        textColor="#FFFFFF"
+        style={{ width: '100%' }}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   wrapper: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: wp('4%'),
-    margin: wp('4%'),
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 3,
+    backgroundColor: '#ffffff',
+    borderRadius: 15,
+    padding: wp('6%'),
+    shadowColor: '#000000',
+    shadowOpacity: 0.02,
+    shadowRadius: 2,
+    elevation: 1,
   },
   scrollContainer: {
     flexDirection: 'row',
@@ -100,29 +107,20 @@ const styles = StyleSheet.create({
     height: wp('12%'),
     borderRadius: wp('2%'),
     marginBottom: hp('0.5%'),
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#ffffff',
   },
   name: {
-    fontSize: wp('3%'),
+    fontSize: wp('3.3%'),
     textAlign: 'center',
-    color: '#333',
+    color: '#222222',
+    fontFamily: 'Urbanist-Bold'
   },
   missingText: {
     fontSize: wp('3.2%'),
-    color: '#666',
+    fontFamily: 'OpenSans-Medium',
+    color: '#67686A',
     textAlign: 'center',
     marginVertical: hp('1%'),
-  },
-  ctaButton: {
-    backgroundColor: '#FF5A1F',
-    paddingVertical: hp('1.4%'),
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  ctaText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: wp('3.8%'),
   },
 });
 

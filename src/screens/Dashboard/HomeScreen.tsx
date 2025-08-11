@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ThemeGradientBackground from 'components/Backgrounds/GradientBackground';
 import React, { useEffect, useState } from 'react';
 import {
   GestureResponderEvent,
@@ -8,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -20,6 +20,7 @@ import Highlights from './Components/Highlights';
 import PopularMenus from './Components/PopularMenusMarquee';
 import SchoolMarquee from './Components/SchoolsServes';
 import SearchBar from './Components/Search';
+import SectionTitle from 'components/Titles/SectionHeading';
 
 //############## BANNER MOCK DATA ################
 export const mockChallenges = [
@@ -49,17 +50,8 @@ export const mockChallenges = [
   },
 ];
 
-const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
+const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [userName, setUserName] = useState('User');
-
-  const handleLogout = async () => {
-    try {
-      await AsyncStorage.clear();
-      navigation.replace('Login');
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
 
   useEffect(() => {
     const getUserRole = async () => {
@@ -78,34 +70,23 @@ const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
     getUserRole();
   }, []);
 
-  function test(): void {
-    throw new Error('Function not implemented.');
-  }
-
   function onPressViewAll(event: GestureResponderEvent): void {
     throw new Error('Function not implemented.');
   }
-
   return (
-    <LinearGradient
-      colors={['#FF651429', '#4AB23814', '#FAFAFA00']}
-      start={{x: 0.1, y: 0}}
-      end={{x: 0.1, y: 1}}
-      style={styles.container}>
+
+    <ThemeGradientBackground>
       <View style={styles.container}>
         <View style={styles.logoutContainer}></View>
-        {/* <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-          <Text style={styles.logoutText}>Logout</Text>
-        </TouchableOpacity> */}
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <Header userName={userName} />
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: hp('10%') }}>
+          <Header userName={userName ?? 'GuestUSer'} navigation={navigation} />
           <SearchBar />
           <PromoBanner />
-          <Text style={styles.TextContainer}>Kick Start your Free Trial</Text>
+          <SectionTitle> Kick Start your Free Trial</SectionTitle>
           <FreeTrialCard />
-          <Text style={styles.TextContainer}>Lunch Bowl’s Highlights</Text>
+          <SectionTitle>Lunch Bowl’s Highlights</SectionTitle>
           <Highlights />
-          <Text style={styles.TextContainer}>Schools We Serve</Text>
+          <SectionTitle>Schools We Serve</SectionTitle>
           <SchoolMarquee />
           <View style={styles.headerContainer}>
             <Text style={styles.heading}>Popular Menus</Text>
@@ -114,11 +95,11 @@ const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
             </TouchableOpacity>
           </View>
           <PopularMenus />
-          <Text style={styles.TextContainer}>Quick Actions</Text>
+          <SectionTitle>Quick Actions</SectionTitle>
           <Highlights />
         </ScrollView>
       </View>
-    </LinearGradient>
+    </ThemeGradientBackground>
   );
 };
 
@@ -127,13 +108,12 @@ export default HomeScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: wp('1%'),
-    paddingTop: hp('2%'),
+    paddingHorizontal: wp('5%'),
   },
   logoutContainer: {
     alignItems: 'flex-end',
   },
-   headerContainer: {
+  headerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -142,13 +122,21 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: 20,
-    color: '#000',
-    fontFamily:'Urbanist-SemiBold'
+    color: '#000000',
+    fontFamily: 'Urbanist-SemiBold',
+    textTransform: 'uppercase',
+    marginTop: hp('2.0%'),
+    marginLeft: wp('0%'),
+    marginVertical: hp('2%'),
+    textAlign: 'left',
+    flexWrap: 'wrap',
+    maxWidth: '100%',
   },
   viewAll: {
-    fontSize: 20,
-    fontWeight: '500',
-    color: '#FF6B00', 
+    fontSize: 12,
+    color: '#4AB238',
+    textTransform: 'uppercase',
+    fontFamily: 'Urbanist-Bold'
   },
   logoutButton: {
     backgroundColor: '#FF6B6B',
@@ -156,19 +144,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp('4%'),
     borderRadius: wp('2%'),
   },
-  logoutText: {
-    color: '#fff',
-    fontSize: wp('4%'),
-    fontWeight: 'bold',
-  },
 
-  TextContainer: {
-    marginLeft: 20,
-    fontSize: wp('5%'),
-    fontFamily: 'OpenSans-Bold',
-    color: '#000',
-    textAlign: 'left',
-    flexWrap: 'wrap',
-    maxWidth: '100%',
-  },
+
 });

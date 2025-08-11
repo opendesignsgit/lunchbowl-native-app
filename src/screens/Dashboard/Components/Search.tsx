@@ -1,6 +1,6 @@
-import {View, TextInput, StyleSheet} from 'react-native';
-import {SvgXml} from 'react-native-svg';
-import {SearchIcon} from 'styles/svg-icons';
+import { View, TextInput, StyleSheet } from 'react-native';
+import { SvgXml } from 'react-native-svg';
+import { SearchIcon } from 'styles/svg-icons';
 
 const SearchBar = () => {
   return (
@@ -17,17 +17,20 @@ const SearchBar = () => {
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 15,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F7F7F7',
-    paddingHorizontal:14,
-    borderRadius: 12,
+    backgroundColor: '#ffffff',
+    paddingHorizontal: 18,
+    borderRadius: 10,
+    marginBottom: '1%',
+    marginTop: '2%'
+
   },
   input: {
     marginLeft: 10,
     flex: 1,
     fontSize: 16,
+    fontFamily: 'Urbanist-Regular'
   },
   icon: {},
 });

@@ -13,6 +13,8 @@ interface User {
   role: number;
   token: string;
   userId: string;
+    name: string;
+
 }
 
 interface AuthContextType {
@@ -25,6 +27,7 @@ interface AuthContextType {
   isOnboardingDoneState: boolean | null;
   user: User | null;
   authToken: string | null;
+  username: string | null;
   login: (loginData: LoginForm) => Promise<any>;
   signup: (signupData: SignupForm) => Promise<any>;
   logout: () => Promise<void>;
@@ -45,6 +48,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [authToken, setAuthToken] = useState<string | null>(null);
   const [isProfileSetupDone, setIsProfileSetupDone] = useState<boolean>(false);
+  const [userName,setUserName] = useState<string | null>(null);
 
   const [isOnboardingDoneState, setIsOnboardingDoneState] = useState<
     boolean | null
@@ -75,8 +79,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
       );
       console.log('from backend', response);
       if (response.success && response.token) {
-        const {token, _id, name, email, phone, freeTrial,role} = response;
-        const userRole = role ?? 'customer'; 
+        const {token, _id, name, email, phone, freeTrial, role} = response;
+        const userRole = role ?? 'customer';
         const userWithoutToken = {
           userId: _id,
           name,
@@ -90,11 +94,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
         setUserId(_id);
         setUserRole(userRole);
         setAuthToken(token);
+        setUserName(name || 'User');
 
         await AsyncStorage.setItem('user', JSON.stringify(userWithoutToken));
         await AsyncStorage.setItem(TOKEN_KEY, token);
         await AsyncStorage.setItem('userId', _id);
         await AsyncStorage.setItem('userRole', userRole);
+        await AsyncStorage.setItem('username', name);
 
         setisLoggedIn(true);
 
@@ -106,29 +112,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
         };
       }
 
-      // if (response.success && response.data) {
-      //   const loggedUser = response.data;
-
-      //   if (loggedUser && loggedUser.token) {
-      //     const {token, ...userWithoutToken} = loggedUser;
-      //     const isProfileSetupDone = userWithoutToken.isProfileSetupDone;
-      //     setIsProfileSetupDone(isProfileSetupDone);
-      //     setUser(userWithoutToken);
-      //     setUserId(userWithoutToken.userId);
-      //     setUserRole(userWithoutToken.role?.toString());
-      //     setAuthToken(token);
-      //     await AsyncStorage.setItem('user', JSON.stringify(userWithoutToken));
-      //     await AsyncStorage.setItem(TOKEN_KEY, token);
-      //     await AsyncStorage.setItem('userId', userWithoutToken.userId);
-      //     await AsyncStorage.setItem(
-      //       'userRole',
-      //       userWithoutToken.role?.toString(),
-      //     );
-
-      //     setisLoggedIn(true);
-      //     return response;
-      //   }
-      // }
       return response;
     } catch (error) {
       const errorMessage = handleApiError(error);
@@ -213,6 +196,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
         userRole,
         user,
         authToken,
+        userName,
         login,
         signup,
         logout,

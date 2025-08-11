@@ -1,6 +1,6 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
-import MainScreen from './MainScreen';
+import MealCategoryScreen from './Menu';
 
 const Stack = createStackNavigator();
 
@@ -9,7 +9,7 @@ const MenueNavigator = () => {
     <Stack.Navigator initialRouteName="Menu">
       <Stack.Screen
         name="Menu"
-        component={MainScreen}
+        component={MealCategoryScreen}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

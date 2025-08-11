@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useRef} from 'react';
 import {
   Image,
   ScrollView,
@@ -7,23 +7,94 @@ import {
   View,
   SafeAreaView,
   TouchableOpacity,
+  Animated,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import PrimaryButton from '../../components/buttons/PrimaryButton';
+import PrimaryButton from 'components/buttons/PrimaryButton';
 import LinearGradient from 'react-native-linear-gradient';
+import {Easing} from 'react-native';
+
+const imageRows = [
+  [
+    require('../../assets/images/WelcomScreens/image1.png'),
+    require('../../assets/images/WelcomScreens/image2.png'),
+  ],
+  [
+    require('../../assets/images/WelcomScreens/image6.png'),
+    require('../../assets/images/WelcomScreens/image5.png'),
+    require('../../assets/images/WelcomScreens/image6.png'),
+  ],
+  [
+    require('../../assets/images/WelcomScreens/image7.png'),
+    require('../../assets/images/WelcomScreens/image8.png'),
+    require('../../assets/images/WelcomScreens/image9.png'),
+  ],
+];
 
 const WelcomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
+  const SPEED = 20;
+
+  const startMarquee = (
+    animatedValue: Animated.Value,
+    ref: any,
+    totalWidth: number,
+    direction = 1,
+  ) => {
+    const animate = () => {
+      animatedValue.setValue(0);
+      Animated.timing(animatedValue, {
+        toValue: totalWidth,
+        duration: (totalWidth / SPEED) * 1000,
+        useNativeDriver: false,
+        easing: Easing.linear,
+      }).start(() => animate());
+    };
+
+    animatedValue.addListener(({value}) => {
+      const scrollPos = direction === 1 ? value : totalWidth - value;
+      ref.current?.scrollTo({x: scrollPos, animated: false});
+    });
+
+    animate();
+
+    return () => animatedValue.removeAllListeners();
+  };
+
+  const scrollX1 = useRef(new Animated.Value(0)).current;
+  const scrollX2 = useRef(new Animated.Value(0)).current;
+  const scrollX3 = useRef(new Animated.Value(0)).current;
+
+  const scrollRef1 = useRef<ScrollView>(null);
+  const scrollRef2 = useRef<ScrollView>(null);
+  const scrollRef3 = useRef<ScrollView>(null);
+
+  useEffect(() => {
+    const width1 = (wp('50%') + wp('2%')) * imageRows[0].length;
+    const width2 = (wp('40%') + wp('2%')) * imageRows[1].length;
+    const width3 = (wp('30%') + wp('2%')) * imageRows[2].length;
+
+    const unsub1 = startMarquee(scrollX1, scrollRef1, width1, 1); // left
+    const unsub2 = startMarquee(scrollX2, scrollRef2, width2, -1); // right
+    const unsub3 = startMarquee(scrollX3, scrollRef3, width3, 1); // left
+
+    return () => {
+      unsub1();
+      unsub2();
+      unsub3();
+    };
+  }, []);
+
   const GoToWalkthrowScreen = async () => {
     try {
-      //await AsyncStorage.setItem('isAppIntroDone', 'true');
       navigation.navigate('WalkThroughScreen');
     } catch (error) {
-      console.error('Error setting isAppIntroDone in AsyncStorage', error);
+      console.error('Navigation error:', error);
     }
   };
+
   return (
     <SafeAreaView style={WelcomeStyle.safeArea}>
       <ScrollView
@@ -31,43 +102,98 @@ const WelcomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
         bounces={false}>
         <View style={WelcomeStyle.container}>
           <View style={WelcomeStyle.imageContainer}>
-            <Image
-              source={require('../../assets/images/WelcomScreens/welcomeImage.png')}
-              style={WelcomeStyle.welcomeImage}
-              resizeMode="contain"
-            />
-            <LinearGradient
-              colors={['transparent', '#FFFFFF']}
-              style={WelcomeStyle.imageFade}
-            />
+            <View style={WelcomeStyle.FirstMarque}>
+              <ScrollView
+                ref={scrollRef1}
+                horizontal
+                scrollEnabled={false}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingLeft: wp('2%'),
+                }}
+                style={{
+                  width: wp('70%'),
+                }}>
+                {[...imageRows[0], ...imageRows[0]].map((img, i) => (
+                  <Image
+                    key={`r1-${i}`}
+                    source={img}
+                    style={WelcomeStyle.imageStyleRow1}
+                    resizeMode="contain"
+                  />
+                ))}
+              </ScrollView>
+            </View>
+
+            <View style={WelcomeStyle.SecondMarque}>
+              <ScrollView
+                ref={scrollRef2}
+                horizontal
+                scrollEnabled={false}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{
+                  flexDirection: 'row',
+                  paddingLeft: wp('2%'),
+                }}>
+                {[...imageRows[1], ...imageRows[1]].map((img, i) => (
+                  <Image
+                    key={`r2-${i}`}
+                    source={img}
+                    style={WelcomeStyle.imageStyleRow2}
+                    resizeMode="contain"
+                  />
+                ))}
+              </ScrollView>
+            </View>
+
+            <View style={WelcomeStyle.ThirdMarque}>
+              <ScrollView
+                ref={scrollRef3}
+                horizontal
+                scrollEnabled={false}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{
+                  flexDirection: 'row',
+                  paddingLeft: wp('2%'),
+                }}>
+                {[...imageRows[2], ...imageRows[2]].map((img, i) => (
+                  <Image
+                    key={`r3-${i}`}
+                    source={img}
+                    style={WelcomeStyle.imageStyleRow3}
+                    resizeMode="contain"
+                  />
+                ))}
+              </ScrollView>
+              <LinearGradient
+                colors={['transparent', '#FFFFFF']}
+                style={WelcomeStyle.imageFade}
+              />
+            </View>
           </View>
+
           <View style={WelcomeStyle.centerRow}>
             <Text style={WelcomeStyle.title}>Welcome to{'\n'}Lunch Bowl !</Text>
             <Text style={WelcomeStyle.description}>
-              Discover delicious meals delivered fast. Order, track, and enjoy
-              your favorite food with Lunch Bowl!
+              Lorem ipsum dolor sit amet consectetur. Facilisis in vitae nibh
+              quis nulla. Vulputate lacus lacus euismod adipiscing adipi scing
+              lacinia. Sed ut fermentum.
             </Text>
             <View style={WelcomeStyle.button}>
               <PrimaryButton
                 title="LET’S Get Started"
                 onPress={GoToWalkthrowScreen}
-                backgroundColor="#FF6514"
-                textColor="#FFFFFF"
-                borderRadius={8}
-                paddingVertical={12}
-                fontSize={16}
-                textTransform="uppercase"
-                fontFamily="Poppins-SemiBold"
               />
             </View>
-          </View>
-          <View style={WelcomeStyle.createAccountContainer}>
-            <Text style={WelcomeStyle.text}>
-              Already have an account?
+            <View style={WelcomeStyle.loginContainer}>
+              <Text style={WelcomeStyle.text}>Already have an Account? </Text>
               <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                <Text style={WelcomeStyle.createAccountText}> Sign in</Text>
+                <Text style={WelcomeStyle.createAccountText}>Login</Text>
               </TouchableOpacity>
-            </Text>
+            </View>
           </View>
         </View>
       </ScrollView>
@@ -76,6 +202,29 @@ const WelcomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
 };
 
 const WelcomeStyle = StyleSheet.create({
+  FirstMarque: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  SecondMarque: {},
+  ThirdMarque: {},
+
+  imageStyleRow1: {
+    width: wp('40%'),
+    height: hp('25%'),
+    marginRight: wp('2%'),
+  },
+  imageStyleRow2: {
+    width: wp('40%'),
+    height: hp('25%'),
+    marginRight: wp('2%'),
+  },
+  imageStyleRow3: {
+    width: wp('40%'),
+    height: hp('25%'),
+    marginRight: wp('2%'),
+  },
+
   safeArea: {
     flex: 1,
     backgroundColor: '#FFFFFF',
@@ -91,43 +240,28 @@ const WelcomeStyle = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
   },
-  topRow: {
-    height: hp('80%'),
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  bottomRow: {
-    height: hp('20%'),
-    width: '100%',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    paddingHorizontal: wp('5%'),
-  },
   welcomeImage: {
-    width: wp('100%'),
-    height: hp('60%'),
+    width: wp('25%'),
+    height: hp('15%'),
     resizeMode: 'contain',
+    marginRight: wp('2%'),
   },
   imageContainer: {
     width: wp('100%'),
-    height: hp('60%'),
+    height: hp('56%'),
     position: 'relative',
     justifyContent: 'flex-end',
   },
-
   imageFade: {
     position: 'absolute',
     bottom: 0,
     height: hp('40%'),
     width: '100%',
   },
-
   title: {
-    fontSize: wp('7%'),
+    fontSize: wp('8%'),
     color: '#FF6514',
-    fontFamily: 'Urbanist-Bold',
+    fontFamily: 'Urbanist-SemiBold',
     textAlign: 'center',
     width: wp('100%'),
   },
@@ -138,7 +272,7 @@ const WelcomeStyle = StyleSheet.create({
     marginTop: hp('2%'),
     marginBottom: hp('2%'),
     fontFamily: 'OpenSans-Regular',
-    width: wp('80%'),
+    width: wp('90%'),
   },
   centerRow: {
     justifyContent: 'center',
@@ -147,30 +281,24 @@ const WelcomeStyle = StyleSheet.create({
     marginVertical: hp('2%'),
   },
   button: {
-    width: wp('80%'),
     marginVertical: hp('1%'),
     marginBottom: hp('2%'),
-    fontFamily: 'Urbanist-Bold',
-    textTransform: 'uppercase',
   },
-
-  createAccountContainer: {
+  loginContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  createAccountText: {
-    fontSize: wp('3.5%'),
-    color: '##FF6514',
-    fontWeight: '400',
-    fontFamily: 'Poppins',
-    transform: [{translateY: 3}],
-  },
   text: {
-    fontSize: wp('3.5%'),
+    fontSize: wp('3.9%'),
     color: '#000000',
     fontWeight: '400',
-    fontFamily: 'Poppins',
+    fontFamily: 'OpenSans-Regular',
+  },
+  createAccountText: {
+    fontSize: wp('3.9%'),
+    color: '#FF6514',
+    fontFamily: 'Urbanist-Bold',
   },
 });
 

@@ -17,14 +17,8 @@ export default function FreeTrialCard() {
         children.
       </Text>
       <PrimaryButton
-        title="Next"
+        title="Get Free trial"
         onPress={FreeTrail}
-        textColor="#FFFFFF"
-        borderRadius={wp('2%')}
-        paddingVertical={hp('1.5%')}
-        fontSize={wp('4%')}
-        textTransform="uppercase"
-        fontFamily="Poppins-SemiBold"
         style={{width: '100%'}}
       />
     </View>
@@ -34,17 +28,20 @@ export default function FreeTrialCard() {
 const styles = StyleSheet.create({
   card: {
     padding: wp('4%'),
-    backgroundColor: '#FFF6F0',
+    backgroundColor: 'rgba(255, 101, 20, 0.1)',
     borderRadius: wp('3%'),
     borderRightWidth: wp('1%'),
+    borderBottomWidth: wp('1%'), 
+    borderTopWidth:wp('0.1%'), 
+    borderLeftWidth:wp('0.1%'), 
     borderColor: '#F37520',
     width: '100%',
     alignSelf: 'center',
-    marginVertical: hp('2%'),
   },
   desc: {
     marginVertical: hp('1%'),
     fontSize: wp('4%'),
     marginBottom: hp('2%'),
+    fontFamily:'Urbanist-Regular'
   },
 });

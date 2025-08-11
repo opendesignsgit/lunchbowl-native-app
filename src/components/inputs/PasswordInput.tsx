@@ -113,7 +113,7 @@ const InputStyles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 26,
     fontWeight: 'bold',
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
     gap: 10,
   },
 
@@ -126,7 +126,7 @@ const InputStyles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 8,
     fontWeight: 'bold',
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
     gap: 10,
   },
 
@@ -185,7 +185,7 @@ const InputStyles = StyleSheet.create({
     marginBottom: 10,
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
   },
 
   //  OTP INPUT STYLES

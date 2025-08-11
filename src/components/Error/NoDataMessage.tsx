@@ -1,25 +1,24 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const NoDataMessage: React.FC = () => {
-    return (
-        <View style={styles.container}>
-            <Text style={styles.message}>No customers available</Text>
-        </View>
-    );
+const NoDataFound: React.FC<{ message?: string }> = ({ message = 'No data found' }) => {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>📭 {message}</Text>
+    </View>
+  );
 };
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 16,
-    },
-    message: {
-        fontSize: 16,
-        color: '#555',
-    },
-});
+export default NoDataFound;
 
-export default NoDataMessage;
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  text: {
+    color: '#888',
+    fontSize: 14,
+    fontStyle: 'italic',
+  },
+});

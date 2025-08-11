@@ -90,11 +90,10 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     alignItems: 'center',
-    paddingHorizontal: wp('3%'),
   },
   imageWrapper: {
     width: screenWidth * 0.9,
-    height: hp('20%'),
+    height: hp('21%'),
     marginRight: wp('3%'),
     borderRadius: 12,
     overflow: 'hidden',
@@ -110,16 +109,16 @@ const styles = StyleSheet.create({
     marginTop: hp('1%'),
   },
   dot: {
-    width: 8,
-    height: 8,
+    width: 5,
+    height: 4,
     borderRadius: 4,
     backgroundColor: '#ccc',
     marginHorizontal: 4,
   },
   activeDot: {
     backgroundColor: '#FF6514',
-    width: 50,
-    height: 8,
+    width: 15,
+    height: 4,
   },
 });
 
