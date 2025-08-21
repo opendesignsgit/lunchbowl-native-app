@@ -291,3 +291,12 @@ export const EditIcon = `
 <path d="M2.52121 10.8728L2 14L5.12724 13.4788C5.67029 13.3883 6.1715 13.1304 6.56079 12.7411L13.6132 5.68859C14.1289 5.17281 14.1289 4.3366 13.6131 3.82084L12.1791 2.38682C11.6633 1.87105 10.8271 1.87106 10.3113 2.38685L3.25894 9.43933C2.86965 9.8286 2.61171 10.3298 2.52121 10.8728Z" stroke="#FF6514" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M9.33325 4L11.9999 6.66667" stroke="#FF6514" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;
+
+export const questionIcon = `
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#8C8C8C" stroke-width="1.5"/>
+<path d="M10 9C10 7.89543 10.8954 7 12 7C13.1046 7 14 7.89543 14 9C14 9.39815 13.8837 9.76913 13.6831 10.0808C13.0854 11.0097 12 11.8954 12 13V13.5" stroke="#8C8C8C" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M11.9919 17H12.0009" stroke="#8C8C8C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+`;

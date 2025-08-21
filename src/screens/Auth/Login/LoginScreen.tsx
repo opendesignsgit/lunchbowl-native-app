@@ -45,6 +45,50 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
     }
   }, [error]);
 
+  // const halndleSendOtp = async () => {
+  //   if (!isPrivacyChecked) {
+  //     setError('Please agree to the privacy policy to continue.');
+  //     return;
+  //   }
+  //   if (!formattedValue) {
+  //     setError('Please enter a valid phone number.');
+  //     return;
+  //   }
+
+  //   let mobile = formattedValue.replace('+', '');
+
+  //   if (mobile.startsWith('91') && mobile.length === 12) {
+  //     mobile = mobile.slice(2);
+  //   }
+
+  //   const path = 'logIn';
+  //   console.log('mobile', mobile);
+
+  //   try {
+  //     setLoading(true);
+  //     const LoginData = {mobile, path};
+  //     console.log('Login Data:', LoginData);
+
+  //     const response = await SendOtp(LoginData);
+
+  //     if (response && response.message && response.otp) {
+  //       navigation.navigate('OtpVerificationScreen', {
+  //         mobile,
+  //         path: 'logIn-otp',
+  //         otp: response.otp,
+  //       });
+  //     } else {
+  //       setError('Something went wrong while sending OTP.');
+  //     }
+  //   } catch (error) {
+  //     console.log('Error:', error);
+  //     setError(
+  //       error instanceof Error ? error.message : 'Something went wrong.',
+  //     );
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
   const halndleSendOtp = async () => {
     if (!isPrivacyChecked) {
       setError('Please agree to the privacy policy to continue.');
@@ -71,14 +115,13 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
 
       const response = await SendOtp(LoginData);
 
-      if (response && response.message && response.otp) {
+      if (response?.smsResult?.success) {
         navigation.navigate('OtpVerificationScreen', {
           mobile,
           path: 'logIn-otp',
-          otp: response.otp,
         });
       } else {
-        setError('Something went wrong while sending OTP.');
+        setError('Failed to send OTP. Please try again.');
       }
     } catch (error) {
       console.log('Error:', error);
@@ -114,7 +157,7 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
               <View style={styles.titleContainer}>
                 <Text style={styles.titleText}>Log in</Text>
                 <Text style={styles.subtitleText}>
-                  Enter your mobile number to continue. sample 7428730894
+                  Enter your mobile number to continue. 
                 </Text>
               </View>
 
@@ -383,7 +426,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: wp('4%'),
-    color: '#000',
+    color: '#000000',
   },
   createAccountLink: {
     fontSize: wp('4%'),

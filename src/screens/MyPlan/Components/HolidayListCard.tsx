@@ -1,17 +1,14 @@
-import PrimaryButton from 'components/buttons/PrimaryButton';
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-interface HolidayItem {
-  date: string;
-  name: string;
-}
+
+import {Holiday} from 'src/model/calendarModels';
 
 interface HolidayListCardProps {
-  holidays: HolidayItem[];
+  holidays: Holiday[];
 }
 
 const formatDate = (dateString: string): string => {
@@ -47,61 +44,48 @@ export default HolidayListCard;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#ffffff',
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 8,
-    color: '#000',
+    marginTop: hp('2%'),
+    borderRadius: wp('5%'),
   },
   card: {
     borderWidth: 1,
     borderColor: '#f97316',
-    borderRadius: 12,
-    padding: 24,
+    borderRadius: wp('5%'),
+    paddingVertical: hp('2.5%'),
+    paddingHorizontal: wp('4%'),
     backgroundColor: '#ffffff',
     borderStyle: 'dashed',
   },
   holidayRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: hp('0.8%'),
   },
   bullet: {
-    fontSize: 20,
+    fontSize: wp('5%'),
     color: '#f97316',
-    marginRight: 6,
+    marginRight: wp('2%'),
   },
   holidayText: {
-    fontSize: 18,
+    fontSize: wp('4%'),
     color: '#374151',
     fontFamily: 'OpenSans-Regular',
     textTransform: 'capitalize',
+    flexShrink: 1,
   },
   date: {
     fontWeight: '600',
   },
   note: {
-    marginTop: 10,
-    fontSize: 13,
+    marginTop: hp('1.5%'),
+    fontSize: wp('3.5%'),
     color: '#6b7280',
   },
   dot: {
-    fontSize: 14,
+    fontSize: wp('4%'),
   },
   bold: {
     fontWeight: '600',
-    color: '#000',
-  },
-  button: {
-    backgroundColor: '#ff6600',
-    borderRadius: 6,
-    paddingVertical: 12,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#ffffff',
-    fontWeight: '700',
-    fontSize: 14,
+    color: '#000000',
   },
 });

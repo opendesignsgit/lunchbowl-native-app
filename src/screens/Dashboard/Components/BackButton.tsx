@@ -31,7 +31,7 @@ const HeaderBackButton: React.FC<HeaderWithBackButtonDividerProps> = ({ title })
 
 const styles = StyleSheet.create({
   headerContainer: {
-    marginLeft: 10
+    // marginLeft: 10
   },
   firstRow: {
     flexDirection: 'row',

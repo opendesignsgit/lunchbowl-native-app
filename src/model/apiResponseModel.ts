@@ -6,6 +6,7 @@
 //   otp?: string; // Optional field for OTP
 // }
 export interface ApiResponseModel {
+  smsResult?: any;
   success: boolean;
   message: string;
   token?: string;

@@ -1,10 +1,8 @@
 import ThemeGradientBackground from 'components/Backgrounds/GradientBackground';
 import SectionTitle from 'components/Titles/SectionHeading';
-import React, { useState } from 'react';
-import { FlatList, ScrollView, StyleSheet, View } from 'react-native';
-import {
-  widthPercentageToDP as wp
-} from 'react-native-responsive-screen';
+import React, {useState} from 'react';
+import {FlatList, ScrollView, StyleSheet, View} from 'react-native';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import SearchBar from 'screens/Dashboard/Components/Search';
 import CategoryItem from './Components/CategoryItem';
 import MealCard from './Components/MealCard';
@@ -100,7 +98,7 @@ const meals = [
   },
 ];
 
-const MealCategoryScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+const MealCategoryScreen: React.FC<{navigation: any}> = ({navigation}) => {
   const [selectedCategory, setSelectedCategory] = useState('Fruits');
   return (
     <ThemeGradientBackground>
@@ -112,8 +110,8 @@ const MealCategoryScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           keyExtractor={item => item.id}
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 16, marginBottom: 20 }}
-          renderItem={({ item }) => (
+          contentContainerStyle={{paddingHorizontal: 16, marginBottom: 20}}
+          renderItem={({item}) => (
             <CategoryItem
               title={item.title}
               image={item.image}
@@ -123,7 +121,9 @@ const MealCategoryScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           )}
         />
 
-        <ScrollView contentContainerStyle={styles.mealList} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          contentContainerStyle={styles.mealList}
+          showsVerticalScrollIndicator={false}>
           {meals.map(meal => (
             <MealCard
               key={meal.id}
@@ -139,17 +139,13 @@ const MealCategoryScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   );
 };
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: wp('5%'),
-    marginBottom: '20%'
-
-
+    marginBottom: '20%',
   },
-  mealList: {
-  },
+  mealList: {},
 });
 
 export default MealCategoryScreen;

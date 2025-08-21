@@ -13,7 +13,8 @@
       "hooks/*": ["src/hooks/*"],
       "types/*": ["src/types/*"],
       "models/*": ["src/models/*"],
-      "utils/*": ["src/utils/*"]
+      "utils/*": ["src/utils/*"],
+      //  "@services/*": ["services/*"]
     }
   }
 }

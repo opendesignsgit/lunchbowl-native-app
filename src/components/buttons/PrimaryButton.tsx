@@ -22,6 +22,7 @@ type PrimaryButtonProps = {
   textTransform?: 'none' | 'capitalize' | 'uppercase' | 'lowercase';
   fontFamily?: string;
   style?: ViewStyle;
+ disabled?: boolean;
 };
 
 export default function PrimaryButton({

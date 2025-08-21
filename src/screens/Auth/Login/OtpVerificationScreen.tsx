@@ -1,38 +1,30 @@
-/**
- * Method to handle user login.
- *  - An object containing the user's Phone and Otp.
- *  A promise that resolves to the response of the login request.
- * DISCLIMAR --- DONT MODIFY THIS METHOD NAME  WORKING VERSION --BHARATHI
- */
-
-import React, {useState} from 'react';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
+import ThemeGradientBackground from 'components/Backgrounds/GradientBackground';
+import PrimaryButton from 'components/buttons/PrimaryButton';
+import ErrorMessage from 'components/Error/BoostrapStyleError';
+import {LoadingModal} from 'components/LoadingModal/LoadingModal';
+import React, {useRef, useState} from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableWithoutFeedback,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
-  Keyboard,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableWithoutFeedback,
+  View,
 } from 'react-native';
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
-import {useAuth} from '../../../context/AuthContext';
-import OtpInput from 'components/inputs/OtpInput';
-import {LoginForm} from 'src/model/authModel';
-import {ApiResponseModel} from 'src/model/apiResponseModel';
-import {SvgXml} from 'react-native-svg';
-import {logo} from 'styles/svg-icons';
-import ErrorMessage from 'components/Error/BoostrapStyleError';
-import PrimaryButton from 'components/buttons/PrimaryButton';
-import {LoadingModal} from 'components/LoadingModal/LoadingModal';
-import LinearGradient from 'react-native-linear-gradient';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-
-// TEMPRORY TYPES is not perment solution  ###########################
+import {SvgXml} from 'react-native-svg';
+import {ApiResponseModel} from 'src/model/apiResponseModel';
+import {LoginForm} from 'src/model/authModel';
+import {logo} from 'styles/svg-icons';
+import {useAuth} from '../../../context/AuthContext';
+import HeaderBackButton from 'screens/Dashboard/Components/BackButton';
 
 type OtpVerificationRouteParams = {
   mobile: string;
@@ -46,7 +38,6 @@ type AuthStackParamList = {
 };
 
 const OtpVerificationScreen = () => {
-  // STATE VARIALBELES ###########################
   const navigation =
     useNavigation<
       import('@react-navigation/native').NavigationProp<AuthStackParamList>
@@ -58,7 +49,10 @@ const OtpVerificationScreen = () => {
   const route = useRoute<RouteProp<AuthStackParamList, 'OtpVerification'>>();
   const {mobile, path, otp} = route.params;
 
-  // HANDLER FUNCTIONS API CALL ###########################
+  const inputRefs = useRef<Array<TextInput | null>>([]);
+
+  const [resendTimer, setResendTimer] = useState(60);
+
   const handleVerify = async () => {
     if (otpInput.length !== 4) {
       setError('Please enter a valid 4-digit OTP.');
@@ -68,13 +62,10 @@ const OtpVerificationScreen = () => {
     try {
       setLoading(true);
       setError('');
-      // Remove country code
-      const formattedMobile = mobile.slice(2);
+
       const VerifyloginData: LoginForm = {
-        // mobile:formattedMobile,
         mobile,
         otp: otpInput,
-        // path,
       };
 
       console.log('recieved otp', VerifyloginData);
@@ -96,18 +87,51 @@ const OtpVerificationScreen = () => {
       setLoading(false);
     }
   };
-  // HELPER FUNCTIONS #####################################
-  const handleCloseError = () => {
-    // setError(null);
+  // const handleResend = async () => {
+  //   try {
+  //     await resendOtp(email); // API call
+  //     Toast.show({ type: "success", text1: "OTP Sent Again" });
+  //     setResendTimer(60);
+  //   } catch (err) {
+  //     Toast.show({ type: "error", text1: "Failed to resend OTP" });
+  //   }
+  // };
+
+  const handleOtpChange = (text: string, index: number) => {
+    const otpArray = otpInput.split('');
+    if (text.length > 1) {
+      // Paste handling
+      const newOtp = text.slice(0, 4);
+      setOtpInput(newOtp);
+      return;
+    }
+
+    otpArray[index] = text;
+    const newCode = otpArray.join('').slice(0, 4);
+    setOtpInput(newCode);
+
+    if (text && index < 3) {
+      inputRefs.current[index + 1]?.focus();
+    }
   };
-  // RENDERING COMPONENTS #################################
+
+  const handleKeyPress = (e: any, index: number) => {
+    if (e.nativeEvent.key === 'Backspace') {
+      if (!otpInput[index] && index > 0) {
+        const otpArray = otpInput.split('');
+        otpArray[index - 1] = '';
+        setOtpInput(otpArray.join(''));
+        inputRefs.current[index - 1]?.focus();
+      }
+    }
+  };
+
+  const handleCloseError = () => {
+    setError('');
+  };
 
   return (
-    <LinearGradient
-      colors={['#FF651429', '#4AB23814', '#FAFAFA00']}
-      start={{x: 0.5, y: 0}}
-      end={{x: 0.5, y: 1}}
-      style={styles.gradientContainer}>
+    <ThemeGradientBackground>
       <KeyboardAvoidingView
         style={{flex: 1}}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
@@ -115,92 +139,93 @@ const OtpVerificationScreen = () => {
           <ScrollView
             contentContainerStyle={{flexGrow: 1}}
             keyboardShouldPersistTaps="handled">
-            {/*############### MAIN CONTAINER ############ */}
+            <HeaderBackButton title="back" />
             <View style={styles.container}>
-              {/*############### LOGO CONTAINER ############ */}
-
               <View style={styles.logoContainer}>
                 <SvgXml xml={logo} style={styles.logo} />
               </View>
-              {/*############### TITLE CONTAINER ############ */}
               <View style={styles.titleContainer}>
                 <Text style={styles.titleText}>verify otp</Text>
-
                 <Text style={styles.subtitleText}>
                   We've sent an OTP to your Mobile number. OTP: {otp}
                 </Text>
               </View>
 
-              {/*############### OTP INPUT CONTAINER ############ */}
-
               {error && (
                 <ErrorMessage error={error} onClose={handleCloseError} />
               )}
+
               <View style={styles.inputContainer}>
-                <Text style={styles.label}>Enter One Time Password*</Text>
-                <View style={{alignItems: 'flex-start', width: '65%'}}>
-                  <View style={styles.otpWrapper}>
-                    <OtpInput
-                      code={otpInput}
-                      setCode={setOtpInput}
-                      length={4}
+                <Text style={styles.label}>
+                  Enter One Time Password
+                  <Text style={styles.required}>*</Text>
+                </Text>
+
+                <View style={styles.otpWrapper}>
+                  {[0, 1, 2, 3].map(index => (
+                    <TextInput
+                      key={index}
+                      ref={ref => (inputRefs.current[index] = ref)}
+                      style={styles.otpInput}
+                      keyboardType="number-pad"
+                      maxLength={1}
+                      value={otpInput[index] || ''}
+                      onChangeText={text => handleOtpChange(text, index)}
+                      onKeyPress={e => handleKeyPress(e, index)}
+                      autoFocus={index === 0}
+                      returnKeyType="next"
                     />
-                  </View>
+                  ))}
                 </View>
+                {/* 
+                 <View style={styles.resendContainer}>
+        {resendTimer > 0 ? (
+          <Text style={styles.timerText}>
+            Resend OTP in {resendTimer}s
+          </Text>
+        ) : (
+          <TouchableOpacity onPress={handleResend}>
+            <Text style={styles.resendText}>Resend OTP</Text>
+          </TouchableOpacity>
+        )}
+      </View> */}
               </View>
-
               <PrimaryButton
-                title="Send One Time Password"
+                title="Verify One Time Password"
                 onPress={handleVerify}
-                style={styles.signInButton}
-                borderRadius={wp('2%')}
-                paddingVertical={hp('1.5%')}
-                fontSize={wp('4%')}
-                textTransform="uppercase"
-                fontFamily="Poppins-SemiBold"
               />
-
               <LoadingModal loading={loading} setLoading={setLoading} />
             </View>
           </ScrollView>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
-    </LinearGradient>
+    </ThemeGradientBackground>
   );
 };
 
 export default OtpVerificationScreen;
 
 const styles = StyleSheet.create({
-  gradientContainer: {
-    flex: 1,
-  },
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
-    padding: wp('8%'),
+    padding: wp('7%'),
   },
   logoContainer: {
     width: '100%',
     alignItems: 'center',
     marginBottom: hp('3%'),
+    marginTop: hp('1%'),
   },
   logo: {
     width: wp('30%'),
     height: wp('30%'),
   },
-  title: {
-    width: '100%',
-    alignItems: 'flex-end',
-    fontFamily: 'Urbanist-Regular',
-    flexDirection: 'row',
-  },
   titleContainer: {
     width: '100%',
     marginBottom: hp('3%'),
   },
-
   titleText: {
     fontSize: wp('8%'),
     color: '#FF6514',
@@ -208,7 +233,6 @@ const styles = StyleSheet.create({
     marginBottom: hp('0.5%'),
     textTransform: 'uppercase',
   },
-
   subtitleText: {
     fontSize: wp('4%'),
     color: '#9a8a8af2',
@@ -217,69 +241,49 @@ const styles = StyleSheet.create({
   label: {
     fontSize: wp('4%'),
     color: '#000000',
-    fontFamily: 'OpenSans-SemiBold',
-    marginBottom: hp('1%'),
+    fontFamily: 'Urbanist-SemiBold',
+    marginBottom: hp('2%'),
   },
-
+  required: {
+    color: '#EA1A27',
+  },
   inputContainer: {
     width: '100%',
     marginBottom: hp('2%'),
     marginVertical: hp('1.5%'),
-    fontSize: wp('14%'),
   },
   otpWrapper: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: wp('4%'),
+    width: '65%',
   },
-  descriptionContainer: {
-    fontSize: wp('4%'),
-    color: '#000',
-    fontWeight: 'bold',
-    marginBottom: hp('1%'),
+  otpInput: {
+    width: wp('14%'),
+    height: hp('6%'),
+    borderWidth: 2,
+    borderColor: '#EAEAEC',
+    borderRadius: 10,
+    fontSize: wp('5%'),
+    textAlign: 'center',
+    backgroundColor: '#ffffff',
   },
-  checkboxContainer: {
-    width: '100%',
-    marginVertical: hp('1.5%'),
-    alignItems: 'flex-start',
-  },
-
-  checkbox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-
-  checkboxBox: {
-    width: wp('4.5%'),
-    height: wp('4.5%'),
-    borderWidth: 1,
-    borderColor: '#999',
-    marginRight: wp('2.5%'),
-    borderRadius: 4,
-    backgroundColor: '#fff',
-  },
-
-  checkboxChecked: {
-    backgroundColor: '#FF6514',
-    borderColor: '#FF6514',
-  },
-
-  checkboxLabel: {
-    fontSize: wp('3.8%'),
-    color: '#333',
-    fontFamily: 'Poppins-Regular',
-    flexShrink: 1,
-  },
-
-  linkText: {
-    color: '#FF6514',
-    fontWeight: '600',
-    textDecorationLine: 'underline',
-  },
-
   signInButton: {
     height: hp('6%'),
     justifyContent: 'center',
     width: '100%',
+  },
+  resendContainer: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  timerText: {
+    fontSize: 14,
+    color: '#777',
+  },
+  resendText: {
+    fontSize: 14,
+    color: '#007BFF',
+    fontWeight: '600',
   },
 });

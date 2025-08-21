@@ -9,9 +9,9 @@ export interface SignupForm {
 }
 
 export interface LoginForm {
-  firstName:string
-   mobile: string
-   path: string
+  firstName?:string
+   mobile?: string
+   path?: string
    otp?: string; 
 }
 

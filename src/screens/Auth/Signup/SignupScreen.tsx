@@ -135,6 +135,12 @@ const SignUpScreen = ({navigation, route}: {navigation: any; route: any}) => {
                   label="Full Name* (with Initial or Surname)"
                   placeholder="Enter Full name"
                 />
+                  {/* <ThemeInputPrimary
+                  value={firstName}
+                  onChangeText={setFullName}
+                  label="Full Name* (with Initial or Surname)"
+                  placeholder="Enter Full name"
+                /> */}
               </View>
 
               {error && (

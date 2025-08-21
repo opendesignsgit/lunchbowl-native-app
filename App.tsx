@@ -1,22 +1,25 @@
-import React from 'react';
-import {AuthProvider} from './src/context/AuthContext';
+import React, { useEffect } from 'react';
+import { AuthProvider } from './src/context/AuthContext';
 import MainNavigator from './src/navigations/MainNavigator';
-import {StatusBar, Platform, SafeAreaView, StyleSheet, Alert} from 'react-native';
+import { StatusBar, Platform, SafeAreaView, StyleSheet } from 'react-native';
 import './src/utils/firebaseConfig';
 import useFirebaseNotifications from 'utils/Notifications';
+
+
 const App = () => {
   useFirebaseNotifications();
+
   return (
-  <AuthProvider>
-    <StatusBar
-      barStyle="dark-content"
-      backgroundColor="#ffffff"
-      translucent={true}
-    />
-    <SafeAreaView style={styles.safeArea}>
-      <MainNavigator />
-    </SafeAreaView>
-  </AuthProvider>
+    <AuthProvider>
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="#ffffff"
+        translucent={true}
+      />
+      <SafeAreaView style={styles.safeArea}>
+        <MainNavigator />
+      </SafeAreaView>
+    </AuthProvider>
   )
 };
 
