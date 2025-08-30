@@ -22,8 +22,12 @@ import {
   MyPlanIconActive,
   MyPlanIconInactive,
 } from 'styles/svg-icons';
+import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
+import {Colors} from 'assets/styles/colors';
+import Fonts from 'assets/styles/fonts';
 
 const Tab = createBottomTabNavigator();
+const hiddenTabRoutes = ['Registartion', 'Login', 'ProfileSetup'];
 
 const AppNavigator = () => {
   return (
@@ -71,17 +75,29 @@ const AppNavigator = () => {
         ),
         tabBarShowLabel: true,
         tabBarLabelStyle: {
-          fontFamily: 'Urbanist-Regular',
+          fontFamily: Fonts.Urbanist.regular,
           fontSize: 14,
           marginTop: '20%',
         },
-        tabBarActiveTintColor: '#FF5B00',
+        tabBarActiveTintColor: Colors.primaryOrange,
         tabBarStyle: styles.tabBar,
         headerShown: false,
       })}>
       <Tab.Screen name="Home" component={DashboardNavigator} />
       <Tab.Screen name="Menu" component={MenueNavigator} />
-      <Tab.Screen name="MyPlan" component={MyPlanNavigator} />
+      <Tab.Screen
+        name="MyPlan"
+        component={MyPlanNavigator}
+        options={({route}) => {
+          const routeName = getFocusedRouteNameFromRoute(route) ?? '';
+
+          if (hiddenTabRoutes.includes(routeName)) {
+            return {tabBarStyle: {display: 'none'}};
+          }
+
+          return {};
+        }}
+      />
       <Tab.Screen name="History" component={HistoryNavigator} />
     </Tab.Navigator>
   );
@@ -94,7 +110,7 @@ const styles = StyleSheet.create({
     right: wp('0.5%'),
     borderTopLeftRadius: wp('5%'),
     borderTopRightRadius: wp('5%'),
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.white,
     elevation: 10,
     height: hp('9%'),
     paddingBottom: hp('0.7%'),
@@ -109,7 +125,7 @@ const styles = StyleSheet.create({
   },
 
   iconWrapperFocused: {
-    backgroundColor: '#FFEEE3',
+    backgroundColor: Colors.lightRed,
     padding: wp('8%'),
     marginTop: hp('4%'),
   },
@@ -120,7 +136,7 @@ const styles = StyleSheet.create({
     height: hp('0.5%'),
     borderTopLeftRadius: wp('2%'),
     borderTopRightRadius: wp('2%'),
-    backgroundColor: '#FF5B00',
+    backgroundColor: Colors.primaryOrange,
   },
 });
 

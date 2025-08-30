@@ -1,3 +1,5 @@
+import {Colors} from 'assets/styles/colors';
+import Fonts from 'assets/styles/fonts';
 import React, {useState} from 'react';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import {SvgXml} from 'react-native-svg';
@@ -26,7 +28,6 @@ export default function MenueCalendar({
   currentYear,
   onMonthChange,
 }: CalendarProps) {
-
   const [selectedDate, setSelectedDate] = useState<string>('');
   const getDaysInMonth = (month: number, year: number) => {
     return new Date(year, month + 1, 0).getDate();
@@ -164,7 +165,7 @@ export default function MenueCalendar({
 }
 
 const styles = StyleSheet.create({
-  container: {padding: 16, backgroundColor: '#ffffff', borderRadius: 20},
+  container: {padding: 16, backgroundColor: Colors.white, borderRadius: 20},
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -174,8 +175,8 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 18,
-    color: '#FF6514',
-    fontFamily: 'Urbanist-Bold',
+    color: Colors.primaryOrange,
+    fontFamily: Fonts.Urbanist.bold,
   },
   weekRow: {flexDirection: 'row'},
   weekDay: {

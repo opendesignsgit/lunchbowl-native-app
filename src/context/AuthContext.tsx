@@ -7,14 +7,13 @@ import TOKEN_KEY from '../config/tokenConfig';
 import {LoginForm, SignupForm} from '../model/authModel';
 
 interface User {
-  fullname: string;
-  email: string;
-  phone_number: string;
-  role: number;
-  token: string;
-  userId: string;
-    name: string;
-
+  userId?: string;
+  fullname?: string;
+  email?: string;
+  phone_number?: string;
+  freeTrial?: boolean;
+  role: string;
+  token?: string;
 }
 
 interface AuthContextType {
@@ -48,7 +47,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [authToken, setAuthToken] = useState<string | null>(null);
   const [isProfileSetupDone, setIsProfileSetupDone] = useState<boolean>(false);
-  const [userName,setUserName] = useState<string | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
 
   const [isOnboardingDoneState, setIsOnboardingDoneState] = useState<
     boolean | null
@@ -81,29 +80,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
       if (response.success && response.token) {
         const {token, _id, name, email, phone, freeTrial, role} = response;
         const userRole = role ?? 'customer';
-        const userWithoutToken = {
-          userId: _id,
-          name,
-          email,
-          phone,
-          freeTrial,
+        const userWithoutToken: User = {
+          userId: _id ?? '',
+          fullname: name ?? 'User',
+          email: email ?? '',
+          phone_number: phone ?? '',
+          // freeTrial: freeTrial ?? false,
           role: userRole,
+          token,
         };
-
         setUser(userWithoutToken);
-        setUserId(_id);
+        setUserId(_id ?? null);
         setUserRole(userRole);
         setAuthToken(token);
-        setUserName(name || 'User');
-
+        setUsername(name || 'User');
         await AsyncStorage.setItem('user', JSON.stringify(userWithoutToken));
         await AsyncStorage.setItem(TOKEN_KEY, token);
-        await AsyncStorage.setItem('userId', _id);
+        await AsyncStorage.setItem('userId', _id ?? '');
         await AsyncStorage.setItem('userRole', userRole);
-        await AsyncStorage.setItem('username', name);
-
+        await AsyncStorage.setItem('username', name ?? '');
         setisLoggedIn(true);
-
         return {
           success: true,
           message: response.message,
@@ -127,10 +123,44 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
   const signup = async (signupData: SignupForm): Promise<ApiResponseModel> => {
     try {
       const response: ApiResponseModel = await AuthService.doSignup(signupData);
-      if (response.success && response.data) {
-        setUser(response.data);
-        return response;
+      console.log('Signup response ===>', response);
+
+      if (response.success && response.token) {
+        const {token, _id, name, email, phone, freeTrial, role} = response;
+        const userRole = role ?? 'customer';
+        const userWithoutToken: User = {
+          userId: _id ?? '',
+          fullname: name ?? 'User',
+          email: email ?? '',
+          phone_number: phone ?? '',
+          freeTrial: freeTrial ?? true,
+          role: userRole,
+          token,
+        };
+
+        // Update states
+        setUser(userWithoutToken);
+        setUserId(_id ?? null);
+        setUserRole(userRole);
+        setAuthToken(token);
+        setUsername(name || 'User');
+        setisLoggedIn(true);
+
+        // Persist to AsyncStorage
+        await AsyncStorage.setItem('user', JSON.stringify(userWithoutToken));
+        await AsyncStorage.setItem(TOKEN_KEY, token);
+        await AsyncStorage.setItem('userId', _id ?? '');
+        await AsyncStorage.setItem('userRole', userRole);
+        await AsyncStorage.setItem('username', name ?? '');
+
+        return {
+          success: true,
+          message: response.message,
+          data: {...userWithoutToken, token},
+          error: null,
+        };
       }
+
       return response;
     } catch (error) {
       const errorMessage = handleApiError(error);
@@ -196,7 +226,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
         userRole,
         user,
         authToken,
-        userName,
+        username,
         login,
         signup,
         logout,

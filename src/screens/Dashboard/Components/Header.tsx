@@ -6,6 +6,8 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import {Colors} from 'assets/styles/colors';
+import Fonts from 'assets/styles/fonts';
 
 interface HeaderProps {
   userName: string;
@@ -14,11 +16,12 @@ interface HeaderProps {
 
 export default function Header({userName, navigation}: HeaderProps) {
   const goToSettings = () => {
-    navigation.navigate('Settings'); 
+    navigation.navigate('Settings');
   };
-    const goNotification = () => {
-    navigation.navigate('notifications'); 
+  const goNotification = () => {
+    navigation.navigate('notifications');
   };
+  const firstName = userName?.trim().split('')[0] || 'Guest';
 
   return (
     <View style={styles.container}>
@@ -28,7 +31,7 @@ export default function Header({userName, navigation}: HeaderProps) {
           numberOfLines={1}
           ellipsizeMode="tail"
           adjustsFontSizeToFit>
-          Hello, {userName || 'Guest'}!
+          Hello, {firstName}!
         </Text>
         <Text style={styles.subtitle}>Welcome to Lunch Bowl</Text>
       </View>
@@ -59,13 +62,13 @@ const styles = StyleSheet.create({
   },
   greeting: {
     fontSize: wp('7.5%'),
-    color: '#F37520',
-    fontFamily: 'Urbanist-SemiBold',
+    color: Colors.primaryOrange,
+    fontFamily: Fonts.Urbanist.semiBold,
   },
   subtitle: {
-    fontSize: wp('3.5%'), 
-    color: '#000000',
-    fontFamily: 'Urbanist-SemiBold',
+    fontSize: wp('3.5%'),
+    color: Colors.black,
+    fontFamily: Fonts.Urbanist.semiBold,
     marginTop: hp('0.5%'),
   },
   rightIcons: {

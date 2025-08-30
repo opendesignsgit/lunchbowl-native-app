@@ -23,6 +23,8 @@ import {
 import {SvgXml} from 'react-native-svg';
 import {facebookIcon, googleIcon, logo} from 'styles/svg-icons';
 import {useAuth} from '../../../context/AuthContext';
+import {Colors} from 'assets/styles/colors';
+import Fonts from 'assets/styles/fonts';
 
 const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
   const [error, setError] = useState<string | null>(null);
@@ -35,6 +37,7 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
   const [phoneKey, setPhoneKey] = useState(Date.now());
   const [formattedValue, setFormattedValue] = useState('');
   const [isPrivacyChecked, setIsPrivacyChecked] = useState(false);
+
   useEffect(() => {
     if (error) {
       const timer = setTimeout(() => {
@@ -45,50 +48,6 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
     }
   }, [error]);
 
-  // const halndleSendOtp = async () => {
-  //   if (!isPrivacyChecked) {
-  //     setError('Please agree to the privacy policy to continue.');
-  //     return;
-  //   }
-  //   if (!formattedValue) {
-  //     setError('Please enter a valid phone number.');
-  //     return;
-  //   }
-
-  //   let mobile = formattedValue.replace('+', '');
-
-  //   if (mobile.startsWith('91') && mobile.length === 12) {
-  //     mobile = mobile.slice(2);
-  //   }
-
-  //   const path = 'logIn';
-  //   console.log('mobile', mobile);
-
-  //   try {
-  //     setLoading(true);
-  //     const LoginData = {mobile, path};
-  //     console.log('Login Data:', LoginData);
-
-  //     const response = await SendOtp(LoginData);
-
-  //     if (response && response.message && response.otp) {
-  //       navigation.navigate('OtpVerificationScreen', {
-  //         mobile,
-  //         path: 'logIn-otp',
-  //         otp: response.otp,
-  //       });
-  //     } else {
-  //       setError('Something went wrong while sending OTP.');
-  //     }
-  //   } catch (error) {
-  //     console.log('Error:', error);
-  //     setError(
-  //       error instanceof Error ? error.message : 'Something went wrong.',
-  //     );
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
   const halndleSendOtp = async () => {
     if (!isPrivacyChecked) {
       setError('Please agree to the privacy policy to continue.');
@@ -112,16 +71,14 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
       setLoading(true);
       const LoginData = {mobile, path};
       console.log('Login Data:', LoginData);
-
       const response = await SendOtp(LoginData);
-
-      if (response?.smsResult?.success) {
+      if (response?.success) {
         navigation.navigate('OtpVerificationScreen', {
           mobile,
           path: 'logIn-otp',
         });
       } else {
-        setError('Failed to send OTP. Please try again.');
+        setError(response?.message || 'Failed to send OTP. Please try again.');
       }
     } catch (error) {
       console.log('Error:', error);
@@ -157,7 +114,7 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
               <View style={styles.titleContainer}>
                 <Text style={styles.titleText}>Log in</Text>
                 <Text style={styles.subtitleText}>
-                  Enter your mobile number to continue. 
+                  Enter your mobile number to continue.
                 </Text>
               </View>
 
@@ -179,7 +136,7 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
                   containerStyle={{
                     width: '100%',
                     borderWidth: 1,
-                    borderColor: '#ccc',
+                    borderColor: Colors.sandal,
                     borderRadius: 5,
                     paddingVertical: 0,
                     marginTop: 0,
@@ -187,7 +144,7 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
                     marginBottom: 10,
                   }}
                   textContainerStyle={{
-                    backgroundColor: 'white',
+                    backgroundColor: Colors.white,
                     borderRadius: 5,
                     height: 50,
                     paddingVertical: 10,
@@ -203,7 +160,10 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
                   <CheckBox
                     value={isPrivacyChecked}
                     onValueChange={setIsPrivacyChecked}
-                    tintColors={{true: '#FF6514', false: '#FF6514'}}
+                    tintColors={{
+                      true: Colors.primaryOrange,
+                      false: Colors.default,
+                    }}
                   />
                   <Text style={styles.checkboxLabel}>
                     By clicking, I accept the{' '}
@@ -220,6 +180,9 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
                 <PrimaryButton
                   title="Send One Time Password"
                   onPress={halndleSendOtp}
+                  style={{
+                    width: wp('85%'),
+                  }}
                 />
               </View>
               <View style={styles.dividerContainer}>
@@ -278,7 +241,7 @@ const styles = StyleSheet.create({
   },
   title: {
     alignItems: 'flex-end',
-    fontFamily: 'Urbanist-Regular',
+    fontFamily: Fonts.Urbanist.regular,
     flexDirection: 'row',
   },
   titleContainer: {
@@ -287,73 +250,50 @@ const styles = StyleSheet.create({
 
   titleText: {
     fontSize: wp('8%'),
-    color: '#FF6514',
-    fontFamily: 'Urbanist-Bold',
+    color: Colors.primaryOrange,
+    fontFamily: Fonts.Urbanist.bold,
     marginBottom: hp('0.5%'),
     textTransform: 'uppercase',
   },
 
   subtitleText: {
     fontSize: wp('4%'),
-    color: '#666',
-    fontFamily: 'OpensSans-Regular',
+    color: Colors.default,
+    fontFamily: Fonts.OpenSans.regular,
   },
   label: {
     fontSize: wp('5%'),
-    color: '#000',
-    fontFamily: 'Urbanist-SemiBold',
+    color: Colors.black,
+    fontFamily: Fonts.Urbanist.semiBold,
     marginBottom: hp('1%'),
   },
 
   inputContainer: {
-    marginBottom: hp('2%'),
-    marginVertical: hp('1.5%'),
     gap: hp('1%'),
     fontSize: wp('14%'),
-    fontFamily: 'Poppins-SemiBold',
+    fontFamily: Fonts.Urbanist.semiBold,
   },
   descriptionContainer: {
     fontSize: wp('4%'),
-    color: '#000',
+    color: Colors.black,
     fontWeight: 'bold',
     marginBottom: hp('1%'),
   },
   checkboxContainer: {
+    marginTop: '6%',
     width: '100%',
-    marginVertical: hp('1.5%'),
     flexDirection: 'row',
     alignItems: 'center',
-  },
-
-  checkbox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-
-  checkboxBox: {
-    width: wp('4.5%'),
-    height: wp('4.5%'),
-    borderWidth: 1,
-    borderColor: '#999',
-    marginRight: wp('2.5%'),
-    borderRadius: 4,
-    backgroundColor: '#fff',
-  },
-
-  checkboxChecked: {
-    backgroundColor: '#FF6514',
-    borderColor: '#FF6514',
   },
 
   checkboxLabel: {
     fontSize: wp('3.8%'),
-    color: '#7f7f7fff',
-    fontFamily: 'OpensSans-Reugular',
+    color: Colors.default,
+    fontFamily: Fonts.OpenSans.regular,
     flexShrink: 1,
   },
-
   linkText: {
-    color: '#FF6514',
+    color: Colors.primaryOrange,
     fontWeight: '600',
     textDecorationLine: 'underline',
   },
@@ -363,29 +303,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginVertical: hp('2%'),
+    marginBottom: hp('2%'),
     width: '100%',
     gap: wp('2%'),
     paddingHorizontal: wp('5%'),
-    paddingVertical: hp('1%'),
   },
   line: {
     flex: 1,
     height: 1,
-    backgroundColor: '#ccc',
     marginHorizontal: wp('2%'),
+    backgroundColor: Colors.default,
   },
   orText: {
-    fontSize: hp('2%'),
-    color: '#333',
-    fontWeight: '500',
+    fontSize: hp('1.7%'),
+    color: Colors.bodyText,
+    fontFamily: Fonts.Urbanist.bold,
   },
   socialButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
     borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 25,
+    borderColor: Colors.lightRed,
+    borderRadius: 10,
+    backgroundColor: Colors.white,
     width: '48%',
     paddingVertical: hp('2%'),
     paddingHorizontal: wp('10%'),
@@ -407,9 +348,8 @@ const styles = StyleSheet.create({
   },
   socialButtonText: {
     fontSize: wp('4%'),
-    color: '#121212',
-    fontWeight: 'bold',
-    fontFamily: 'Inter',
+    color: Colors.bodyText,
+    fontFamily: Fonts.OpenSans.regular,
   },
   signInButton: {
     height: hp('6%'),
@@ -417,20 +357,21 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   footer: {
-    marginTop: hp('5%'),
+    marginTop: hp('15%'),
   },
   footerRow: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    
   },
   footerText: {
     fontSize: wp('4%'),
-    color: '#000000',
+    color: Colors.black,
   },
   createAccountLink: {
     fontSize: wp('4%'),
-    color: '#FF6514',
+    color: Colors.primaryOrange,
     fontWeight: '500',
     marginLeft: 5,
   },

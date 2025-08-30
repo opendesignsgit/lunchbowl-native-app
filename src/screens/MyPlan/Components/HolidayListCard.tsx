@@ -1,3 +1,5 @@
+import {Colors} from 'assets/styles/colors';
+import Fonts from 'assets/styles/fonts';
 import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {
@@ -43,17 +45,17 @@ export default HolidayListCard;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.white,
     marginTop: hp('2%'),
     borderRadius: wp('5%'),
   },
   card: {
     borderWidth: 1,
-    borderColor: '#f97316',
+    borderColor: Colors.primaryOrange,
     borderRadius: wp('5%'),
     paddingVertical: hp('2.5%'),
     paddingHorizontal: wp('4%'),
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.white,
     borderStyle: 'dashed',
   },
   holidayRow: {
@@ -63,13 +65,13 @@ const styles = StyleSheet.create({
   },
   bullet: {
     fontSize: wp('5%'),
-    color: '#f97316',
+    color: Colors.primaryOrange,
     marginRight: wp('2%'),
   },
   holidayText: {
     fontSize: wp('4%'),
-    color: '#374151',
-    fontFamily: 'OpenSans-Regular',
+    color: Colors.bodyText,
+    fontFamily: Fonts.OpenSans.regular,
     textTransform: 'capitalize',
     flexShrink: 1,
   },
@@ -79,13 +81,13 @@ const styles = StyleSheet.create({
   note: {
     marginTop: hp('1.5%'),
     fontSize: wp('3.5%'),
-    color: '#6b7280',
+    color: Colors.bodyText,
   },
   dot: {
     fontSize: wp('4%'),
   },
   bold: {
     fontWeight: '600',
-    color: '#000000',
+    color: Colors.black,
   },
 });

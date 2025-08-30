@@ -1,3 +1,5 @@
+import {Colors} from 'assets/styles/colors';
+import Fonts from 'assets/styles/fonts';
 import React from 'react';
 import {
   TouchableOpacity,
@@ -22,20 +24,25 @@ type PrimaryButtonProps = {
   textTransform?: 'none' | 'capitalize' | 'uppercase' | 'lowercase';
   fontFamily?: string;
   style?: ViewStyle;
- disabled?: boolean;
+  disabled?: boolean;
+  disabledBackgroundColor?: string; 
+  disabledTextColor?: string;    
 };
 
 export default function PrimaryButton({
   title,
   onPress,
-  backgroundColor = '#FF6514',
-  textColor = '#ffffff',
+  backgroundColor = Colors.primaryOrange,
+  textColor = Colors.white,
   borderRadius = 8,
   paddingVertical = 18,
   fontSize = 14,
   icon = null,
   textTransform = 'uppercase',
-  fontFamily = 'Urbanist-Bold',
+  fontFamily = Fonts.Urbanist.bold,
+  disabledBackgroundColor = Colors.formdisableState, 
+  disabledTextColor = Colors.bg,   
+   disabled = false,  
   style = {},
 }: PrimaryButtonProps) {
   return (
@@ -44,20 +51,21 @@ export default function PrimaryButton({
         styles.button,
         style,
         {
-          backgroundColor,
+          backgroundColor: disabled ? disabledBackgroundColor : backgroundColor,
           borderRadius,
           paddingVertical,
         },
       ]}
       activeOpacity={0.8}
-      onPress={onPress}>
+      onPress={disabled ? undefined : onPress} 
+      disabled={disabled}>
       <View style={styles.content}>
         {icon && <View style={styles.icon}>{icon}</View>}
         <Text
           style={[
             styles.text,
             {
-              color: textColor,
+              color: disabled ? disabledTextColor : textColor,
               fontSize,
               textTransform,
               fontFamily,

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
+import React, {useEffect, useState} from 'react';
+import {createStackNavigator} from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomerNavigator from './Child/CustomerNavigator';
 import AdminNavigator from './Child/AdminNavigator';
@@ -13,7 +13,7 @@ const DashboardNavigator = () => {
     const getUserRole = async () => {
       try {
         const storedUser = await AsyncStorage.getItem('user');
-        console.log('storedUser',storedUser)
+        console.log('storedUser', storedUser);
         if (storedUser) {
           const parsedUser = JSON.parse(storedUser);
           setUserRole(parsedUser.role || 'guest');
@@ -30,36 +30,21 @@ const DashboardNavigator = () => {
   }, []);
 
   if (userRole === null) {
-    return null; 
+    return null;
   }
 
   return (
-    <Stack.Navigator>
-      {userRole === 'customer' && (
-        <Stack.Screen
-          name="CustomerNavigator"
-          component={CustomerNavigator}
-          options={{ headerShown: false }}
-        />
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      {userRole === 'customer' ? (
+        <Stack.Screen name="CustomerNavigator" component={CustomerNavigator} />
+      ) : userRole === 'admin' ? (
+        <Stack.Screen name="AdminNavigator" component={AdminNavigator} />
+      ) : (
+        // fallback if guest
+        <Stack.Screen name="CustomerNavigator" component={CustomerNavigator} />
       )}
-
-      {userRole === 'admin' && (
-        <Stack.Screen
-          name="AdminNavigator"
-          component={AdminNavigator}
-          options={{ headerShown: false }}
-        />
-      )}
-
-      {/* Common screen */}
-      <Stack.Screen
-        name="ViewNotifications"
-        component={ViewNotifications}
-        options={{ headerShown: false }}
-      />
     </Stack.Navigator>
   );
 };
 
 export default DashboardNavigator;
-

@@ -1,4 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
+import { Colors } from 'assets/styles/colors';
+import Fonts from 'assets/styles/fonts';
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import {
@@ -10,6 +12,7 @@ import { HeaderBackIcon } from 'styles/svg-icons';
 
 interface HeaderWithBackButtonDividerProps {
   title: string;
+  onPress?: () => void; 
 }
 
 const HeaderBackButton: React.FC<HeaderWithBackButtonDividerProps> = ({ title }) => {
@@ -31,7 +34,8 @@ const HeaderBackButton: React.FC<HeaderWithBackButtonDividerProps> = ({ title })
 
 const styles = StyleSheet.create({
   headerContainer: {
-    // marginLeft: 10
+    marginLeft: 10,
+    padding:10
   },
   firstRow: {
     flexDirection: 'row',
@@ -41,14 +45,14 @@ const styles = StyleSheet.create({
   backWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    fontFamily: 'Urbanist-Bold',
+    fontFamily:Fonts.Urbanist.bold,
 
   },
   headerText: {
-    fontSize: wp('5%'),
-    color: '#000000',
+    fontSize: wp('4%'),
+    color: Colors.black,
     marginLeft: wp('2%'),
-    fontFamily: 'Urbanist-Bold',
+    fontFamily:Fonts.Urbanist.bold,
     textTransform: 'uppercase',
   },
 });

@@ -100,6 +100,7 @@ const WalkThroughScreen: React.FC<{navigation: any}> = ({navigation}) => {
               Skip
             </Text>
           )}
+          
           {/*############### PAGINATION CONTAINER  ############ */}
 
           <View style={styles.pagination}>

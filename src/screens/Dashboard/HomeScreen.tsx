@@ -1,6 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {Colors} from 'assets/styles/colors';
+import Fonts from 'assets/styles/fonts';
 import ThemeGradientBackground from 'components/Backgrounds/GradientBackground';
-import React, { useEffect, useState } from 'react';
+import SectionTitle from 'components/Titles/SectionHeading';
+import React, {useEffect, useState} from 'react';
 import {
   GestureResponderEvent,
   ScrollView,
@@ -20,9 +23,9 @@ import Highlights from './Components/Highlights';
 import PopularMenus from './Components/PopularMenusMarquee';
 import SchoolMarquee from './Components/SchoolsServes';
 import SearchBar from './Components/Search';
-import SectionTitle from 'components/Titles/SectionHeading';
 
 //############## BANNER MOCK DATA ################
+
 export const mockChallenges = [
   {
     _id: '1',
@@ -50,8 +53,8 @@ export const mockChallenges = [
   },
 ];
 
-const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const [userName, setUserName] = useState('User');
+const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
+  const [userName, setUserName] = useState<string | null>(null);
 
   useEffect(() => {
     const getUserRole = async () => {
@@ -59,26 +62,33 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         const storedUser = await AsyncStorage.getItem('user');
         if (storedUser) {
           const parsedUser = JSON.parse(storedUser);
-          setUserName(parsedUser.name || 'User');
-          console.log('User loaded:', parsedUser);
+          setUserName(parsedUser.fullname?.trim() || null);
+          console.log(
+            'User xnxnxnxnxnxnx -------------------------- :',
+            parsedUser.fullname,
+          );
+          console.log('User loaded :', parsedUser);
+        } else {
+          setUserName(null);
         }
       } catch (error) {
         console.error('Error fetching user:', error);
+        setUserName(null);
       }
     };
 
     getUserRole();
   }, []);
-
   function onPressViewAll(event: GestureResponderEvent): void {
     throw new Error('Function not implemented.');
   }
   return (
-
     <ThemeGradientBackground>
       <View style={styles.container}>
         <View style={styles.logoutContainer}></View>
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: hp('10%') }}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{paddingBottom: hp('10%')}}>
           <Header userName={userName ?? 'GuestUSer'} navigation={navigation} />
           <SearchBar />
           <PromoBanner />
@@ -122,8 +132,8 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: 20,
-    color: '#000000',
-    fontFamily: 'Urbanist-SemiBold',
+    color: Colors.black,
+    fontFamily: Fonts.Urbanist.semiBold,
     textTransform: 'uppercase',
     marginTop: hp('2.0%'),
     marginLeft: wp('0%'),
@@ -134,16 +144,14 @@ const styles = StyleSheet.create({
   },
   viewAll: {
     fontSize: 12,
-    color: '#4AB238',
+    color: Colors.primaryOrange,
     textTransform: 'uppercase',
-    fontFamily: 'Urbanist-Bold'
+    fontFamily: Fonts.Urbanist.bold,
   },
   logoutButton: {
-    backgroundColor: '#FF6B6B',
+    backgroundColor: Colors.primaryOrange,
     paddingVertical: hp('1%'),
     paddingHorizontal: wp('4%'),
     borderRadius: wp('2%'),
   },
-
-
 });

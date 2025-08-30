@@ -1,6 +1,6 @@
-import {LoginForm} from 'src/model/authModel';
+import { LoginForm } from 'src/model/authModel';
 import httpAxiosClient from '../config/httpclient';
-import {ApiResponseModel} from '../model/apiResponseModel';
+import { ApiResponseModel } from '../model/apiResponseModel';
 
 /**
  * Class representing the authentication API.
@@ -18,20 +18,15 @@ class AuthApi {
    * @param credentials - An object containing the user's email and password.
    * @returns A promise that resolves to the response of the login request.
    */
-  async login(credentials: {
-    // firstName:string
-    mobile: string;
-    otp: string; 
-  }): Promise<ApiResponseModel> {
-    console.log(' Sending OTP verification request with:', credentials);
 
+  async login(userData: any): Promise<ApiResponseModel> {
     return await httpAxiosClient.post(
       `${this.authEndpoint}/verifyOtp`,
-      credentials,
+      userData,
     );
   }
 
-  async SendOtp(credentials: {mobile: string}): Promise<ApiResponseModel> {
+  async SendOtp(credentials: { mobile: string }): Promise<ApiResponseModel> {
     return await httpAxiosClient.post(
       `${this.authEndpoint}/sendOtp`,
       credentials,
@@ -43,9 +38,10 @@ class AuthApi {
    * @param userData - An object containing the user's email, password, and name.
    * @returns A promise that resolves to the response of the registration request.
    */
+
   async register(userData: any): Promise<ApiResponseModel> {
     return await httpAxiosClient.post(
-      `${this.authEndpoint}/register`,
+      `${this.authEndpoint}/verifyOtp`,
       userData,
     );
   }
@@ -76,7 +72,7 @@ class AuthApi {
    */
   async verifyRole(role: string): Promise<ApiResponseModel> {
     return await httpAxiosClient.get(`${this.authEndpoint}/verify-role`, {
-      params: {role},
+      params: { role },
     });
   }
 
@@ -87,7 +83,7 @@ class AuthApi {
    */
   async verifyEmail(email: string): Promise<ApiResponseModel> {
     return await httpAxiosClient.get(`${this.authEndpoint}/verify-email`, {
-      params: {email},
+      params: { email },
     });
   }
 

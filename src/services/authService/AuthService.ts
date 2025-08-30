@@ -1,10 +1,10 @@
-import {ApiResponseModel} from '../../model/apiResponseModel';
-import {handleApiError} from '../../utils/handleError';
-import {LoginForm, SignupForm} from '../../model/authModel';
+import { ApiResponseModel } from '../../model/apiResponseModel';
+import { handleApiError } from '../../utils/handleError';
+import { LoginForm, SignupForm } from '../../model/authModel';
 import AuthApi from '../../api/authApi';
 
 class AuthService {
-  constructor() {}
+  constructor() { }
 
   async doSignup(signupData: SignupForm): Promise<ApiResponseModel> {
     try {
@@ -20,12 +20,11 @@ class AuthService {
       };
     } catch (error: any) {
       const errorMessage = handleApiError(error);
-      return {success: false, message: errorMessage, data: null, error: error};
+      return { success: false, message: errorMessage, data: null, error: error };
     }
   }
 
   async doSendOtp(LoginData: LoginForm): Promise<ApiResponseModel> {
-    
     try {
       const response: any = await AuthApi.SendOtp(LoginData);
       if (response.status && response.data) {
@@ -39,17 +38,18 @@ class AuthService {
       };
     } catch (error: any) {
       const errorMessage = handleApiError(error);
-      return {success: false, message: errorMessage, data: null, error: error};
+      return { success: false, message: errorMessage, data: null, error: error };
     }
   }
 
   async doLogin(LoginData: LoginForm): Promise<ApiResponseModel> {
     try {
       const response: any = await AuthApi.login({
-        // firstName:LoginData.firstName??'',
-        mobile: LoginData.mobile,
-        otp: LoginData.otp ?? '',
-       
+
+        mobile: LoginData.mobile ?? "",
+        otp: LoginData.otp ?? "",
+        path: LoginData.path ?? "",
+
       });
       if (response.status && response.data) {
         return response.data;
@@ -62,11 +62,9 @@ class AuthService {
       };
     } catch (error: any) {
       const errorMessage = handleApiError(error);
-      return {success: false, message: errorMessage, data: null, error: error};
+      return { success: false, message: errorMessage, data: null, error: error };
     }
   }
-
-
 
   async completeOnboarding(userId: string): Promise<ApiResponseModel> {
     try {
@@ -82,7 +80,7 @@ class AuthService {
       };
     } catch (error: any) {
       const errorMessage = handleApiError(error);
-      return {success: false, message: errorMessage, data: null, error: error};
+      return { success: false, message: errorMessage, data: null, error: error };
     }
   }
 }

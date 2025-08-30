@@ -1,12 +1,5 @@
-// export interface ApiResponseModel {
-//   success: boolean;
-//   message: string;
-//   data: any;
-//   error: string | null;
-//   otp?: string; // Optional field for OTP
-// }
 export interface ApiResponseModel {
-  smsResult?: any;
+  smsLogId?: any;
   success: boolean;
   message: string;
   token?: string;
@@ -16,6 +9,7 @@ export interface ApiResponseModel {
   phone?: string;
   freeTrial?: boolean;
   error?: any;
-  otp?:string
-   data: any;
+  otp?: string
+  data: any;
+  role?: any;
 }

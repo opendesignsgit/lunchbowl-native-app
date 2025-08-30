@@ -21,10 +21,12 @@ import {
 } from 'react-native-responsive-screen';
 import {SvgXml} from 'react-native-svg';
 import {ApiResponseModel} from 'src/model/apiResponseModel';
-import {LoginForm} from 'src/model/authModel';
+import {LoginForm, SignupForm} from 'src/model/authModel';
 import {logo} from 'styles/svg-icons';
 import {useAuth} from '../../../context/AuthContext';
 import HeaderBackButton from 'screens/Dashboard/Components/BackButton';
+import {Colors} from 'assets/styles/colors';
+import Fonts from 'assets/styles/fonts';
 
 type OtpVerificationRouteParams = {
   mobile: string;
@@ -45,15 +47,21 @@ const OtpVerificationScreen = () => {
   const [otpInput, setOtpInput] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const {login, isProfileSetupDone, userId} = useAuth();
+  const {login, signup, isProfileSetupDone, userId} = useAuth();
   const route = useRoute<RouteProp<AuthStackParamList, 'OtpVerification'>>();
-  const {mobile, path, otp} = route.params;
-
+  const {mobile, path, ...rest} = route.params;
   const inputRefs = useRef<Array<TextInput | null>>([]);
-
   const [resendTimer, setResendTimer] = useState(60);
 
+
   const handleVerify = async () => {
+    let verificationPath = path;
+    if (Object.keys(rest).length > 0 && path === 'signUp') {
+      verificationPath = 'signUp-otp';
+    } else if (Object.keys(rest).length > 0 && path === 'login') {
+      verificationPath = 'login-otp';
+    }
+
     if (otpInput.length !== 4) {
       setError('Please enter a valid 4-digit OTP.');
       return;
@@ -62,14 +70,34 @@ const OtpVerificationScreen = () => {
     try {
       setLoading(true);
       setError('');
-
       const VerifyloginData: LoginForm = {
         mobile,
         otp: otpInput,
+        path: verificationPath,
+        ...rest,
       };
 
-      console.log('recieved otp', VerifyloginData);
-      const response: ApiResponseModel = await login(VerifyloginData);
+      console.log('OTP request body ===>', VerifyloginData);
+
+      let response: ApiResponseModel;
+
+      if (verificationPath === 'signUp-otp') {
+        const VerifySignupData: SignupForm = {
+          ...rest,
+          mobile,
+          otp: otpInput,
+          path: verificationPath,
+          firstName: ''
+        };
+        response = await signup(VerifySignupData);
+      } else {
+        const VerifyLoginData: LoginForm = {
+          mobile,
+          otp: otpInput,
+          path: verificationPath,
+        };
+        response = await login(VerifyLoginData);
+      }
 
       if (response.success && response.data) {
         if (!isProfileSetupDone && userId) {
@@ -87,20 +115,10 @@ const OtpVerificationScreen = () => {
       setLoading(false);
     }
   };
-  // const handleResend = async () => {
-  //   try {
-  //     await resendOtp(email); // API call
-  //     Toast.show({ type: "success", text1: "OTP Sent Again" });
-  //     setResendTimer(60);
-  //   } catch (err) {
-  //     Toast.show({ type: "error", text1: "Failed to resend OTP" });
-  //   }
-  // };
 
   const handleOtpChange = (text: string, index: number) => {
     const otpArray = otpInput.split('');
     if (text.length > 1) {
-      // Paste handling
       const newOtp = text.slice(0, 4);
       setOtpInput(newOtp);
       return;
@@ -139,15 +157,15 @@ const OtpVerificationScreen = () => {
           <ScrollView
             contentContainerStyle={{flexGrow: 1}}
             keyboardShouldPersistTaps="handled">
-            <HeaderBackButton title="back" />
             <View style={styles.container}>
+              <HeaderBackButton title="back" />
               <View style={styles.logoContainer}>
                 <SvgXml xml={logo} style={styles.logo} />
               </View>
               <View style={styles.titleContainer}>
                 <Text style={styles.titleText}>verify otp</Text>
                 <Text style={styles.subtitleText}>
-                  We've sent an OTP to your Mobile number. OTP: {otp}
+                  We've sent an OTP to your Mobile number. OTP:
                 </Text>
               </View>
 
@@ -177,18 +195,6 @@ const OtpVerificationScreen = () => {
                     />
                   ))}
                 </View>
-                {/* 
-                 <View style={styles.resendContainer}>
-        {resendTimer > 0 ? (
-          <Text style={styles.timerText}>
-            Resend OTP in {resendTimer}s
-          </Text>
-        ) : (
-          <TouchableOpacity onPress={handleResend}>
-            <Text style={styles.resendText}>Resend OTP</Text>
-          </TouchableOpacity>
-        )}
-      </View> */}
               </View>
               <PrimaryButton
                 title="Verify One Time Password"
@@ -209,7 +215,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'flex-start',
-    alignItems: 'center',
     padding: wp('7%'),
   },
   logoContainer: {
@@ -228,24 +233,24 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontSize: wp('8%'),
-    color: '#FF6514',
-    fontFamily: 'Urbanist-Bold',
+    color: Colors.primaryOrange,
+    fontFamily: Fonts.Urbanist.bold,
     marginBottom: hp('0.5%'),
     textTransform: 'uppercase',
   },
   subtitleText: {
     fontSize: wp('4%'),
-    color: '#9a8a8af2',
+    color: Colors.bodyText,
     fontFamily: 'Poppins-Regular',
   },
   label: {
     fontSize: wp('4%'),
-    color: '#000000',
-    fontFamily: 'Urbanist-SemiBold',
+    color: Colors.black,
+    fontFamily: Fonts.Urbanist.semiBold,
     marginBottom: hp('2%'),
   },
   required: {
-    color: '#EA1A27',
+    color: Colors.primaryOrange,
   },
   inputContainer: {
     width: '100%',
@@ -261,12 +266,12 @@ const styles = StyleSheet.create({
   otpInput: {
     width: wp('14%'),
     height: hp('6%'),
-    borderWidth: 2,
-    borderColor: '#EAEAEC',
+    borderWidth: 1,
+    borderColor: Colors.lightRed,
     borderRadius: 10,
     fontSize: wp('5%'),
     textAlign: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.white,
   },
   signInButton: {
     height: hp('6%'),
@@ -279,11 +284,11 @@ const styles = StyleSheet.create({
   },
   timerText: {
     fontSize: 14,
-    color: '#777',
+    color: Colors.bodyText,
   },
   resendText: {
     fontSize: 14,
-    color: '#007BFF',
+    color: Colors.primaryOrange,
     fontWeight: '600',
   },
 });

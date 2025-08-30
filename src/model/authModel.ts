@@ -1,16 +1,14 @@
 export interface SignupForm {
   email?: string;
-  password?: string;
-
   firstName: string;
   mobile: string;
   path: string;
   otp: string;
+  
 }
 
 export interface LoginForm {
-  firstName?:string
-   mobile?: string
+   mobile: string 
    path?: string
    otp?: string; 
 }
