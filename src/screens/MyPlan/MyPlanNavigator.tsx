@@ -1,76 +1,87 @@
-import React, {useEffect, useState} from 'react';
-import {createStackNavigator} from '@react-navigation/stack';
+
+import React, { useEffect, useState } from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
 import MyPlanScreen from './Calender';
 import FoodScreen from './FoodScreen';
 import MenuSelectionScreen from './MenuSelection';
-import {CalendarDateProvider} from '../../context/calenderContext';
-import {MenuProvider} from 'context/MenuContext';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { CalendarDateProvider } from '../../context/calenderContext';
+import { MenuProvider } from 'context/MenuContext';
 import Registartion from 'screens/Subscription/Registration';
 import PaymentWebView from 'screens/Subscription/Components/forms/PaymentWebView';
+import RegistrationService from 'services/RegistartionService/registartion';
+import { useAuth } from 'context/AuthContext';
+
 const Stack = createStackNavigator();
 
 const MyPlanNavigator = () => {
-  const [isFreeTrial, setIsFreeTrial] = useState<boolean | null>(null);
+  const [screenToShow, setScreenToShow] = useState<string | null>(null);
+  const { userId } = useAuth();
 
   useEffect(() => {
-    const checkFreeTrial = async () => {
+    const payload: any = {
+      _id: userId,
+      path: 'Step-Check',
+    };
+
+    const decideInitialRoute = async () => {
       try {
-        const storedUser = await AsyncStorage.getItem('user');
-        console.log('free trail  data for navi', storedUser);
-        if (storedUser) {
-          const parsedUser = JSON.parse(storedUser);
-          setIsFreeTrial(parsedUser.freeTrial ?? false);
+        const response: any = await RegistrationService.registartionCheck(payload);
+        const step = Number(response?.data?.step);
+
+        // Only step 4 (or higher) can see MyPlan; others go to Registartion
+        if (Number.isFinite(step) && step >= 4) {
+          setScreenToShow('MyPlan');
         } else {
-          setIsFreeTrial(false);
+          setScreenToShow('Registartion');
         }
       } catch (error) {
-        console.error('Error checking free trial:', error);
-        setIsFreeTrial(false);
+        console.error('Error checking step:', error);
+        // On any error, default to Registartion
+        setScreenToShow('Registartion');
       }
     };
 
-    checkFreeTrial();
-  }, []);
+    if (userId) {
+      decideInitialRoute();
+    } else {
+      // No user yet → send to Registartion
+      setScreenToShow('Registartion');
+    }
+  }, [userId]);
 
-  if (isFreeTrial === null) {
-    return null;
+  if (screenToShow === null) {
+    return null; // or show a loader if you prefer
   }
+
   return (
     <MenuProvider>
       <CalendarDateProvider>
-        <Stack.Navigator
-          initialRouteName={isFreeTrial ? 'Registartion' : 'MyPlan'}>
+        <Stack.Navigator initialRouteName={screenToShow}>
           <Stack.Screen
             name="MenuSelection"
             component={MenuSelectionScreen}
-            options={{headerShown: false}}
+            options={{ headerShown: false }}
           />
           <Stack.Screen
             name="FoodList"
             component={FoodScreen}
-            options={{headerShown: false}}
+            options={{ headerShown: false }}
           />
-          {isFreeTrial ? (
-            <>
-              <Stack.Screen
-                name="Registartion"
-                component={Registartion}
-                options={{headerShown: false}}
-              />
-              <Stack.Screen
-                name="WebViewScreen"
-                component={PaymentWebView}
-                options={{headerShown: false}}
-              />
-            </>
-          ) : (
-            <Stack.Screen
-              name="MyPlan"
-              component={MyPlanScreen}
-              options={{headerShown: false}}
-            />
-          )}
+          <Stack.Screen
+            name="MyPlan"
+            component={MyPlanScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Registartion"
+            component={Registartion}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="WebViewScreen"
+            component={PaymentWebView}
+            options={{ headerShown: false }}
+          />
         </Stack.Navigator>
       </CalendarDateProvider>
     </MenuProvider>

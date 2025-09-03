@@ -5,10 +5,18 @@ import PrimaryFieldLabel from 'components/inputs/FieldLabel';
 import PrimaryDropdown from 'components/inputs/PrimaryDropdown';
 import ThemeInputPrimary from 'components/inputs/ThemeInputPrimary';
 import React, {useMemo} from 'react';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import styles from '../../Components/forms/Styles/styles';
 import PrimaryTextArea from 'components/inputs/TextArea';
+import { Colors } from 'assets/styles/colors';
 
 const classOptions = [
   {label: 'LKG', value: 'LKG'},
@@ -26,6 +34,7 @@ const classOptions = [
   {label: '11th Grade', value: '11'},
   {label: '12th Grade', value: '12'},
 ];
+
 const lunchTimes = [
   {label: '10:00 AM - 10:30 AM', value: '10:00-10:30'},
   {label: '11:00 AM - 11:30 AM', value: '11:00-11:30'},
@@ -73,141 +82,156 @@ export default function ChildrenDetails({
   }));
 
   return (
-    <View style={styles.childFormContainer}>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{paddingBottom: hp('15%')}}>
-        <View style={styles.addchildTab}>
-          <Text style={styles.addchildTabText}>
-            CHILDREN ({children.length})
-          </Text>
-
-          <TouchableOpacity onPress={addChild}>
-            <Text style={styles.addchildTabPlusButton}>
-              + Add Another Child
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <View style={styles.childFormContainer}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{paddingBottom: hp('15%')}}>
+          <View style={styles.addchildTab}>
+            <Text style={styles.addchildTabText}>
+              CHILDREN ({children.length})
             </Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.hrLine} />
 
-        {children.map((child: any, index: number) => (
-          <View key={index}>
-            <PrimaryFieldLabel
-              label={`Child ${index + 1} Full Name`}
-              required
-            />
-            <ThemeInputPrimary
-              value={child.childName}
-              onChangeText={(val: string) =>
-                handleChildChange(index, 'childName', val)
-              }
-              placeholder="Child's Full Name"
-              error={errors?.[index]?.childName}
-            />
-            <PrimaryFieldLabel label="Date of Birth" required />
-            <DateOfBirthInput
-              value={child.dob}
-              onChange={(val: string) => handleChildChange(index, 'dob', val)}
-              error={errors?.[index]?.dob}
-            />
-            <PrimaryFieldLabel label="School" required />
-            {loadingSchools ? (
-              <Text>Loading schools...</Text>
-            ) : (
-              <PrimaryDropdown
-                options={schoolOptions}
-                placeholder="Select School"
-                selectedValue={String(child.school)}
-                onValueChange={(val: string | number) => {
-                  const selectedSchool = schoolOptions.find(
-                    (s: {value: string | number}) => s.value === val,
-                  );
-
-                  handleChildChange(index, 'school', String(val));
-                  if (selectedSchool) {
-                    handleChildChange(
-                      index,
-                      'location',
-                      selectedSchool.Locationlabel,
-                    );
-                  }
-                }}
-              />
-            )}
-            <PrimaryFieldLabel label="Location" required />
-            <ThemeInputPrimary
-              value={child.location}
-              onChangeText={(val: string) =>
-                handleChildChange(index, 'location', val)
-              }
-              placeholder="Location"
-              editable={false}
-              error={errors?.[index]?.location}
-            />
-
-            <PrimaryFieldLabel label="Lunch Time" required />
-            <PrimaryDropdown
-              options={lunchTimes}
-              placeholder="Select Class"
-              selectedValue={child.lunchTime}
-              onValueChange={val =>
-                handleChildChange(index, 'lunchTime', String(val))
-              }
-            />
-            <View  style={styles.flexLabel}>
-              <View style={{flex: 1}}>
-                <PrimaryFieldLabel label="Class" required />
-                <PrimaryDropdown
-                  options={classOptions}
-                  placeholder="Select Class"
-                  selectedValue={child.childClass}
-                  onValueChange={(val: string | number) =>
-                    handleChildChange(index, 'childClass', String(val))
-                  }
-                />
-              </View>
-
-              <View style={{flex: 1}}>
-                <PrimaryFieldLabel label="Section" required />
-                <PrimaryDropdown
-                  options={sectionOptions}
-                  placeholder="Select Section"
-                  selectedValue={child.childSection}
-                  onValueChange={(val: string | number) =>
-                    handleChildChange(index, 'childSection', String(val))
-                  }
-                />
-              </View>
-            </View>
-            <PrimaryFieldLabel label="Does child have any allergies?" />
-            <PrimaryTextArea
-              label=""
-              placeholder="Enter allergies if any"
-              value={child.allergies}
-              onChangeText={val => handleChildChange(index, 'allergies', val)}
-              error={errors?.[index]?.allergies}
-            />
-            {children.length > 1 && (
-              <TouchableOpacity
-                onPress={() => removeChild(index)}
-                style={styles.removeButton}>
-                <Text style={styles.removeButtontext}>Remove Child</Text>
-              </TouchableOpacity>
-            )}
+            <TouchableOpacity
+              onPress={addChild}
+              style={{flexDirection: 'row', alignItems: 'center'}}>
+              <Text
+                style={[
+                  styles.addchildTabPlusButton,
+                  
+                ]}>
+                +
+              </Text>
+              <Text style={styles.addchildTabPlusButtonText}>
+                
+                Add Another Child
+              </Text>
+            </TouchableOpacity>
           </View>
-        ))}
-      </ScrollView>
-      <View style={styles.SubmitButtonContainer}>
-        <View style={styles.StickyButton}>
-          <SecondaryButton title="BACK" onPress={prevStep} />
-          <PrimaryButton
-            title="NEXT"
-            onPress={nextStep}
-            style={styles.btn}
-            disabled={!isFormValid}
-          />
+          <View style={styles.hrLine} />
+
+          {children.map((child: any, index: number) => (
+            <View key={index}>
+              <PrimaryFieldLabel
+                label={`Child ${index + 1} Full Name`}
+                required
+              />
+              <ThemeInputPrimary
+                value={child.childName}
+                onChangeText={(val: string) =>
+                  handleChildChange(index, 'childName', val)
+                }
+                placeholder="Child's Full Name"
+                error={errors?.[index]?.childName}
+              />
+              <PrimaryFieldLabel label="Date of Birth" required />
+              <DateOfBirthInput
+                value={child.dob}
+                onChange={(val: string) => handleChildChange(index, 'dob', val)}
+                error={errors?.[index]?.dob}
+              />
+              <PrimaryFieldLabel label="School" required />
+              {loadingSchools ? (
+                <Text>Loading schools...</Text>
+              ) : (
+                <PrimaryDropdown
+                  options={schoolOptions}
+                  placeholder="Select School"
+                  selectedValue={String(child.school)}
+                  onValueChange={(val: string | number) => {
+                    const selectedSchool = schoolOptions.find(
+                      (s: {value: string | number}) => s.value === val,
+                    );
+
+                    handleChildChange(index, 'school', String(val));
+                    if (selectedSchool) {
+                      handleChildChange(
+                        index,
+                        'location',
+                        selectedSchool.Locationlabel,
+                      );
+                    }
+                  }}
+                />
+              )}
+              <PrimaryFieldLabel label="Location" required />
+              <ThemeInputPrimary
+                value={child.location}
+                onChangeText={(val: string) =>
+                  handleChildChange(index, 'location', val)
+                }
+                placeholder="Location"
+                editable={false}
+                error={errors?.[index]?.location}
+              />
+
+              <PrimaryFieldLabel label="Lunch Time" required />
+              <PrimaryDropdown
+                options={lunchTimes}
+                placeholder="Select Class"
+                selectedValue={child.lunchTime}
+                onValueChange={val =>
+                  handleChildChange(index, 'lunchTime', String(val))
+                }
+              />
+              <View style={styles.flexLabel}>
+                <View style={{flex: 1}}>
+                  <PrimaryFieldLabel label="Class" required />
+                  <PrimaryDropdown
+                    options={classOptions}
+                    placeholder="Select Class"
+                    selectedValue={child.childClass}
+                    onValueChange={(val: string | number) =>
+                      handleChildChange(index, 'childClass', String(val))
+                    }
+                  />
+                </View>
+
+                <View style={{flex: 1}}>
+                  <PrimaryFieldLabel label="Section" required />
+                  <PrimaryDropdown
+                    options={sectionOptions}
+                    placeholder="Select Section"
+                    selectedValue={child.childSection}
+                    onValueChange={(val: string | number) =>
+                      handleChildChange(index, 'childSection', String(val))
+                    }
+                  />
+                </View>
+              </View>
+              <PrimaryFieldLabel label="Does child have any allergies?" />
+              <PrimaryTextArea
+                label=""
+                placeholder="Enter allergies if any"
+                value={child.allergies}
+                onChangeText={val => handleChildChange(index, 'allergies', val)}
+                error={errors?.[index]?.allergies}
+              />
+              {children.length > 1 && (
+                <View style={styles.removeButtonContainer}>
+                  <TouchableOpacity
+                    onPress={() => removeChild(index)}
+                    style={styles.removeButton}>
+                    <Text style={styles.removeButtontext}>Remove Child</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+          ))}
+        </ScrollView>
+        <View style={styles.SubmitButtonContainer}>
+          <View style={styles.StickyButton}>
+            <SecondaryButton title="BACK" onPress={prevStep} />
+            <PrimaryButton
+              title="NEXT"
+              onPress={nextStep}
+              style={styles.btn}
+              disabled={!isFormValid}
+            />
+          </View>
         </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }

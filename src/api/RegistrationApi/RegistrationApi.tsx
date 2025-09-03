@@ -4,11 +4,16 @@ class RegistrationApi {
   private registrationEndpoint: string;
   private AllSchoolEndpoint: string;
   private startSubs: string;
+  private registrationCheckerEndPoint: string;
+  private getPlanPrice:string;
 
   constructor() {
     this.registrationEndpoint = '/customer/stepForm-Register';
     this.AllSchoolEndpoint = '/schools/get-all-schools';
-    this.startSubs = '/customer/form/';
+    this.startSubs = '/customer/form';
+    this.registrationCheckerEndPoint ='customer/Step-Check';
+    this.getPlanPrice ='customer/get-plan-price'
+
   }
 
   async createParentRegistration(registrationData: any) {
@@ -17,6 +22,14 @@ class RegistrationApi {
       registrationData,
     );
   }
+
+    async getPerDayCost(registrationId:string) {
+   
+      return await httpAxiosClient.get(
+      `${this.getPlanPrice}/${registrationId}`,
+    );
+  }
+
 
   async createChildRegistration(registrationData: any) {
     return await httpAxiosClient.post(
@@ -49,6 +62,10 @@ class RegistrationApi {
     return await httpAxiosClient.get(
       `${this.registrationEndpoint}/${registrationId}`,
     );
+  }
+  
+    async registartionCheck(payloadData: any) {
+    return await httpAxiosClient.post(`${this.registrationCheckerEndPoint}`, payloadData);
   }
 
   async updateRegistration(registrationId: string, registrationData: any) {

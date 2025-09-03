@@ -22,7 +22,6 @@ export default function DateOfBirthInput({value, onChange, error}: Props) {
   const [showPicker, setShowPicker] = useState(false);
   const [date, setDate] = useState<Date | null>(null);
 
-  // ✅ state for dynamic age limits
   const [minAge, setMinAge] = useState<number>(3);
   const [maxAge, setMaxAge] = useState<number>(18);
 
@@ -93,7 +92,7 @@ export default function DateOfBirthInput({value, onChange, error}: Props) {
       <TouchableOpacity
         style={[styles.input, error ? {borderColor: Colors.red} : null]}
         onPress={() => setShowPicker(true)}>
-        <Text style={{color: value ? Colors.black : Colors.bodyText}}>
+        <Text style={{color: value ? Colors.bodyText : Colors.black}}>
           {value ? `${value} (Age ${age ?? '00'})` : 'DD/MM/YYYY (Age 00)'}
         </Text>
       </TouchableOpacity>
@@ -107,6 +106,7 @@ export default function DateOfBirthInput({value, onChange, error}: Props) {
           display={Platform.OS === 'ios' ? 'spinner' : 'default'}
           maximumDate={new Date()} 
           onChange={handleChange}
+          
         />
       )}
     </View>
@@ -121,6 +121,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 18,
     fontSize: 14,
+    color:Colors.black,
     backgroundColor: Colors.white,
   },
   error: {

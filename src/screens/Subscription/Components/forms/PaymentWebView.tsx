@@ -10,7 +10,7 @@ type PaymentWebViewParams = {
   };
 };
 
-export default function PaymentWebView() {
+export default function PaymentWebView({navigation}: any) {
   const route = useRoute<RouteProp<PaymentWebViewParams, 'PaymentWebView'>>();
   const {encRequest, accessCode} = route.params;
 
@@ -41,8 +41,18 @@ export default function PaymentWebView() {
         )}
         onNavigationStateChange={navState => {
           console.log('🌐 Payment URL: ', navState.url);
+
           if (navState.url.includes('ccavenue/response')) {
             console.log('✅ Payment completed.');
+            // 👉 After success, navigate to MyPlan screen
+            navigation.replace('MyPlan');
+          }
+          if (
+            navState.url.includes('cancel') ||
+            navState.url.includes('subscriptionFailed')
+          ) {
+            console.log('❌ Payment cancelled.');
+            navigation.replace('Registartion');
           }
         }}
       />

@@ -20,6 +20,24 @@ class RegistrationService {
     }
   }
 
+    static async getPerDayCost(
+    token: any,
+  ): Promise<ApiResponseModel> {
+    try {
+      const response = await RegistrationApi.getPerDayCost(token        
+      );
+      return response.data as ApiResponseModel;
+    } catch (error: any) {
+      return {
+        success: false,
+        message: 'Error creating registration',
+        data: null,
+        error: this.handleApiError(error),
+      };
+    }
+  }
+  // getPerDayCost
+
   static async createChildRegistration(
     registrationData: any,
   ): Promise<ApiResponseModel> {
@@ -68,6 +86,19 @@ class RegistrationService {
     }
   }
 
+  static async registartionCheck(payload:string): Promise<ApiResponseModel> {
+    try {
+      const response = await RegistrationApi.registartionCheck(payload);
+      return response.data as ApiResponseModel;
+    } catch (error: any) {
+      return {
+        success: false,
+        message: 'Error fetching registration',
+        data: null,
+        error: this.handleApiError(error),
+      };
+    }
+  }
 
   static async startSubscription(
     payloadData: string,
@@ -152,9 +183,9 @@ class RegistrationService {
     }
   }
 
-  static async savePlans(path: string): Promise<ApiResponseModel> {
+  static async savePlans(payload: string): Promise<ApiResponseModel> {
     try {
-      const response = await RegistrationApi.savePlansDetails(path);
+      const response = await RegistrationApi.savePlansDetails(payload);
       return response.data as ApiResponseModel;
     } catch (error: any) {
       return {

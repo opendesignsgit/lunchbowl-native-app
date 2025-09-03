@@ -49,14 +49,14 @@ const PrimaryDropdown: React.FC<Props> = ({
         onValueChange(item.value);
         setIsFocus(false);
       }}
-      renderLeftIcon={() => (
-        <SvgXml
-          xml={SearchIcon}
-          width={wp('5%')}
-          height={hp('2.5%')}
-          style={styles.icon}
-        />
-      )}
+      // renderLeftIcon={() => (
+      //   <SvgXml
+      //     xml={SearchIcon}
+      //     width={wp('5%')}
+      //     height={hp('2.5%')}
+      //     style={styles.icon}
+      //   />
+      // )}
       renderItem={item => (
         <View
           style={
@@ -68,12 +68,12 @@ const PrimaryDropdown: React.FC<Props> = ({
             <LinearGradient
               colors={[Colors.primaryOrange, Colors.red, Colors.primaryOrange,]}
               style={styles.gradientItem}>
-              <SvgXml
+              {/* <SvgXml
                 xml={SearchIcon}
                 width={wp('4%')}
                 height={hp('2%')}
                 style={styles.tickIcon}
-              />
+              /> */}
               <Text style={styles.selectedItemText}>{item.label}</Text>
             </LinearGradient>
           ) : (

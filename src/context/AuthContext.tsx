@@ -85,7 +85,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
           fullname: name ?? 'User',
           email: email ?? '',
           phone_number: phone ?? '',
-          // freeTrial: freeTrial ?? false,
+          freeTrial: freeTrial ?? false,
           role: userRole,
           token,
         };

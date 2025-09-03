@@ -24,6 +24,7 @@ export default function ThemeInputPrimary({
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
+        placeholderTextColor={Colors.bodyText}
         multiline={multiline}
         numberOfLines={numberOfLines}
         textAlignVertical={multiline ? "top" : "center"} 

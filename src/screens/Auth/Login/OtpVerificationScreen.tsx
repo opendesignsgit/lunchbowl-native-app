@@ -271,6 +271,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     fontSize: wp('5%'),
     textAlign: 'center',
+    color: Colors.black,
     backgroundColor: Colors.white,
   },
   signInButton: {

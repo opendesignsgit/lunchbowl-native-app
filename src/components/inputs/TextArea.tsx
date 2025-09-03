@@ -23,6 +23,7 @@ const PrimaryTextArea: React.FC<TextAreaProps> = ({
         style={[styles.textArea, style]}
         multiline
         numberOfLines={4}
+        placeholderTextColor={Colors.bodyText}
       />
 
       {error ? <Text style={styles.error}>{error}</Text> : null}
@@ -45,10 +46,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     textAlignVertical: 'top',
-    fontSize: 14,
-    minHeight: '100%',
+    fontSize: 16,
     color: Colors.black,
     fontFamily:Fonts.OpenSans.regular
+    
   },
   error: {
     fontSize: 12,

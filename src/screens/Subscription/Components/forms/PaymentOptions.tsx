@@ -12,6 +12,9 @@ import {useAuth} from 'context/AuthContext';
 export default function PaymentOptions({prevStep, navigation}: any) {
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
   const {userId} = useAuth();
+  
+
+
   const handlePayment = async () => {
     try {
       if (!userId) {
@@ -24,7 +27,10 @@ export default function PaymentOptions({prevStep, navigation}: any) {
       if (!response?.success) {
         throw new Error(response?.message || 'Failed to fetch form data');
       }
+     console.log("receicevd data ",response);
+     console.log("jhgjhgjhgjhgjhghj",JSON.stringify(response.data, null, 2));
 
+     
       const {subscriptionPlan, user, parentDetails} = response.data || {};
       if (!subscriptionPlan || !user) {
         throw new Error('Required data missing in response');
@@ -51,7 +57,7 @@ export default function PaymentOptions({prevStep, navigation}: any) {
         billing_zip: (parentDetails?.pincode || '600001').substring(0, 10),
         billing_country: (parentDetails?.country || 'India').substring(0, 50),
         merchant_param1: userId,
-        merchant_param2: subscriptionPlan.planId,
+        merchant_param2: subscriptionPlan.planId || "predefined",
         merchant_param3: orderId,
       };
 
@@ -67,7 +73,7 @@ export default function PaymentOptions({prevStep, navigation}: any) {
 
       navigation.navigate('WebViewScreen', {
         encRequest: encryptedData,
-        access_code: ccavenueConfig.access_code,
+        accessCode: ccavenueConfig.access_code, 
         endpoint: ccavenueConfig.endpoint,
       });
 
@@ -109,6 +115,7 @@ export default function PaymentOptions({prevStep, navigation}: any) {
     );
     return encrypted.ciphertext.toString();
   };
+  
 
   const generateOrderId = () =>
     `LB${Date.now()}${Math.floor(Math.random() * 1000)}`;
@@ -126,14 +133,7 @@ export default function PaymentOptions({prevStep, navigation}: any) {
           <Text style={localStyles.cardText}>CC Avenue</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[
-            localStyles.card,
-            selectedMethod === 'Razorpay' && localStyles.selectedCard,
-          ]}
-          onPress={() => setSelectedMethod('Razorpay')}>
-          <Text style={localStyles.cardText}>Razorpay</Text>
-        </TouchableOpacity>
+        
       </View>
 
       {/* Buttons */}

@@ -94,9 +94,9 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: hp('2%'),
+
     },
     parentFormContainer: {
-        // marginBottom: hp('20%'),
         marginTop: hp('2%'),
     },
     childFormContainer: {
@@ -107,8 +107,15 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.Urbanist.bold,
     },
     addchildTabPlusButton: {
-        color: Colors.black,
+        fontFamily: Fonts.Urbanist.bold,
+        color: Colors.primaryOrange,
+    },
+    addchildTabPlusButtonText: {
         fontFamily: Fonts.Urbanist.semiBold,
+        color: Colors.black,
+        fontSize: wp('3.7%'),
+
+
     },
     SubmitButtonContainer: {
         position: 'absolute',
@@ -121,16 +128,19 @@ const styles = StyleSheet.create({
         borderColor: Colors.Storke,
     },
     removeButton: {
-        marginTop: 10,
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        borderRadius: 8,
+        marginTop: hp('1.5%'),
+        paddingVertical: hp('1.2%'),
+        paddingHorizontal: wp('4%'),
+        borderRadius: wp('2%'),
         backgroundColor: Colors.red,
         alignSelf: 'flex-start',
     },
+    removeButtonContainer: {
+        marginBottom: hp('5%'),
+    },
     removeButtontext: {
         color: Colors.bg,
-        fontWeight: '600'
+        fontFamily: Fonts.Urbanist.bold,
     }
 
 });

@@ -16,6 +16,8 @@ import {
   validateParentDetails,
 } from 'utils/RegisterationValidate';
 import {useAuth} from 'context/AuthContext';
+import ErrorMessage from 'components/Error/BoostrapStyleError';
+import {LoadingModal} from 'components/LoadingModal/LoadingModal';
 
 type Step = 1 | 2 | 3 | 4;
 
@@ -27,6 +29,8 @@ export default function Registration({navigation}: any) {
   const [mobileNumber, setMobileNumber] = useState('');
   const [address, setAddress] = useState('');
   const {userId} = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   //################# CHILD STATES ######################
   const [children, setChildren] = useState([
@@ -130,6 +134,7 @@ export default function Registration({navigation}: any) {
     setChildren(updated);
   };
 
+
   //###################### INITILA SCREEN ###################
 
   if (!showForm) {
@@ -182,6 +187,8 @@ export default function Registration({navigation}: any) {
     setParentErrors({});
 
     try {
+      setLoading(true);
+
       const payload = {
         formData: {
           fatherFirstName: fatherFullName.split(' ')[0] || fatherFullName,
@@ -214,10 +221,14 @@ export default function Registration({navigation}: any) {
       }
     } catch (error) {
       console.error('Error saving parent details:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const submitChildrenDetails = async () => {
+    setLoading(true);
+
     const errors = validateChildrenDetails(children);
     if (Object.keys(errors).length > 0) {
       setChildrenErrors(errors);
@@ -259,18 +270,28 @@ export default function Registration({navigation}: any) {
         nextStep();
       } else {
         console.error('Invalid child response', response);
+        setError(response || 'Something went wrong.');
       }
     } catch (error) {
+      setError('Error saving plan. Please try again.');
       console.error('Error saving children:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   //###################### FORMS SCREEN ######################
 
+  const handleCloseError = () => {
+    setError(null);
+  };
+
   return (
     <ThemeGradientBackground>
       <HeaderBackButton title="Back" onPress={prevStep} />
       <PaginationDots totalSteps={4} currentStep={step} />
+      <LoadingModal loading={loading} setLoading={setLoading} />
+      {error && <ErrorMessage error={error} onClose={handleCloseError} />}
       <View style={styles.formsContainer}>
         {/* -------- Step Title + Description -------- */}
         <View style={styles.pageHeader}>

@@ -3,11 +3,11 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import {useFocusEffect} from '@react-navigation/native';
 import {Colors} from 'assets/styles/colors';
 import PrimaryButton from 'components/buttons/PrimaryButton';
+import ErrorMessage from 'components/Error/BoostrapStyleError';
+import {LoadingModal} from 'components/LoadingModal/LoadingModal';
 import {useAuth} from 'context/AuthContext';
 import React, {useCallback, useEffect, useState} from 'react';
 import {
-  ActivityIndicator,
-  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -18,7 +18,7 @@ import HolidayService from 'services/MyPlansApi/HolidayService';
 import RegistrationService from 'services/RegistartionService/registartion';
 import {Holiday} from 'src/model/calendarModels';
 
-const PER_DAY_COST = 200;
+//####################### HELPER FUNCTIONS   ######################
 
 type Plan = {
   days: number;
@@ -102,6 +102,21 @@ export default function SubscriptionPlan({
   prevStep,
   nextStep,
 }: any) {
+  //####################### STATE VARIABLES ######################
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isChecked, setIsChecked] = useState(false);
+  const [showStart, setShowStart] = useState(false);
+  const [showEnd, setShowEnd] = useState(false);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const {userId, authToken} = useAuth();
+  const [PER_DAY_COST, setPerDayCost] = useState(200);
+  const [holidays, setHolidays] = useState<Holiday[]>([]);
+
+  //####################### PLAN DISCOUNT  ######################
+
   const applyDiscount = (days: number, basePrice: number) => {
     let discountPercent = 0;
 
@@ -116,6 +131,8 @@ export default function SubscriptionPlan({
 
     return {finalPrice, discountPercent, discountAmount};
   };
+  //####################### GENERATE PLAN  ######################
+
   const generatePlans = (holidays: Holiday[]) => {
     const today = new Date();
     const start = getValidStartDate(today, 2);
@@ -148,6 +165,7 @@ export default function SubscriptionPlan({
       };
     });
   };
+  const [plans, setPlans] = useState<Plan[]>(() => generatePlans(holidays));
 
   //######### GET HOLIDAYS API CALL ############################
 
@@ -173,29 +191,40 @@ export default function SubscriptionPlan({
     }
   };
 
+  //######### GET PERDAY PRICE API CALL ############################
+
+  const getPerDayCost = async (authToken: string) => {
+    try {
+      const response: any = await RegistrationService.getPerDayCost(authToken);
+      if (response?.data?.perDayCost) {
+        setPerDayCost(response.data.perDayCost);
+      } else {
+        setPerDayCost(200); // fallback
+      }
+    } catch (error) {
+      console.error('Error fetching per-day cost:', error);
+      setPerDayCost(200); // fallback
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
       GetHolidays();
-    }, []),
+      if (authToken) {
+        getPerDayCost(authToken);
+      }
+    }, [authToken]),
   );
-
-  const [holidays, setHolidays] = useState<Holiday[]>([]);
 
   useEffect(() => {
     if (holidays.length > 0) {
       setPlans(generatePlans(holidays));
     }
   }, [holidays]);
-
-  const [plans, setPlans] = useState<Plan[]>(() => generatePlans(holidays));
-  const [loading, setLoading] = useState(false);
-
-  const [isChecked, setIsChecked] = useState(false);
-  const [showStart, setShowStart] = useState(false);
-  const [showEnd, setShowEnd] = useState(false);
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
-  const {userId} = useAuth();
+  const handleCloseError = () => {
+    setError(null);
+  };
+  //######### PLAN DETAILS API CALL ############################
 
   const handleNext = async () => {
     let workingDays = 0;
@@ -205,12 +234,21 @@ export default function SubscriptionPlan({
     let eDate = null;
 
     if (isChecked && startDate && endDate) {
+      // Subscription by custom date
       sDate = startDate.toISOString().split('T')[0];
       eDate = endDate.toISOString().split('T')[0];
 
       workingDays = getWorkingDaysBetween(startDate, endDate, holidays);
       totalPrice = workingDays * PER_DAY_COST * childCount;
       planId = 'byDate';
+    } else if (selectedPlan) {
+      // Predefined plan (1, 3, 6 months)
+      workingDays = selectedPlan.days;
+      totalPrice = selectedPlan.price * childCount;
+      planId = `${selectedPlan.days}-days`;
+
+      sDate = selectedPlan.startDate?.toISOString().split('T')[0] ?? null;
+      eDate = selectedPlan.endDate?.toISOString().split('T')[0] ?? null;
     }
 
     const payload: any = {
@@ -228,134 +266,141 @@ export default function SubscriptionPlan({
     };
 
     try {
+      setLoading(true);
+
       console.log(
         '++++++++++++++++++++++++++Sending payload ******************************:',
         payload,
       );
-      await RegistrationService.savePlans(payload);
-      nextStep();
+      const response = await RegistrationService.savePlans(payload);
+      if (response.success) {
+        nextStep();
+      } else {
+        setError(response.message || 'Something went wrong.');
+      }
     } catch (err) {
       console.error('Error saving plan:', err);
+      setError('Error saving plan. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <View>
-      {loading ? (
-        <ActivityIndicator size="large" color={Colors.primaryOrange} />
-      ) : (
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {plans.map(plan => {
-            const totalAmount = plan.price * childCount;
+      <LoadingModal loading={loading} setLoading={setLoading} />
+      {error && <ErrorMessage error={error} onClose={handleCloseError} />}
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {plans.map(plan => {
+          const totalAmount = plan.price * childCount;
 
-            return (
-              <TouchableOpacity
-                key={plan.days}
-                style={[
-                  styles.planCard,
-                  selectedPlan?.days === plan.days && styles.selectedCard,
-                ]}
-                onPress={() => {
-                  setIsChecked(false);
-                  setSelectedPlan(plan);
-                }}>
-                <View style={styles.radioCircle}>
-                  {selectedPlan?.days === plan.days && (
-                    <View style={styles.radioDot} />
-                  )}
-                </View>
-                <View style={{flex: 1}}>
-                  <Text
-                    style={[
-                      styles.planText,
-                      selectedPlan?.days === plan.days && styles.selectedText,
-                    ]}>
-                    {plan.days} Working Days - Rs. {plan.price.toLocaleString()}
-                  </Text>
-                  <Text style={{fontSize: 13, color: '#666'}}>
-                    For {childCount} {childCount > 1 ? 'children' : 'child'}
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontWeight: '600',
-                      color: Colors.primaryOrange,
-                    }}>
-                    Total: Rs. {totalAmount.toLocaleString()}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            );
-          })}
-
-          {/* Subscription By Date (Pre Book) */}
-
-          <View style={styles.container}>
-            <View style={styles.headerRow}>
-              <CheckBox
-                value={isChecked}
-                onValueChange={val => {
-                  setIsChecked(val);
-                  if (val) {
-                    setSelectedPlan(null);
-                  }
-                }}
-                tintColors={{true: '#007BFF', false: '#ccc'}}
-              />
-              <Text style={styles.label}>
-                Subscription By Date{' '}
-                <Text style={styles.subLabel}>(Pre Book)</Text>
-              </Text>
-            </View>
-
-            {isChecked && (
-              <View style={styles.dateRow}>
-                <TouchableOpacity
-                  style={styles.dateBox}
-                  onPress={() => setShowStart(true)}>
-                  <Text style={styles.dateText}>
-                    {startDate ? startDate.toDateString() : 'Start Date'}
-                  </Text>
-                </TouchableOpacity>
-
-                {/* End Date */}
-                <TouchableOpacity
-                  style={styles.dateBox}
-                  onPress={() => setShowEnd(true)}>
-                  <Text style={styles.dateText}>
-                    {endDate ? endDate.toDateString() : 'End Date'}
-                  </Text>
-                </TouchableOpacity>
+          return (
+            <TouchableOpacity
+              key={plan.days}
+              style={[
+                styles.planCard,
+                selectedPlan?.days === plan.days && styles.selectedCard,
+              ]}
+              onPress={() => {
+                setIsChecked(false);
+                setSelectedPlan(plan);
+              }}>
+              <View style={styles.radioCircle}>
+                {selectedPlan?.days === plan.days && (
+                  <View style={styles.radioDot} />
+                )}
               </View>
-            )}
+              <View style={{flex: 1}}>
+                <Text
+                  style={[
+                    styles.planText,
+                    selectedPlan?.days === plan.days && styles.selectedText,
+                  ]}>
+                  {plan.days} Working Days - Rs. {plan.price.toLocaleString()}
+                </Text>
+                <Text style={{fontSize: 13, color: '#666'}}>
+                  For {childCount} {childCount > 1 ? 'children' : 'child'}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontWeight: '600',
+                    color: Colors.primaryOrange,
+                  }}>
+                  Total: Rs. {totalAmount.toLocaleString()}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          );
+        })}
 
-            {/* Date Pickers */}
-            {showStart && (
-              <DateTimePicker
-                value={startDate || new Date()}
-                mode="date"
-                display="calendar"
-                onChange={(e, date) => {
-                  setShowStart(false);
-                  if (date) setStartDate(date);
-                }}
-              />
-            )}
+        {/* Subscription By Date (Pre Book) */}
 
-            {showEnd && (
-              <DateTimePicker
-                value={endDate || new Date()}
-                mode="date"
-                display="calendar"
-                onChange={(e, date) => {
-                  setShowEnd(false);
-                  if (date) setEndDate(date);
-                }}
-              />
-            )}
+        <View style={styles.container}>
+          <View style={styles.headerRow}>
+            <CheckBox
+              value={isChecked}
+              onValueChange={val => {
+                setIsChecked(val);
+                if (val) {
+                  setSelectedPlan(null);
+                }
+              }}
+              tintColors={{true: '#007BFF', false: '#ccc'}}
+            />
+            <Text style={styles.label}>
+              Subscription By Date{' '}
+              <Text style={styles.subLabel}>(Pre Book)</Text>
+            </Text>
           </View>
-        </ScrollView>
-      )}
+
+          {isChecked && (
+            <View style={styles.dateRow}>
+              <TouchableOpacity
+                style={styles.dateBox}
+                onPress={() => setShowStart(true)}>
+                <Text style={styles.dateText}>
+                  {startDate ? startDate.toDateString() : 'Start Date'}
+                </Text>
+              </TouchableOpacity>
+
+              {/* End Date */}
+              <TouchableOpacity
+                style={styles.dateBox}
+                onPress={() => setShowEnd(true)}>
+                <Text style={styles.dateText}>
+                  {endDate ? endDate.toDateString() : 'End Date'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {/* Date Pickers */}
+          {showStart && (
+            <DateTimePicker
+              value={startDate || new Date()}
+              mode="date"
+              display="calendar"
+              onChange={(e, date) => {
+                setShowStart(false);
+                if (date) setStartDate(date);
+              }}
+            />
+          )}
+
+          {showEnd && (
+            <DateTimePicker
+              value={endDate || new Date()}
+              mode="date"
+              display="calendar"
+              onChange={(e, date) => {
+                setShowEnd(false);
+                if (date) setEndDate(date);
+              }}
+            />
+          )}
+        </View>
+      </ScrollView>
 
       {/* Selected Plan Details */}
       {(selectedPlan || (isChecked && startDate && endDate)) && (
@@ -453,7 +498,7 @@ export default function SubscriptionPlan({
 const styles = StyleSheet.create({
   container: {
     borderWidth: 1,
-    borderColor:Colors.lightRed,
+    borderColor: Colors.lightRed,
     borderRadius: 10,
     padding: 12,
     marginVertical: 10,
@@ -496,7 +541,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 15,
     marginBottom: 12,
-    backgroundColor:Colors.white,
+    backgroundColor: Colors.white,
   },
   selectedCard: {
     borderColor: Colors.primaryOrange,
@@ -524,7 +569,6 @@ const styles = StyleSheet.create({
   },
   selectedText: {
     color: Colors.primaryOrange,
-
   },
   btnRow: {
     flexDirection: 'row',
@@ -542,7 +586,7 @@ const styles = StyleSheet.create({
 
   summaryCard: {
     borderWidth: 1,
-    borderColor:Colors.lightRed,
+    borderColor: Colors.lightRed,
     borderRadius: 12,
     padding: 15,
     marginTop: 15,

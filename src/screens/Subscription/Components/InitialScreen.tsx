@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {View, Text} from 'react-native';
 import {SvgXml} from 'react-native-svg';
 import ThemeGradientBackground from 'components/Backgrounds/GradientBackground';
@@ -9,6 +9,7 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import styles from './forms/Styles/styles';
+import { LoadingModal } from 'components/LoadingModal/LoadingModal';
 interface EmptyPlanStateProps {
   navigation: any;
   vabourCub: string;
@@ -19,6 +20,12 @@ const InitialsScreen: React.FC<EmptyPlanStateProps> = ({
   vabourCub,
   onGetStarted,
 }) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  if (loading) {
+    return <LoadingModal loading={loading} setLoading={setLoading} />;
+  }
+
   return (
     <ThemeGradientBackground>
       <View style={styles.IInitialScreencontainer}>
