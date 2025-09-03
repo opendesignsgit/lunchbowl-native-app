@@ -13,6 +13,8 @@ const styles = StyleSheet.create({
     IInitialScreencontainer: {
         flex: 1,
         justifyContent: 'space-between',
+            paddingHorizontal: wp('5%'),
+
     },
     illustration: {
         alignItems: 'center',

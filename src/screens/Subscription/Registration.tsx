@@ -18,6 +18,7 @@ import {
 import {useAuth} from 'context/AuthContext';
 import ErrorMessage from 'components/Error/BoostrapStyleError';
 import {LoadingModal} from 'components/LoadingModal/LoadingModal';
+import Typography from 'components/Text/Typography';
 
 type Step = 1 | 2 | 3 | 4;
 
@@ -133,7 +134,6 @@ export default function Registration({navigation}: any) {
     updated.splice(index, 1);
     setChildren(updated);
   };
-
 
   //###################### INITILA SCREEN ###################
 
@@ -288,17 +288,17 @@ export default function Registration({navigation}: any) {
 
   return (
     <ThemeGradientBackground>
-      <HeaderBackButton title="Back" onPress={prevStep} />
-      <PaginationDots totalSteps={4} currentStep={step} />
       <LoadingModal loading={loading} setLoading={setLoading} />
       {error && <ErrorMessage error={error} onClose={handleCloseError} />}
       <View style={styles.formsContainer}>
+        <HeaderBackButton title="Back" onPress={prevStep} />
+        <PaginationDots totalSteps={4} currentStep={step} />
         {/* -------- Step Title + Description -------- */}
         <View style={styles.pageHeader}>
-          <Text style={styles.stepTitle}>{formInfo[step].title}</Text>
-          <Text style={styles.stepDescription}>
+          <Typography style={styles.stepTitle}>{formInfo[step].title}</Typography>
+          <Typography style={styles.stepDescription}>
             {formInfo[step].description}
-          </Text>
+          </Typography>
         </View>
 
         {step === 1 && (

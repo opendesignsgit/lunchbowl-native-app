@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   dot: {
-    width: wp('21.5%'),
+    width: wp('21.2%'),
     height: wp('1%'),
     borderRadius: wp('1.5%'),
     backgroundColor: Colors.default,

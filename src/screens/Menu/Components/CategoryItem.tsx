@@ -8,7 +8,9 @@ import {
   GestureResponderEvent,
   ImageSourcePropType,
 } from 'react-native';
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import {Colors} from 'assets/styles/colors';
+import Fonts from 'assets/styles/fonts';
 
 type CategoryItemProps = {
   title: string;
@@ -36,40 +38,44 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
     marginRight: wp('5%'),
-    height: wp('50%'),
-    width: wp('22%'),
+    // width: wp('22%'),
   },
   imageWrapper: {
-    backgroundColor: '#ffffff',
-    borderRadius: 60,
-    borderWidth: 30,
-    borderColor: '#ffffff',
+    backgroundColor: Colors.white,
+    borderRadius: wp('15%'),
+    borderWidth: wp('0.8%'),
+    borderColor: Colors.white,
     width: wp('20%'),
     height: wp('20%'),
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: Colors.black,
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    shadowOffset: {width: 0, height: 2},
+    elevation: 2,
   },
   active: {
-    borderColor: '#FF5B00',
-    borderWidth: 30,
-    fontFamily:'Urbanist-Regular'
+    borderColor: Colors.primaryOrange,
+    borderWidth: wp('1.2%'),
   },
   image: {
     width: wp('12%'),
     height: wp('12%'),
-    borderRadius: 100,
+    borderRadius: wp('12%'),
+    resizeMode: 'cover',
   },
   title: {
-    marginTop: 5,
-    fontSize: 12,
-    color: '#000000',
+    marginTop: wp('2%'),
+    fontSize: wp('3.2%'),
+    fontFamily: Fonts.Urbanist.regular,
+    color: Colors.bodyText,
     textAlign: 'center',
   },
   activeText: {
-    color: '#FF5B00',
-    fontWeight: '600',
+    color: Colors.primaryOrange,
+    fontFamily: Fonts.Urbanist.bold,
   },
 });
-
 
 export default CategoryItem;

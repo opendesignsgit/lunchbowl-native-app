@@ -34,8 +34,6 @@ const HeaderBackButton: React.FC<HeaderWithBackButtonDividerProps> = ({ title })
 
 const styles = StyleSheet.create({
   headerContainer: {
-    marginLeft: 10,
-    padding:10
   },
   firstRow: {
     flexDirection: 'row',

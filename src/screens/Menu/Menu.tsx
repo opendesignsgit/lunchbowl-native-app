@@ -1,140 +1,88 @@
 import ThemeGradientBackground from 'components/Backgrounds/GradientBackground';
+import ErrorMessage from 'components/Error/BoostrapStyleError';
+import { LoadingModal } from 'components/LoadingModal/LoadingModal';
 import SectionTitle from 'components/Titles/SectionHeading';
-import React, {useState} from 'react';
-import {FlatList, ScrollView, StyleSheet, View} from 'react-native';
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
+import React, { useState } from 'react';
+import { FlatList, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
+import HeaderBackButton from 'screens/Dashboard/Components/BackButton';
 import SearchBar from 'screens/Dashboard/Components/Search';
 import CategoryItem from './Components/CategoryItem';
 import MealCard from './Components/MealCard';
 
-const categories = [
-  {
-    id: '1',
-    title: 'Fruits',
-    image: require('../../assets/images/Dashboard/Menues/menue1.png'),
-  },
-  {
-    id: '2',
-    title: 'Rice',
-    image: require('../../assets/images/Dashboard/Menues/menue1.png'),
-  },
-  {
-    id: '3',
-    title: 'Pasta',
-    image: require('../../assets/images/Dashboard/Menues/menue1.png'),
-  },
-  {
-    id: '4',
-    title: 'Salad',
-    image: require('../../assets/images/Dashboard/Menues/menue1.png'),
-  },
-  {
-    id: '5',
-    title: 'Soups',
-    image: require('../../assets/images/Dashboard/Menues/menue1.png'),
-  },
-];
+import { useMeals } from 'context/MealContext';
+import NoDataFound from 'components/Error/NoDataMessage';
 
-const meals = [
-  {
-    id: 1,
-    image: require('../../assets/images/Dashboard/Menues/menue1.png'),
-    title: '5 Spice Fried Rice',
-    description: 'Aromatic rice with bold spices and veggies.',
-  },
-  {
-    id: 2,
-    image: require('../../assets/images/Dashboard/Menues/menue1.png'),
-    title: 'Veg Biriyani and Raita',
-    description: 'Classic Indian rice dish with cooling yogurt dip.',
-  },
-  {
-    id: 3,
-    image: require('../../assets/images/Dashboard/Menues/menue1.png'),
-    title: 'Alfredo Pasta',
-    description: 'Creamy Italian-style pasta with herbs.',
-  },
-  {
-    id: 4,
-    image: require('../../assets/images/Dashboard/Menues/menue1.png'),
-    title: 'Paneer Butter Masala',
-    description: 'Rich gravy with soft paneer cubes.',
-  },
-  {
-    id: 5,
-    image: require('../../assets/images/Dashboard/Menues/menue1.png'),
-    title: 'Grilled Sandwich',
-    description: 'Toasted sandwich with veggies and cheese.',
-  },
-  {
-    id: 6,
-    image: require('../../assets/images/Dashboard/Menues/menue1.png'),
-    title: 'Vegetable Soup',
-    description: 'Healthy soup with seasonal vegetables.',
-  },
-  {
-    id: 7,
-    image: require('../../assets/images/Dashboard/Menues/menue1.png'),
-    title: 'Tomato Pasta',
-    description: 'Tangy tomato-based pasta with herbs.',
-  },
-  {
-    id: 8,
-    image: require('../../assets/images/Dashboard/Menues/menue1.png'),
-    title: 'Chilli Garlic Noodles',
-    description: 'Spicy noodles with garlic flavor.',
-  },
-  {
-    id: 9,
-    image: require('../../assets/images/Dashboard/Menues/menue1.png'),
-    title: 'Tandoori Roti & Curry',
-    description: 'Whole wheat roti served with spicy curry.',
-  },
-  {
-    id: 10,
-    image: require('../../assets/images/Dashboard/Menues/menue1.png'),
-    title: 'Schezwan Fried Rice',
-    description: 'Spicy Indo-Chinese rice with sauces.',
-  },
-];
+ const MealCategoryScreen: React.FC<{navigation: any}> = ({navigation}) => {
+  const { meals, categories, loading, error } = useMeals();
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
 
-const MealCategoryScreen: React.FC<{navigation: any}> = ({navigation}) => {
-  const [selectedCategory, setSelectedCategory] = useState('Fruits');
+  const filteredMeals = meals.filter(meal => {
+    const matchesCategory =
+      selectedCategory === 'All' || meal.cuisine === selectedCategory;
+
+    const matchesSearch =
+      meal.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      meal.description.toLowerCase().includes(searchQuery.toLowerCase());
+
+    return matchesCategory && matchesSearch;
+  });
+
   return (
     <ThemeGradientBackground>
-      <View style={styles.container}>
-        <SearchBar />
-        <SectionTitle>Select your Category</SectionTitle>
-        <FlatList
-          data={categories}
-          keyExtractor={item => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{paddingHorizontal: 16, marginBottom: 20}}
-          renderItem={({item}) => (
-            <CategoryItem
-              title={item.title}
-              image={item.image}
-              selected={item.title === selectedCategory}
-              onPress={() => setSelectedCategory(item.title)}
-            />
-          )}
-        />
+      <LoadingModal loading={loading} setLoading={() => {}} />
+      {error && <ErrorMessage error={error} onClose={() => {}} />}
+      {!loading && (
+        <View style={styles.container}>
+          <HeaderBackButton title="My Plan" />
+          <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
+          <SectionTitle>Select your Category</SectionTitle>
 
-        <ScrollView
-          contentContainerStyle={styles.mealList}
-          showsVerticalScrollIndicator={false}>
-          {meals.map(meal => (
-            <MealCard
-              key={meal.id}
-              image={meal.image}
-              title={meal.title}
-              description={meal.description}
-              onPress={() => console.log('View', meal.title)}
-            />
-          ))}
-        </ScrollView>
-      </View>
+          <FlatList
+            data={categories}
+            keyExtractor={item => item.title}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{
+              paddingHorizontal: wp('4%'),
+              marginBottom: hp('2%'),
+              height: hp('22%'),
+            }}
+            renderItem={({ item }) => (
+              <CategoryItem
+                title={item.title}
+                image={item.image}
+                selected={item.title === selectedCategory}
+                onPress={() => setSelectedCategory(item.title)}
+              />
+            )}
+          />
+
+         <ScrollView
+            contentContainerStyle={styles.mealList}
+            showsVerticalScrollIndicator={false}>
+            {filteredMeals.length > 0 ? (
+              filteredMeals.map(meal => (
+                <MealCard
+                  key={meal.id}
+                  image={meal.image}
+                  title={meal.title}
+                  description={meal.description}
+                  onPress={() =>
+                    navigation.navigate('MealDetailScreen', { mealId: meal.id })
+                  }
+                />
+              ))
+            ) : (
+              <NoDataFound message="No meals found for this category." />
+            )}
+          </ScrollView>
+        </View>
+      )}
     </ThemeGradientBackground>
   );
 };
