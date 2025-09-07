@@ -2,7 +2,7 @@ import {Colors} from 'assets/styles/colors';
 import Fonts from 'assets/styles/fonts';
 import PrimaryButton from 'components/buttons/PrimaryButton';
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, ScrollView} from 'react-native';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
 type PlanCardProps = {
@@ -25,43 +25,56 @@ const PlanCard: React.FC<PlanCardProps> = ({
   }
 
   return (
-    <View style={styles.card}>
-      <View style={styles.cardHeader}>
-        <Text style={styles.planTitle}>{userName}’s Current Plan</Text>
-        <Text
-          style={[styles.status, status === 'Expired' && styles.statusExpired]}>
-          {status}
+    <ScrollView
+      contentContainerStyle={styles.wrapper}
+      showsVerticalScrollIndicator={false}>
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.planTitle}>{userName}’s Current Plan</Text>
+          <Text
+            style={[
+              styles.status,
+              status === 'Expired' && styles.statusExpired,
+            ]}>
+            {status}
+          </Text>
+        </View>
+        <Text style={styles.planSubText}>
+          {plan} – {amount}
         </Text>
+        <Text style={styles.expiryText}>Expires on:</Text>
+        <Text style={styles.expiryDate}>{expiry}</Text>
+        <PrimaryButton
+          title="UPGRADE PLAN"
+          onPress={upgrade}
+          style={{width: '100%'}}
+        />
       </View>
-      <Text style={styles.planSubText}>
-        {plan} – {amount}
-      </Text>
-      <Text style={styles.expiryText}>Expires on:</Text>
-      <Text style={styles.expiryDate}>{expiry}</Text>
-      <PrimaryButton
-        title="UPGRADE PLAN"
-        onPress={upgrade}
-        style={{width: '100%'}}
-      />
-    </View>
+    </ScrollView>
   );
 };
+
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: Colors.white,
-    borderRadius: 12,
-    padding: wp('5%'),
-    shadowColor: Colors.black,
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 1,
-    borderRightWidth: wp('1%'),
-    borderBottomWidth: wp('1%'),
-    borderTopWidth: wp('0.1%'),
-    borderLeftWidth: wp('0.1%'),
-    borderColor: Colors.primaryOrange,
-    marginLeft: 10,
-  },
+wrapper: {
+  flexGrow: 1,
+  justifyContent: 'center',  
+  alignItems: 'center',      
+  padding: wp('1%'),
+},
+card: {
+  width: wp('86%'),         
+  maxWidth: 400,             
+  backgroundColor: Colors.white,
+  borderRadius: 12,
+  padding: wp('5%'),
+  shadowColor: Colors.black,
+  shadowOpacity: 0.1,
+  shadowRadius: 4,
+  elevation: 2,
+  borderWidth: 1,
+  borderColor: Colors.primaryOrange,
+},
+
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',

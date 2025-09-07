@@ -55,12 +55,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginTop: hp('2%'),
-    paddingHorizontal: wp('4%'),
     paddingVertical: hp('1%'),
   } as ViewStyle,
   sectionTitle: {
-    fontFamily: Fonts.OpenSans.bold,
-    fontSize: hp('2.2%'),
+    fontFamily: Fonts.Urbanist.semiBold,
+    fontSize: hp('2.4%'),
     color: Colors.black,
   } as TextStyle,
   tooltipText: {

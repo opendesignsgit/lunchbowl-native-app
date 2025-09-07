@@ -1,48 +1,57 @@
-import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, {useState} from 'react';
+import {ScrollView, StyleSheet, Text, View, TextInput} from 'react-native';
 import SortButtons from './Components/SortButtons';
 import OrderCard from './Components/OrderCard';
+import {Colors} from 'assets/styles/colors';
+import Fonts from 'assets/styles/fonts';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
+import HeaderBackButton from 'screens/Dashboard/Components/BackButton';
+import ThemeGradientBackground from 'components/Backgrounds/GradientBackground';
+import SearchBar from 'screens/Dashboard/Components/Search';
+import ToolTipSectionHeader from 'screens/Dashboard/Components/TooltipHeader';
+import {questionIcon} from 'styles/svg-icons';
 
 const mockOrders = [
   {
     image: require('../../assets/images/Dashboard/Menues/menue1.png'),
-    title: "Sanjay's Lunch Plan",
-    dateTime: '01/05/2025 (Monday), 12:30 PM',
-    food: 'Veg Noodles and Gravy',
-    status: 'Delivered',
-  },
-  {
-    image: require('../../assets/images/Dashboard/Menues/menue1.png'),
-    title: "Sanjay's Lunch Plan",
-    dateTime: '01/05/2025 (Monday), 12:30 PM',
-    food: 'Aloo Paratha',
-    status: 'Delivered',
+    title: 'Featrue Not Rady',
+    dateTime: '00/00/0000 (Monday), 00:00 PM',
+    food: 'Featrue Not Rady',
+    status: 'No Status',
   },
 ];
 
 const OrderHistoryScreen = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.header}>Sort your Orders by</Text>
-      <SortButtons />
-      {mockOrders.map((item, index) => (
-        <OrderCard key={index} data={item} />
-      ))}
-    </ScrollView>
+    <ThemeGradientBackground>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.container}>
+          <HeaderBackButton title="history" />
+          <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
+          <ToolTipSectionHeader
+            title="Select your Food Plan"
+            tooltipText="Choose a plan to see your daily meals."
+            icon={questionIcon}
+          />
+          <SortButtons />
+          {mockOrders.map((item, index) => (
+            <OrderCard key={index} data={item} />
+          ))}
+        </View>
+      </ScrollView>
+    </ThemeGradientBackground>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    backgroundColor: '#F8F9FA',
-    flex: 1,
-  },
-  header: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginVertical: 8,
-    color: '#333',
+    paddingHorizontal: wp('6%'),
+    paddingBottom: hp('10%'),
   },
 });
 

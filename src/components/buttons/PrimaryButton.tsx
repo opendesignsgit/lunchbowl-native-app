@@ -103,7 +103,7 @@ export default function PrimaryButton({
   backgroundColor = Colors.primaryOrange,
   textColor = Colors.white,
   borderRadius = wp('2%'),
-  fontSize = wp('3.8%'), // responsive font
+  fontSize = wp('3.8%'), 
   icon = null,
   textTransform = 'uppercase',
   fontFamily = Fonts.Urbanist.bold,
@@ -137,8 +137,8 @@ export default function PrimaryButton({
               fontFamily,
             },
           ]}
-          numberOfLines={1} // prevents overflow
-          ellipsizeMode="tail" // adds dots if too long
+          numberOfLines={1} 
+          ellipsizeMode="tail" 
         >
           {title}
         </Text>
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     marginVertical: hp('1%'),
     alignSelf: 'center',
     width: wp('90%'),
-    height: hp('5%'), 
+    height: hp('5.3%'), 
   },
   text: {
     fontWeight: '600',

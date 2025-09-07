@@ -4,6 +4,7 @@ import { ApiResponseModel } from 'src/model/apiResponseModel';
 import { handleApiError } from 'utils/handleError';
 
 class UserService {
+
   static async updatePassword(
     userId: string,
     passwordData: any,
@@ -21,9 +22,9 @@ class UserService {
     }
   }
 
-  static async getUser(userId: string): Promise<ApiResponseModel> {
+  static async getRegisteredUSerData(userId: string): Promise<ApiResponseModel> {
     try {
-      const response = await UserApi.getUser(userId);
+      const response = await UserApi.getUserData(userId);
       return response.data as ApiResponseModel;
     } catch (error: any) {
       return {

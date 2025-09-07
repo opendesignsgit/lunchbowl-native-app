@@ -1,31 +1,45 @@
-import { useNavigation } from '@react-navigation/native';
-import { Colors } from 'assets/styles/colors';
+import {useNavigation} from '@react-navigation/native';
+import {Colors} from 'assets/styles/colors';
 import Fonts from 'assets/styles/fonts';
+import Typography from 'components/Text/Typography';
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TextStyle,
+  StyleProp,
+} from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { SvgXml } from 'react-native-svg';
-import { HeaderBackIcon } from 'styles/svg-icons';
+import {SvgXml} from 'react-native-svg';
+import {HeaderBackIcon} from 'styles/svg-icons';
 
 interface HeaderWithBackButtonDividerProps {
   title: string;
-  onPress?: () => void; 
+  onPress?: () => void;
+  titleStyle?: StyleProp<TextStyle>;
 }
 
-const HeaderBackButton: React.FC<HeaderWithBackButtonDividerProps> = ({ title }) => {
+const HeaderBackButton: React.FC<HeaderWithBackButtonDividerProps> = ({
+  title,
+  titleStyle,
+}) => {
   const navigation = useNavigation();
 
   return (
     <View style={styles.headerContainer}>
-      <View style={[styles.firstRow, { width: '90%' }]}>
+      <View style={[styles.firstRow, {width: '90%'}]}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={styles.backWrapper}>
           <SvgXml xml={HeaderBackIcon} />
-          <Text style={styles.headerText}>{title}</Text>
+          <Typography style={[styles.headerText, titleStyle]} numberOfLines={1}>
+            {title}
+          </Typography>
         </TouchableOpacity>
       </View>
     </View>
@@ -33,8 +47,7 @@ const HeaderBackButton: React.FC<HeaderWithBackButtonDividerProps> = ({ title })
 };
 
 const styles = StyleSheet.create({
-  headerContainer: {
-  },
+  headerContainer: {},
   firstRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -43,14 +56,13 @@ const styles = StyleSheet.create({
   backWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    fontFamily:Fonts.Urbanist.bold,
-
+    fontFamily: Fonts.Urbanist.bold,
   },
   headerText: {
     fontSize: wp('4%'),
     color: Colors.black,
     marginLeft: wp('2%'),
-    fontFamily:Fonts.Urbanist.bold,
+    fontFamily: Fonts.Urbanist.bold,
     textTransform: 'uppercase',
   },
 });

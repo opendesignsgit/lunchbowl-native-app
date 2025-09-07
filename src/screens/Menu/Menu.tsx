@@ -56,6 +56,7 @@ import NoDataFound from 'components/Error/NoDataMessage';
               <CategoryItem
                 title={item.title}
                 image={item.image}
+                dishImage2={item.dishImage2}
                 selected={item.title === selectedCategory}
                 onPress={() => setSelectedCategory(item.title)}
               />

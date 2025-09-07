@@ -1,6 +1,6 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import React from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
+import React, {useEffect} from 'react';
+import {Alert, Pressable, StyleSheet, View} from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -25,11 +25,29 @@ import {
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 import {Colors} from 'assets/styles/colors';
 import Fonts from 'assets/styles/fonts';
+import {hiddenTabRoutes, isTabHidden} from './HiddenTabRoutes';
+import LinearGradient from 'react-native-linear-gradient';
+import { useNetwork } from 'hooks/useNetwork';
+import Toast from 'react-native-toast-message';
 
 const Tab = createBottomTabNavigator();
-const hiddenTabRoutes = ['Registartion', 'Login', 'ProfileSetup'];
 
 const AppNavigator = () => {
+
+ const { isConnected } = useNetwork();
+
+  useEffect(() => {
+    if (isConnected === false) {
+      Toast.show({
+        type: 'error',
+        text1: 'No Internet Connection',
+        text2: 'Please check your network settings',
+        position: 'top',
+        visibilityTime: 3000,
+      });
+    }
+  }, [isConnected]);
+
   return (
     <Tab.Navigator
       screenOptions={({route}) => ({
@@ -52,17 +70,27 @@ const AppNavigator = () => {
           }
 
           return (
-            <View
-              style={[
-                styles.iconWrapper,
-                focused && styles.iconWrapperFocused,
-              ]}>
-              {focused && <View style={styles.topIndicator} />}
-              <SvgXml
-                xml={iconXml ?? ''}
-                width={wp('6.5%')}
-                height={wp('6.5%')}
-              />
+            <View style={styles.iconWrapper}>
+              {focused ? (
+                <LinearGradient
+                  colors={['#f37a164c', '#ffcccc6a', '#ffcccc76']}
+                  start={{x: 0, y: 0}}
+                  end={{x: 0, y: 1}}
+                  style={styles.iconWrapperFocused}>
+                  <View style={styles.topIndicator} />
+                  <SvgXml
+                    xml={iconXml ?? ''}
+                    width={wp('6.5%')}
+                    height={wp('6.5%')}
+                  />
+                </LinearGradient>
+              ) : (
+                <SvgXml
+                  xml={iconXml ?? ''}
+                  width={wp('6.5%')}
+                  height={wp('6.5%')}
+                />
+              )}
             </View>
           );
         },
@@ -77,24 +105,42 @@ const AppNavigator = () => {
         tabBarLabelStyle: {
           fontFamily: Fonts.Urbanist.regular,
           fontSize: 14,
-          marginTop: '20%',
+          marginTop: '25%',
         },
         tabBarActiveTintColor: Colors.primaryOrange,
         tabBarStyle: styles.tabBar,
         headerShown: false,
       })}>
-      <Tab.Screen name="Home" component={DashboardNavigator} />
-      <Tab.Screen name="Menu" component={MenueNavigator} />
+      <Tab.Screen
+        name="Home"
+        component={DashboardNavigator}
+        options={({route}) => {
+          const routeName = getFocusedRouteNameFromRoute(route) ?? '';
+          if (hiddenTabRoutes.includes(routeName)) {
+            return {tabBarStyle: {display: 'none'}};
+          }
+          return {};
+        }}
+      />
+      <Tab.Screen
+        name="Menu"
+        component={MenueNavigator}
+        options={({route}) => {
+          const routeName = getFocusedRouteNameFromRoute(route) ?? '';
+          if (isTabHidden(routeName)) {
+            return {tabBarStyle: {display: 'none'}};
+          }
+          return {};
+        }}
+      />
       <Tab.Screen
         name="MyPlan"
         component={MyPlanNavigator}
         options={({route}) => {
           const routeName = getFocusedRouteNameFromRoute(route) ?? '';
-
           if (hiddenTabRoutes.includes(routeName)) {
             return {tabBarStyle: {display: 'none'}};
           }
-
           return {};
         }}
       />
@@ -108,27 +154,31 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: wp('0.5%'),
     right: wp('0.5%'),
-    borderTopLeftRadius: wp('5%'),
-    borderTopRightRadius: wp('5%'),
+    borderTopLeftRadius: wp('8%'),
+    borderTopRightRadius: wp('8%'),
     backgroundColor: Colors.white,
     elevation: 10,
-    height: hp('9%'),
+    height: hp('10%'),
     paddingBottom: hp('0.7%'),
   },
 
   iconWrapper: {
     justifyContent: 'center',
     alignItems: 'center',
-    height: '100%',
     marginTop: hp('4%'),
-    marginLeft: wp('15%'),
+    marginLeft: wp('17%'),
   },
 
   iconWrapperFocused: {
-    backgroundColor: Colors.lightRed,
-    padding: wp('8%'),
-    marginTop: hp('4%'),
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingLeft: hp('3.5%'),
+    paddingRight:hp('3.5%'),
+    paddingTop:hp('4%'),
+    paddingBottom:hp('6%'),
+    marginTop:hp('2.9%'),
   },
+
   topIndicator: {
     position: 'absolute',
     top: 0,

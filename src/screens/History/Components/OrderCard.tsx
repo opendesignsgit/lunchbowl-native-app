@@ -1,5 +1,11 @@
+import { Colors } from 'assets/styles/colors';
+import Fonts from 'assets/styles/fonts';
 import React from 'react';
-import {View, Text, StyleSheet, Image, ImageSourcePropType} from 'react-native';
+import { View, Text, StyleSheet, Image, ImageSourcePropType } from 'react-native';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 
 type OrderData = {
   image: ImageSourcePropType;
@@ -13,10 +19,10 @@ type OrderCardProps = {
   data: OrderData;
 };
 
-const OrderCard: React.FC<OrderCardProps> = ({data}) => {
+const OrderCard: React.FC<OrderCardProps> = ({ data }) => {
   return (
     <View style={styles.card}>
-      <Image source={data.image} style={styles.image} />
+      <Image source={data.image} style={styles.image} resizeMode="cover" />
       <View style={styles.content}>
         <Text style={styles.title}>{data.title}</Text>
         <Text style={styles.subtitle}>{data.dateTime}</Text>
@@ -32,47 +38,47 @@ const OrderCard: React.FC<OrderCardProps> = ({data}) => {
 const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    marginBottom: 16,
-    padding: 10,
+    backgroundColor: Colors.white,
+    borderRadius: wp(3), 
+    marginBottom: hp(2), 
+    padding: wp(3),
     elevation: 2,
   },
   image: {
-    width: 70,
-    height: 70,
-    borderRadius: 8,
+    width: wp(30), 
+    height: wp(30), 
+    borderRadius: wp(3), 
   },
   content: {
     flex: 1,
-    marginLeft: 12,
+    marginLeft: wp(3),
   },
   title: {
-    color: '#E94E1B',
-    fontWeight: '700',
-    fontSize: 14,
+    color: Colors.primaryOrange,
+    fontFamily: Fonts.Urbanist.bold,
+    fontSize: hp(2.2), 
   },
   subtitle: {
-    fontSize: 12,
-    color: '#444',
-    marginVertical: 2,
+    fontSize: hp(1.5),
+    color: Colors.bodyText,
+    marginVertical: hp(0.5),
   },
   food: {
-    fontSize: 13,
-    color: '#111',
+    fontSize: hp(1.6),
+    color: Colors.black,
   },
   statusContainer: {
-    backgroundColor: '#E3F8E6',
+    backgroundColor: Colors.greeFadd,
     alignSelf: 'flex-start',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 6,
-    marginTop: 6,
+    paddingHorizontal: wp(2),
+    paddingVertical: hp(0.5),
+    borderRadius: wp(2),
+    marginTop: hp(0.8),
   },
   statusText: {
-    fontSize: 12,
-    color: '#30A64A',
-    fontWeight: '600',
+    fontSize: hp(1.5),
+    color: Colors.green,
+    fontFamily: Fonts.Urbanist.extraBold,
   },
 });
 

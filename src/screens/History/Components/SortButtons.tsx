@@ -1,11 +1,16 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-// import { Ionicons } from '@expo/vector-icons';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {SvgXml} from 'react-native-svg';
+import {questionIcon} from 'styles/svg-icons';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 
 const options = [
-  { icon: 'person', label: 'Child Name' },
-  { icon: 'document-text', label: 'Status' },
-  { icon: 'calendar', label: 'Date' },
+  {icon: questionIcon, label: 'Child Name'},
+  {icon: questionIcon, label: 'Status'},
+  {icon: questionIcon, label: 'Date'},
 ];
 
 const SortButtons = () => {
@@ -13,7 +18,7 @@ const SortButtons = () => {
     <View style={styles.container}>
       {options.map((item, index) => (
         <TouchableOpacity style={styles.button} key={index}>
-          {/* <Ionicons name={item.icon} size={16} color="#000" /> */}
+          <SvgXml xml={item.icon} width={wp('5%')} height={wp('5%')} />
           <Text style={styles.text}>{item.label}</Text>
         </TouchableOpacity>
       ))}
@@ -24,21 +29,22 @@ const SortButtons = () => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    gap: 8,
-    marginBottom: 12,
+    justifyContent: 'flex-start',
+    marginVertical: hp('2%'),
+    gap: wp('2%'), 
   },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 8,
+    paddingHorizontal: wp('3%'),
+    paddingVertical: hp('0.8%'),
+    borderRadius: wp('2%'),
     elevation: 2,
   },
   text: {
-    marginLeft: 6,
-    fontSize: 13,
+    marginLeft: wp('2%'),
+    fontSize: hp('1.8%'),
     color: '#000',
   },
 });

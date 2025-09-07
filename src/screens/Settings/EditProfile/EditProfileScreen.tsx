@@ -19,7 +19,6 @@ import {
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 import {SvgXml} from 'react-native-svg';
-// import PrimaryInput from 'components/components/Input/primaryInput';
 import PrimaryButton from 'components/buttons/PrimaryButton';
 import {camaraIcon} from 'styles/svg-icons';
 import HeaderBackButton from 'screens/Dashboard/Components/BackButton';
@@ -27,9 +26,9 @@ import {ApiResponseModel} from 'src/model/apiResponseModel';
 import {UserInterface} from 'src/model/userSchema';
 import UserService from 'services/userService';
 import IconInput from 'components/inputs/IconInput';
+import {LoadingModal} from 'components/LoadingModal/LoadingModal';
 
 const EditProfileScreen: React.FC<{navigation: any}> = ({navigation}) => {
-  //  -------------------------------------------- State variables  -------------------------------------------
   const {user, userId, userRole} = useAuth();
   console.log(userId);
   const [imageUri, setImageUri] = useState<string | undefined>(undefined);
@@ -42,23 +41,18 @@ const EditProfileScreen: React.FC<{navigation: any}> = ({navigation}) => {
   const [error] = useState<string | null>(null);
   const [message, setMessage] = useState<string>('');
 
-  // ----------------------------------------------  2. UseEffects Hooks -------------------------------------------------- //
-
   useEffect(() => {
     setLoading(true);
     fetchUserData();
   }, [user]);
 
-  // ----------------------------------------------  Fetch Profile data-------------------------------------------------- //
-
   const fetchUserData = async () => {
     try {
-      // setLoading(true);
+      setLoading(true);
 
       if (userId) {
-        const userResponse: ApiResponseModel = await UserService.getUser(
-          userId,
-        );
+        const userResponse: ApiResponseModel =
+          await UserService.getRegisteredUSerData(userId);
         if (userResponse.success && userResponse.data) {
           const userData: UserInterface = userResponse.data;
           console.log('userData', userData);
@@ -71,10 +65,9 @@ const EditProfileScreen: React.FC<{navigation: any}> = ({navigation}) => {
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
-      // setLoading(false);
+      setLoading(false);
     }
   };
-  // ----------------------------------------------  Form validations -------------------------------------------------- //
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -93,7 +86,6 @@ const EditProfileScreen: React.FC<{navigation: any}> = ({navigation}) => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  // ----------------------------------------------  Meadia picker -------------------------------------------------- //
 
   const selectImageFromGallery = () => {
     launchImageLibrary(
@@ -107,7 +99,6 @@ const EditProfileScreen: React.FC<{navigation: any}> = ({navigation}) => {
       },
     );
   };
-  // ----------------------------------------------  Update User data  -------------------------------------------------- //
 
   const saveProfile = async () => {
     setLoading(true);
@@ -143,34 +134,20 @@ const EditProfileScreen: React.FC<{navigation: any}> = ({navigation}) => {
     }
   };
 
-  // ---------------------------------------------- Spin Loader -------------------------------------------------- //
-
   if (loading) {
-    // return <LoadingModal loading={true} setLoading={setLoading} />;
+    return <LoadingModal loading={true} setLoading={setLoading} />;
   }
-
-  // ----------------------------------------------  Main Render UI -------------------------------------------------- //
 
   return (
     <KeyboardAvoidingView
       style={{flex: 1}}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        {/* -------------------------------------------- Main scroll container  ------------------------------------------- */}
-
         <ScrollView
           contentContainerStyle={styles.mainScrollContainer}
           keyboardShouldPersistTaps="handled">
-          {/* -------------------------------------------- Header  ------------------------------------------- */}
-
-          <HeaderBackButton
-            title="Edit Profile"
-            onBackPress={() => navigation.goBack()}
-          />
-          {/* -------------------------------------------- Main container  ------------------------------------------- */}
-
           <View style={styles.mainContainer}>
-            {/* -------------------------------------------- Profile section container  ------------------------------------------- */}
+            <HeaderBackButton title="Edit Profile" />
 
             <View style={styles.profileImageContainer}>
               <Image
@@ -187,42 +164,41 @@ const EditProfileScreen: React.FC<{navigation: any}> = ({navigation}) => {
                 <SvgXml xml={camaraIcon} width={30} height={30} />
               </TouchableOpacity>
             </View>
-            {/* -------------------------------------------- Main  container  ------------------------------------------- */}
             <View style={styles.mainContainer}>
-              {/* -------------------------------------------- Input  container  ------------------------------------------- */}
               <View style={styles.inputContainer}>
-                {/* -------------------------------------------- First name   ------------------------------------------- */}
-
                 <Text style={styles.label}>First Name</Text>
                 <IconInput
                   placeholder="First Name"
                   value={firstName}
-                  onChangeText={setFirstName} iconXml={''}                />
+                  onChangeText={setFirstName}
+                  iconXml={''}
+                />
                 {errors.firstName && (
                   <Text style={styles.errorText}>{errors.firstName}</Text>
                 )}
-                {/* -------------------------------------------- Last name   ------------------------------------------- */}
 
                 <Text style={styles.label}>Last Name</Text>
                 <IconInput
                   placeholder="Last Name"
                   value={lastName}
-                  onChangeText={setLastName} iconXml={''}                />
+                  onChangeText={setLastName}
+                  iconXml={''}
+                />
                 {errors.lastName && (
                   <Text style={styles.errorText}>{errors.lastName}</Text>
                 )}
-                {/* -------------------------------------------- Email  ------------------------------------------- */}
 
                 <Text style={styles.label}>Email</Text>
                 <IconInput
                   placeholder="Email"
                   value={email}
-                  onChangeText={setEmail} iconXml={''}                />
+                  onChangeText={setEmail}
+                  iconXml={''}
+                />
                 {errors.email && (
                   <Text style={styles.errorText}>{errors.email}</Text>
                 )}
 
-                {/* -------------------------------------------- Save Button  ------------------------------------------- */}
                 <View style={styles.ButtonContainer}>
                   <PrimaryButton
                     title="Save Changes"

@@ -15,19 +15,20 @@ import Fonts from 'assets/styles/fonts';
 type CategoryItemProps = {
   title: string;
   image: ImageSourcePropType;
+  dishImage2?: any;
   selected?: boolean;
   onPress?: (event: GestureResponderEvent) => void;
 };
 
 const CategoryItem: React.FC<CategoryItemProps> = ({
   title,
-  image,
+  dishImage2,
   selected = false,
   onPress,
 }) => (
   <TouchableOpacity onPress={onPress} style={styles.wrapper}>
     <View style={[styles.imageWrapper, selected && styles.active]}>
-      <Image source={image} style={styles.image} />
+      <Image source={dishImage2} style={styles.image} />
     </View>
     <Text style={[styles.title, selected && styles.activeText]}>{title}</Text>
   </TouchableOpacity>
@@ -38,7 +39,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
     marginRight: wp('5%'),
-    // width: wp('22%'),
   },
   imageWrapper: {
     backgroundColor: Colors.white,
@@ -60,8 +60,8 @@ const styles = StyleSheet.create({
     borderWidth: wp('1.2%'),
   },
   image: {
-    width: wp('12%'),
-    height: wp('12%'),
+    width: wp('17%'),
+    height: wp('17%'),
     borderRadius: wp('12%'),
     resizeMode: 'cover',
   },

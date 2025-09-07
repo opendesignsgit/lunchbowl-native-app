@@ -1,6 +1,11 @@
 import {Colors} from 'assets/styles/colors';
 import Fonts from 'assets/styles/fonts';
 import React, {useState} from 'react';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
+
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import {SvgXml} from 'react-native-svg';
 import {BackIcon} from 'styles/svg-icons';
@@ -165,7 +170,18 @@ export default function MenueCalendar({
 }
 
 const styles = StyleSheet.create({
-  container: {padding: 16, backgroundColor: Colors.white, borderRadius: 20},
+  container: {
+    padding: 16,
+    backgroundColor: Colors.white,
+    borderRadius: 20,
+     //  Shadow (iOS)
+    shadowColor: Colors.black,
+    shadowOffset: { width: 0, height: hp('0.2%') },
+    shadowOpacity: 0.1,
+    shadowRadius: wp('2%'),
+    //  Shadow (Android)
+    elevation: 0.9,
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -178,14 +194,21 @@ const styles = StyleSheet.create({
     color: Colors.primaryOrange,
     fontFamily: Fonts.Urbanist.bold,
   },
-  weekRow: {flexDirection: 'row'},
+  weekRow: {
+    flexDirection: 'row',
+  },
   weekDay: {
     flex: 1,
     textAlign: 'center',
-    fontWeight: 'bold',
+    color:Colors.black,
     paddingVertical: 10,
+    fontFamily:Fonts.Urbanist.bold,
+    textTransform:"uppercase"
   },
-  weekendText: {color: 'red'},
+  weekendText: {
+    color: Colors.red
+
+  },
   daysContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -193,12 +216,31 @@ const styles = StyleSheet.create({
   dayCell: {
     width: `${100 / 7}%`,
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 12,
     borderRadius: 8,
   },
-  dayText: {fontSize: 16},
-  holidayBg: {backgroundColor: '#FFE5E5', borderRadius: 100},
-  holidayText: {color: '#FF0000', fontWeight: 'bold'},
-  selectedBg: {backgroundColor: '#FF6514', borderRadius: 100},
-  selectedText: {color: '#FFF', fontWeight: 'bold'},
+  dayText: {
+    fontSize: 16,
+    color: Colors.black,
+  },
+  holidayBg: {
+    backgroundColor: Colors.bg,
+    borderRadius: wp('10%'),
+    padding: wp('1.5%'),
+  },
+  holidayText: {
+    color: Colors.red,
+    fontWeight: 'bold',
+    fontSize: wp('3.5%'),
+  },
+  selectedBg: {
+    backgroundColor: Colors.primaryOrange,
+    borderRadius: wp('10%'),
+    padding: wp('1.5%'),
+  },
+  selectedText: {
+    color: Colors.white,
+    fontWeight: 'bold',
+    fontSize: wp('3.5%'),
+  },
 });

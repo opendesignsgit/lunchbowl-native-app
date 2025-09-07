@@ -8,6 +8,7 @@ import {
 } from 'react-native-responsive-screen';
 import {Colors} from 'assets/styles/colors';
 import Fonts from 'assets/styles/fonts';
+import Typography from 'components/Text/Typography';
 
 interface HeaderProps {
   userName: string;
@@ -19,21 +20,16 @@ export default function Header({userName, navigation}: HeaderProps) {
     navigation.navigate('Settings');
   };
   const goNotification = () => {
-    navigation.navigate('notifications');
+    navigation.navigate('UnderConstruction');
   };
-  const firstName = userName?.trim().split('')[0] || 'Guest';
 
   return (
     <View style={styles.container}>
       <View style={styles.textSection}>
-        <Text
-          style={styles.greeting}
-          numberOfLines={1}
-          ellipsizeMode="tail"
-          adjustsFontSizeToFit>
-          Hello, {firstName}!
-        </Text>
-        <Text style={styles.subtitle}>Welcome to Lunch Bowl</Text>
+        <Typography style={styles.greeting}>{`Hello, ${
+          Array.isArray(userName) ? userName.join(' ') : userName
+        }!`}</Typography>
+        <Typography style={styles.subtitle}>Welcome to Lunch Bowl</Typography>
       </View>
       <View style={styles.rightIcons}>
         <TouchableOpacity onPress={goNotification}>
@@ -47,6 +43,7 @@ export default function Header({userName, navigation}: HeaderProps) {
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {

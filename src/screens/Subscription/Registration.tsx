@@ -1,28 +1,29 @@
-import React, {useEffect, useState} from 'react';
 import ThemeGradientBackground from 'components/Backgrounds/GradientBackground';
-import HeaderBackButton from 'screens/Dashboard/Components/BackButton';
-import {Text, View} from 'react-native';
-import styles from './Components/forms/Styles/styles';
-import ParentDetails from './Components/forms/ParentDetails';
-import ChildrenDetails from './Components/forms/ChildDetails';
-import SubscriptionPlan from './Components/forms/Subscription';
-import PaymentOptions from './Components/forms/PaymentOptions';
-import InitialsScreen from './Components/InitialScreen';
-import {vabourCub} from 'styles/svg-icons';
+import ErrorMessage from 'components/Error/BoostrapStyleError';
+import { LoadingModal } from 'components/LoadingModal/LoadingModal';
 import PaginationDots from 'components/paginations.tsx/PrimaryPagination';
+import Typography from 'components/Text/Typography';
+import { useAuth } from 'context/AuthContext';
+import React, { useEffect, useState } from 'react';
+import { View } from 'react-native';
+import HeaderBackButton from 'screens/Dashboard/Components/BackButton';
 import RegistrationService from 'services/RegistartionService/registartion';
+import { vabourCub } from 'styles/svg-icons';
 import {
   validateChildrenDetails,
   validateParentDetails,
 } from 'utils/RegisterationValidate';
-import {useAuth} from 'context/AuthContext';
-import ErrorMessage from 'components/Error/BoostrapStyleError';
-import {LoadingModal} from 'components/LoadingModal/LoadingModal';
-import Typography from 'components/Text/Typography';
+import ChildrenDetails from './Components/forms/ChildDetails';
+import ParentDetails from './Components/forms/ParentDetails';
+import PaymentOptions from './Components/forms/PaymentOptions';
+import styles from './Components/forms/Styles/styles';
+import SubscriptionPlan from './Components/forms/Subscription';
+import InitialsScreen from './Components/InitialScreen';
 
 type Step = 1 | 2 | 3 | 4;
 
 export default function Registration({navigation}: any) {
+
   //################# PARENT STATES ####################
 
   const [fatherFullName, setFatherFullName] = useState('');
@@ -32,6 +33,29 @@ export default function Registration({navigation}: any) {
   const {userId} = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+// ---------------- Restriction Check ----------------
+
+  useEffect(() => {
+    const checkStepStatus = async () => {
+      if (!userId) return;
+
+      try {
+        const payload: any = { _id: userId, path: 'Step-Check' };
+        const response: any = await RegistrationService.registartionCheck(payload);
+        const currentStep = Number(response?.data?.step);
+
+        if (Number.isFinite(currentStep) && currentStep >= 4) {
+          navigation.replace('MyPlan');
+        }
+      } catch (err) {
+        console.error('Step check failed:', err);
+      }
+    };
+
+    checkStepStatus();
+  }, [userId]);
+
 
   //################# CHILD STATES ######################
   const [children, setChildren] = useState([
@@ -71,7 +95,7 @@ export default function Registration({navigation}: any) {
     setChildren(prev => {
       const newChildren = [...prev];
       if (field === null) {
-        newChildren[index] = {...newChildren[index], ...value}; // merge object
+        newChildren[index] = {...newChildren[index], ...value}; 
       } else {
         newChildren[index] = {...newChildren[index], [field]: value};
       }
@@ -80,6 +104,7 @@ export default function Registration({navigation}: any) {
   };
 
   //#################### HELPER FUNCTIONS ##################
+  
   const [schools, setSchools] = useState<any[]>([]);
   const [loadingSchools, setLoadingSchools] = useState(false);
 

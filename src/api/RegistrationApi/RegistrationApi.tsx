@@ -64,7 +64,7 @@ class RegistrationApi {
     );
   }
   
-    async registartionCheck(payloadData: any) {
+    async registartionCheck(payloadData: { _id: string; path: string }) {
     return await httpAxiosClient.post(`${this.registrationCheckerEndPoint}`, payloadData);
   }
 

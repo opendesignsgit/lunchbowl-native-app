@@ -70,7 +70,9 @@ const FoodScreen = () => {
       <View style={styles.container}>
         <ScrollView>
           <HeaderBackButton title="Edit Profile" />
-          <SearchBar />
+          <SearchBar value={''} onChangeText={function (text: string): void {
+            throw new Error('Function not implemented.');
+          } } />
           <FoodListCard
             childName="Child Name 1"
             dateRange="01/04/2025 - 05/04/2025"

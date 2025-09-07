@@ -8,9 +8,14 @@ class UserApi {
     this.userEndpoint = '/customer/account-details';
   }
 
-  async getUser(userId: string) {
-    return await httpAxiosClient.get(`${this.userEndpoint}/${userId}`);
-  }
+async getUserData(userId: string) {
+  return await httpAxiosClient.post(
+    `${this.userEndpoint}`,   
+    { userId }                
+  );
+}
+
+
 
   async updateUser(userId: string, userData: any) {
     return await httpAxiosClient.post(

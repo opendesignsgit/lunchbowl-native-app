@@ -90,10 +90,15 @@ const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{paddingBottom: hp('10%')}}>
           <Header userName={userName ?? 'GuestUSer'} navigation={navigation} />
-          <SearchBar />
+          <SearchBar
+            value={''}
+            onChangeText={function (text: string): void {
+              throw new Error('Function not implemented.');
+            }}
+          />
           <PromoBanner />
           <SectionTitle> Kick Start your Free Trial</SectionTitle>
-          <FreeTrialCard />
+          <FreeTrialCard navigation={undefined} />
           <SectionTitle>Lunch Bowl’s Highlights</SectionTitle>
           <Highlights />
           <SectionTitle>Schools We Serve</SectionTitle>

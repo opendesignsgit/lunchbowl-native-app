@@ -86,7 +86,7 @@ class RegistrationService {
     }
   }
 
-  static async registartionCheck(payload:string): Promise<ApiResponseModel> {
+  static async registartionCheck(payload: { _id: string; path: string }): Promise<ApiResponseModel> {
     try {
       const response = await RegistrationApi.registartionCheck(payload);
       return response.data as ApiResponseModel;

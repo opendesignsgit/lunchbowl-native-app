@@ -33,7 +33,8 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     flex: 1,
     fontSize: 16,
-    fontFamily: Fonts.Urbanist.regular
+    fontFamily: Fonts.Urbanist.regular,
+    color:Colors.black
   },
   icon: {},
 });
