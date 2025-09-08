@@ -7,17 +7,30 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
-const options = [
-  {icon: questionIcon, label: 'Child Name'},
-  {icon: questionIcon, label: 'Status'},
-  {icon: questionIcon, label: 'Date'},
+interface Option {
+  icon: string;
+  label: string;
+  key: string; 
+}
+
+interface Props {
+  onSort: (key: string) => void;
+}
+
+const options: Option[] = [
+  {icon: questionIcon, label: 'Child Name', key: 'name'},
+  {icon: questionIcon, label: 'Status', key: 'status'},
+  {icon: questionIcon, label: 'Date', key: 'date'},
 ];
 
-const SortButtons = () => {
+const SortButtons: React.FC<Props> = ({onSort}) => {
   return (
     <View style={styles.container}>
       {options.map((item, index) => (
-        <TouchableOpacity style={styles.button} key={index}>
+        <TouchableOpacity
+          style={styles.button}
+          key={index}
+          onPress={() => onSort(item.key)}>
           <SvgXml xml={item.icon} width={wp('5%')} height={wp('5%')} />
           <Text style={styles.text}>{item.label}</Text>
         </TouchableOpacity>
@@ -31,7 +44,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     marginVertical: hp('2%'),
-    gap: wp('2%'), 
+    gap: wp('2%'),
   },
   button: {
     flexDirection: 'row',

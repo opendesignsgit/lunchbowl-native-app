@@ -23,6 +23,7 @@ import Highlights from './Components/Highlights';
 import PopularMenus from './Components/PopularMenusMarquee';
 import SchoolMarquee from './Components/SchoolsServes';
 import SearchBar from './Components/Search';
+import WhatsAppButton from 'components/buttons/WhatsAppButton';
 
 //############## BANNER MOCK DATA ################
 
@@ -85,7 +86,6 @@ const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
   return (
     <ThemeGradientBackground>
       <View style={styles.container}>
-        <View style={styles.logoutContainer}></View>
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{paddingBottom: hp('10%')}}>
@@ -113,6 +113,7 @@ const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
           <SectionTitle>Quick Actions</SectionTitle>
           <Highlights />
         </ScrollView>
+        <WhatsAppButton />
       </View>
     </ThemeGradientBackground>
   );

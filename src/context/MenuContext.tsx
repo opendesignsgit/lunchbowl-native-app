@@ -14,6 +14,8 @@ interface Child {
 
 interface MenuContextType {
   childrenData: Child[];
+  startDate: string;
+  endDate: string;
   fetchChildren: (data: RequestData) => Promise<void>;
 }
 
@@ -28,10 +30,16 @@ export const MenuProvider = ({children}: {children: ReactNode}) => {
   const {userId} = useAuth();
   const [childrenData, setChildrenData] = useState<Child[]>([]);
 
+  const [startDate, setStartDate] = useState<string>('2025-09-10');
+  const [endDate, setEndDate] = useState<string>('2025-09-19');
+
   const fetchChildren = async (data: RequestData) => {
     try {
       const response = await MenuService.GetChildrends(data);
-      console.log('📌 Full response:', response);
+      console.log(
+        '📌 Full response:sdfsdfffff========================================================================================',
+        response,
+      );
 
       if (response.success && response.data && response.data.children) {
         const formattedChildren = response.data.children.map((child: any) => ({
@@ -41,6 +49,24 @@ export const MenuProvider = ({children}: {children: ReactNode}) => {
           }`.trim(),
         }));
 
+        const formatDate = (dateStr: string) => {
+          const date = new Date(dateStr);
+          const day = String(date.getDate()).padStart(2, '0');
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const year = date.getFullYear();
+          return `${year}-${month}-${day}`;
+        };
+
+        setStartDate(formatDate(response.data.startDate));
+        console.log(
+          'start dae...////////////////////////',
+          response.data.startDate,
+        ),
+          console.log(
+            'start dae...////////////////////////',
+            response.data.endDate,
+          ),
+          setEndDate(formatDate(response.data.endDate));
         console.log('📌 Formatted children:', formattedChildren);
         setChildrenData(formattedChildren);
       } else {
@@ -61,7 +87,8 @@ export const MenuProvider = ({children}: {children: ReactNode}) => {
   }, [userId]);
 
   return (
-    <MenuContext.Provider value={{childrenData, fetchChildren}}>
+    <MenuContext.Provider
+      value={{childrenData, startDate, endDate, fetchChildren}}>
       {children}
     </MenuContext.Provider>
   );

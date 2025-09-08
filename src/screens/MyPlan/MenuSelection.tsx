@@ -7,6 +7,8 @@ import {useAuth} from 'context/AuthContext';
 import React, {useEffect, useState} from 'react';
 import {Colors} from '../../assets/styles/colors';
 
+import Fonts from 'assets/styles/fonts';
+import {useMenu} from 'context/MenuContext';
 import {
   Alert,
   FlatList,
@@ -22,12 +24,11 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import {SvgXml} from 'react-native-svg';
+import HeaderBackButton from 'screens/Dashboard/Components/BackButton';
 import MenuService from 'services/MyPlansApi/MenuService';
 import {BackIcon, ForwardIcon, questionIcon} from 'styles/svg-icons';
 import menues from '../../services/MenueService/Data/menus.json';
-import {useMenu} from 'context/MenuContext';
-import HeaderBackButton from 'screens/Dashboard/Components/BackButton';
-import Fonts from 'assets/styles/fonts';
+import {useDate} from 'context/calenderContext';
 
 const allMeals = menues.meal_plan.flatMap(day => day.meals);
 
@@ -103,6 +104,8 @@ const MenuSelectionScreen = ({
     ? normalizeDate(new Date(route.params.selectedDate))
     : normalizeDate(new Date());
 
+  // console.log('passedDate,----------------', passedDate);
+
   // ################### STATES CALL HOOCKS #########################
 
   const [selectedTab, setSelectedTab] = useState<'custom' | 'dietitian'>(
@@ -113,10 +116,8 @@ const MenuSelectionScreen = ({
   const {childrenData} = useMenu();
   const {userId} = useAuth();
   const [applySameDish, setApplySameDish] = useState(false);
-  const [saveForUpcomingMonths, setSaveForUpcomingMonths] = useState(false);
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+
   const [selectedDate, setSelectedDate] = useState(passedDate);
-  const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDishes, setSelectedDishes] = useState<string[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
   const [selectedMonth, setSelectedMonth] = useState(new Date());
@@ -133,6 +134,10 @@ const MenuSelectionScreen = ({
   useEffect(() => {
     setSelectedDishes([]);
   }, [selectedTab]);
+
+  const {holidays} = useDate();
+
+  console.log('this is Holiday', holidays);
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('en-US', {
@@ -168,6 +173,14 @@ const MenuSelectionScreen = ({
     next.setMonth(next.getMonth() + 1);
     setSelectedMonth(next);
   };
+
+  // Convert passed date to 'YYYY-MM-DD' format
+  const selectedDateStr = new Date(route.params.selectedDate)
+    .toISOString()
+    .split('T')[0];
+
+  const isHoliday = holidays.some(holiday => holiday.date === selectedDateStr);
+  
 
   // ################### HANDLE API CALL #############################
 
@@ -237,6 +250,12 @@ const MenuSelectionScreen = ({
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePayNow = () => {
+    navigation.navigate('PaymentScreen', {
+      selectedDate: selectedDate.toISOString(),
+    });
   };
 
   return (
@@ -343,7 +362,6 @@ const MenuSelectionScreen = ({
                     )}
                   </View>
                 ))}
-
               </ScrollView>
             ) : (
               // ---------------- Dietitian Plan ----------------
@@ -419,13 +437,31 @@ const MenuSelectionScreen = ({
               <SecondaryButton
                 title="CANCEL"
                 onPress={() => navigation.goBack()}
+                style={{
+                  width: wp('40%'),
+                }}
               />
-              <PrimaryButton
-                title={loading ? 'Saving...' : 'SAVE'}
-                onPress={SaveMenue}
-                disabled={loading}
-                style={{width: wp('40%')}}
-              />
+
+              {!isHoliday && (
+                <PrimaryButton
+                  title={loading ? 'Saving...' : 'SAVE'}
+                  onPress={SaveMenue}
+                  disabled={loading}
+                  style={{
+                    width: wp('40%'),
+                  }}
+                />
+              )}
+
+              {isHoliday && (
+                <PrimaryButton
+                  title="Pay Now"
+                  onPress={handlePayNow}
+                  style={{
+                    width: wp('40%'),
+                  }}
+                />
+              )}
             </View>
           )}
         </View>
@@ -469,7 +505,7 @@ const styles = StyleSheet.create({
   },
   list: {
     borderWidth: 1,
-    borderColor:Colors.lightRed,
+    borderColor: Colors.lightRed,
     marginTop: 5,
     maxHeight: 200,
   },
@@ -515,7 +551,7 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.Urbanist.regular,
   },
   activeTabText: {
-    color:Colors.white,
+    color: Colors.white,
     fontWeight: '600',
   },
   selectedPlanCard: {
@@ -585,7 +621,17 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     borderRadius: wp('3%'),
     padding: wp('4%'),
+
+    // ✅ Shadow for iOS
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+
+    // ✅ Elevation for Android
+    elevation: 2,
   },
+
   menuHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -594,17 +640,17 @@ const styles = StyleSheet.create({
   formContainer: {
     flexGrow: 1,
     marginBottom: hp('2%'),
-    padding:10
+    padding: 10,
   },
   childForm: {
     marginBottom: hp('3%'),
   },
   childName: {
     fontSize: wp('4.6%'),
-    fontFamily:Fonts.Urbanist.semiBold,
+    fontFamily: Fonts.Urbanist.semiBold,
     color: Colors.primaryOrange,
     marginBottom: hp('1%'),
-    textTransform:'capitalize'
+    textTransform: 'capitalize',
   },
   dropdown: {
     borderWidth: 1,
@@ -636,8 +682,13 @@ const styles = StyleSheet.create({
     color: Colors.black,
   },
   buttonsRow: {
+    marginTop:"10%",
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    alignItems: 'center',
+    columnGap: wp('4%'),
+    flexWrap: 'wrap',
+    // gap: wp('4%'),
   },
   cancelBtn: {
     flex: 1,

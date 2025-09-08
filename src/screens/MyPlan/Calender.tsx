@@ -1,13 +1,14 @@
-import { useFocusEffect } from '@react-navigation/native';
-import { Colors } from 'assets/styles/colors';
+import {useFocusEffect} from '@react-navigation/native';
+import {Colors} from 'assets/styles/colors';
 import ThemeGradientBackground from 'components/Backgrounds/GradientBackground';
 import NoDataFound from 'components/Error/NoDataMessage';
+import {LoadingModal} from 'components/LoadingModal/LoadingModal';
 import SectionTitle from 'components/Titles/SectionHeading';
 import PrimaryButton from 'components/buttons/PrimaryButton';
-import { useAuth } from 'context/AuthContext';
-import { useUserProfile } from 'context/UserDataContext';
-import { useDate } from 'context/calenderContext';
-import React, { useCallback, useRef, useState } from 'react';
+import {useAuth} from 'context/AuthContext';
+import {useUserProfile} from 'context/UserDataContext';
+import {useDate} from 'context/calenderContext';
+import React, {useCallback, useRef, useState} from 'react';
 import {
   FlatList,
   NativeScrollEvent,
@@ -23,54 +24,22 @@ import {
 import HeaderBackButton from 'screens/Dashboard/Components/BackButton';
 import ToolTipSectionHeader from 'screens/Dashboard/Components/TooltipHeader';
 import MenueCalendar from 'screens/MyPlan/Components/MenueCalender';
-import HolidayService from 'services/MyPlansApi/HolidayService';
-import { Holiday } from 'src/model/calendarModels';
-import { questionIcon } from 'styles/svg-icons';
-import { formatDate } from 'utils/dateUtils';
+import {questionIcon} from 'styles/svg-icons';
+import {formatDate} from 'utils/dateUtils';
 import HolidayListCard from './Components/HolidayListCard';
 import PlanCard from './Components/MyPlan';
-import { LoadingModal } from 'components/LoadingModal/LoadingModal';
-import ErrorMessage from 'components/Error/BoostrapStyleError';
-
-// const plans = [
-//   {
-//     id: 1,
-//     userName: 'Bharathi',
-//     plan: 'Premium Plan',
-//     amount: '₹499/month',
-//     status: 'Active',
-//     expiry: '31/04/2025 (Monday)',
-//   },
-//   {
-//     id: 2,
-//     userName: 'John',
-//     plan: 'Basic Plan',
-//     amount: '₹199/month',
-//     status: 'Expired',
-//     expiry: '01/07/2024 (Sunday)',
-//   },
-//   {
-//     id: 3,
-//     userName: 'Meena',
-//     plan: 'Pro Plan',
-//     amount: '₹299/month',
-//     status: 'Active',
-//     expiry: '15/12/2024 (Friday)',
-//   },
-// ];
 
 const MyPlanScreen: React.FC<{navigation: any}> = ({navigation}) => {
   //######### STATE VARIABLES  ##############################
-  const screenWidth = wp('100%');
 
+  const screenWidth = wp('100%');
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
 
-  // const [selectedDate, setSelectedDate] = useState('08');
-  const [holidays, setHolidays] = useState<Holiday[]>([]);
-  const [tooltipVisible, setTooltipVisible] = useState(false);
-  const {setSelectedDate} = useDate(); // use context
+  //######### GET HOLIDAYS API CALL ############################
+
+  const {holidays} = useDate();
   const {userId} = useAuth();
   const {profileData, loading, refreshProfileData} = useUserProfile();
 
@@ -78,34 +47,9 @@ const MyPlanScreen: React.FC<{navigation: any}> = ({navigation}) => {
 
   useFocusEffect(
     useCallback(() => {
-      GetHolidays();
       refreshProfileData();
     }, [userId]),
   );
-
-  //######### GET HOLIDAYS API CALL ############################
-
-  const GetHolidays = async () => {
-    try {
-      const response: any = await HolidayService.getAllHolidays();
-      if (response && response.data) {
-        const holidays = response.data.map((holiday: any) => {
-          const dateObj = new Date(holiday.date);
-          const formattedDate = dateObj.toISOString().split('T')[0];
-          return {
-            id: holiday._id,
-            name: holiday.name,
-            date: formattedDate,
-          };
-        });
-        setHolidays(holidays);
-      } else {
-        console.error('Invalid data format', response);
-      }
-    } catch (error) {
-      console.error('Error fetching holidays:', error);
-    }
-  };
 
   function onViewFoodList(): void {
     navigation.navigate('FoodList');
@@ -130,7 +74,7 @@ const MyPlanScreen: React.FC<{navigation: any}> = ({navigation}) => {
     setCurrentYear(year);
   };
 
-  //######### FORMAT SUBSCRIPTION PLAN FROM CONTEXT ####################
+  //######### FORMAT SUBSCRIPTION PLAN FROM CONTEXT ###############
 
   const subscriptionPlan = profileData?.subscriptionPlan
     ? [
@@ -144,7 +88,6 @@ const MyPlanScreen: React.FC<{navigation: any}> = ({navigation}) => {
           //   : profileData.paymentStatus === 'paid'
           //   ? 'Active'
           //   : 'Expired',
-
           expiry: formatDate(profileData.subscriptionPlan.endDate),
         },
       ]
@@ -195,13 +138,11 @@ const MyPlanScreen: React.FC<{navigation: any}> = ({navigation}) => {
           ) : (
             <NoDataFound message="No active subscription found" />
           )}
-
           <ToolTipSectionHeader
             title="Select your Food Plan"
             tooltipText="Choose a plan to see your daily meals."
             icon={questionIcon}
           />
-
           <MenueCalendar
             onDateChange={date =>
               navigation.navigate('MenuSelection', {selectedDate: date})
@@ -218,8 +159,15 @@ const MyPlanScreen: React.FC<{navigation: any}> = ({navigation}) => {
           ) : (
             <NoDataFound message="No holidays found" />
           )}
-
-          <PrimaryButton title="View food list" onPress={onViewFoodList} />
+          <View style={styles.foodListButton}>
+            <PrimaryButton
+              title="View food list"
+              onPress={onViewFoodList}
+              style={{
+                width: wp('90%'),
+              }}
+            />
+          </View>
         </View>
       </ScrollView>
     </ThemeGradientBackground>
@@ -256,4 +204,7 @@ const styles = StyleSheet.create({
     width: wp('4%'),
     height: wp('1%'),
   },
+  foodListButton:{
+   marginVertical:wp('10%')
+  }
 });

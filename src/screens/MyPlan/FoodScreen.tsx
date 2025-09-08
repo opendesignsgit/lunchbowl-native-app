@@ -2,7 +2,6 @@ import {useFocusEffect} from '@react-navigation/native';
 import {useAuth} from 'context/AuthContext';
 import React, {useCallback, useState} from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import HeaderBackButton from 'screens/Dashboard/Components/BackButton';
 import SearchBar from 'screens/Dashboard/Components/Search';
 import FoodListCard from 'screens/MyPlan/Components/FoodListCard';
@@ -11,6 +10,12 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import ThemeGradientBackground from 'components/Backgrounds/GradientBackground';
+import {LoadingModal} from 'components/LoadingModal/LoadingModal';
+import {useMenu} from 'context/MenuContext';
+import SortButtons from 'components/Filters/SortButtons';
+import ToolTipSectionHeader from 'screens/Dashboard/Components/TooltipHeader';
+import {questionIcon} from 'styles/svg-icons';
 
 type Meal = {
   childId: string;
@@ -18,29 +23,47 @@ type Meal = {
   food: string;
 };
 
+type ChildWithMeals = {
+  id: string;
+  name: string;
+  meals: Meal[];
+};
+
 const FoodScreen = () => {
   //######### STATE ############################################
-
-  const [foodList, setFoodList] = useState<Meal[]>([]);
+  const [foodList, setFoodList] = useState<ChildWithMeals[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [searchText, setSearchText] = useState('');
   const {userId} = useAuth();
+
   //######### HOOKS ############################################
+  const {childrenData} = useMenu();
+  console.log('childrensData----------------', childrenData);
 
   useFocusEffect(
     useCallback(() => {
       onViewFoodList();
     }, [userId]),
   );
-  //######### GET FOOD API CALL ##############################
 
+  //######### GET FOOD API CALL ##############################
   const onViewFoodList = async () => {
     try {
       if (!userId) {
         console.error('User ID is null or undefined');
         return;
       }
+
+      setLoading(true);
       const response = await FoodService.getAllFoods('get-saved-meals', userId);
+
+      console.log(
+        'Meals API Response-------------------------------------------',
+        JSON.stringify(response, null, 2),
+      );
+
       const menuSelections = response?.data?.menuSelections;
-      console.log('FOODLIST', menuSelections);
+
       if (menuSelections && typeof menuSelections === 'object') {
         const meals: Meal[] = [];
 
@@ -52,45 +75,94 @@ const FoodScreen = () => {
           );
         });
 
-        setFoodList(meals);
+        // 🔹 Match meals with childrenData
+        const mergedMeals: ChildWithMeals[] = childrenData.map(child => ({
+          ...child,
+          meals: meals.filter(meal => meal.childId === child.id),
+        }));
+
+        console.log('Merged Meals Data ----------------', mergedMeals);
+
+        setFoodList(mergedMeals);
       } else {
         console.error('Invalid food data format:', response);
       }
     } catch (error) {
       console.error('Error fetching food list:', error);
+    } finally {
+      setLoading(false);
     }
   };
+  const [sortKey, setSortKey] = useState<string>('');
 
+  const getSortedFoodList = () => {
+    let sorted = [...foodList];
+
+    if (sortKey === 'name') {
+      sorted.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortKey === 'status') {
+      sorted.sort((a, b) => b.meals.length - a.meals.length);
+    } else if (sortKey === 'date') {
+      sorted.sort((a, b) => {
+        const dateA = a.meals[0]?.date
+          ? new Date(a.meals[0].date).getTime()
+          : 0;
+        const dateB = b.meals[0]?.date
+          ? new Date(b.meals[0].date).getTime()
+          : 0;
+        return dateA - dateB;
+      });
+    }
+
+    return sorted;
+  };
+  //######### RENDER ####################################
   return (
-    <LinearGradient
-      colors={['#FF651429', '#4AB23814', '#FAFAFA00']}
-      start={{x: 0.1, y: 0}}
-      end={{x: 0.1, y: 1}}
-      style={styles.gradient}>
+    <ThemeGradientBackground>
+      <LoadingModal loading={loading} setLoading={setLoading} />
       <View style={styles.container}>
-        <ScrollView>
-          <HeaderBackButton title="Edit Profile" />
-          <SearchBar value={''} onChangeText={function (text: string): void {
-            throw new Error('Function not implemented.');
-          } } />
-          <FoodListCard
-            childName="Child Name 1"
-            dateRange="01/04/2025 - 05/04/2025"
-            list={foodList}
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <HeaderBackButton title="My Saved Meals" />
+          <SearchBar value={searchText} onChangeText={setSearchText} />
+          <ToolTipSectionHeader
+            title="Sort your Food List by"
+            tooltipText="You can sort your saved meals by Child Name, Status (number of meals), or Date."
+            icon={questionIcon}
           />
+          <SortButtons onSort={setSortKey} />
+          {getSortedFoodList()
+            .filter(
+              child =>
+                child.name.toLowerCase().includes(searchText.toLowerCase()) ||
+                child.meals.some(meal =>
+                  meal.food.toLowerCase().includes(searchText.toLowerCase()),
+                ),
+            )
+            .map(child => {
+              const filteredMeals = child.meals.filter(meal =>
+                meal.food.toLowerCase().includes(searchText.toLowerCase()),
+              );
+
+              return (
+                <FoodListCard
+                  key={child.id}
+                  childName={child.name}
+                  meals={filteredMeals}
+                />
+              );
+            })}
         </ScrollView>
       </View>
-    </LinearGradient>
+    </ThemeGradientBackground>
   );
 };
+
 const styles = StyleSheet.create({
-  gradient: {
-    flex: 1,
-  },
   container: {
     flex: 1,
-    paddingHorizontal: wp('4%'),
-    paddingTop: hp('2%'),
+    paddingHorizontal: wp('5%'),
+    marginBottom: wp('20%'),
   },
 });
+
 export default FoodScreen;

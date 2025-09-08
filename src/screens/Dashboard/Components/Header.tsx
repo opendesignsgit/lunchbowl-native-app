@@ -73,12 +73,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   icon: {
-    width: wp('6%'), // ~24
+    width: wp('6%'), 
     height: wp('6%'),
     marginRight: wp('3%'),
   },
   profile: {
-    width: wp('8%'), // ~32
+    width: wp('8%'), 
     height: wp('8%'),
     borderRadius: wp('4%'),
   },

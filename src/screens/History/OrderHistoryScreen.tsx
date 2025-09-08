@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {ScrollView, StyleSheet, Text, View, TextInput} from 'react-native';
-import SortButtons from './Components/SortButtons';
+import SortButtons from '../../components/Filters/SortButtons';
 import OrderCard from './Components/OrderCard';
 import {Colors} from 'assets/styles/colors';
 import Fonts from 'assets/styles/fonts';
@@ -34,11 +34,13 @@ const OrderHistoryScreen = () => {
           <HeaderBackButton title="history" />
           <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
           <ToolTipSectionHeader
-            title="Select your Food Plan"
-            tooltipText="Choose a plan to see your daily meals."
+            title="Sort your Orders by"
+            tooltipText="Sort your Orders by"
             icon={questionIcon}
           />
-          <SortButtons />
+          <SortButtons onSort={function (key: string): void {
+            throw new Error('Function not implemented.');
+          } } />
           {mockOrders.map((item, index) => (
             <OrderCard key={index} data={item} />
           ))}

@@ -24,7 +24,6 @@ import NoDataFound from 'components/Error/NoDataMessage';
   const filteredMeals = meals.filter(meal => {
     const matchesCategory =
       selectedCategory === 'All' || meal.cuisine === selectedCategory;
-
     const matchesSearch =
       meal.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       meal.description.toLowerCase().includes(searchQuery.toLowerCase());

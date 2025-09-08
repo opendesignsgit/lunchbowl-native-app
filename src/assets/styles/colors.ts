@@ -13,7 +13,8 @@ export const Colors = {
     disableState: "#DDDDDD",
     bg: "#FAFAFA",
     Storke: "#EAEAEC",
-    formdisableState:"#fbcdb5"
+    formdisableState:"#fbcdb5",
+    endDate:"#f0f40eff"
 
 };
 

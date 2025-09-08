@@ -7,6 +7,8 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import PrimaryButton from 'components/buttons/PrimaryButton';
+import {Colors} from 'assets/styles/colors';
+import Fonts from 'assets/styles/fonts';
 
 // #################### SLIDE DATA ##################
 
@@ -100,7 +102,7 @@ const WalkThroughScreen: React.FC<{navigation: any}> = ({navigation}) => {
               Skip
             </Text>
           )}
-          
+
           {/*############### PAGINATION CONTAINER  ############ */}
 
           <View style={styles.pagination}>
@@ -157,14 +159,16 @@ const WalkThroughScreen: React.FC<{navigation: any}> = ({navigation}) => {
               <SecondaryButton
                 title="Back"
                 onPress={handleBack}
+                style={{
+                  width: currentSlideIndex === 0 ? wp('90%') : wp('40%'),
+                }}
               />
-              
-            )}   
+            )}
             <PrimaryButton
               title="Next"
               onPress={handleNext}
               style={{
-                width: currentSlideIndex === 0 ? wp('90%') : wp('40%'), 
+                width: currentSlideIndex === 0 ? wp('90%') : wp('40%'),
               }}
             />
           </View>
@@ -187,10 +191,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp('5%'),
   },
   skipText: {
-    color: '#FF6514',
+    color: Colors.primaryOrange,
     fontSize: wp('3.5%'),
-    fontFamily: 'Poppins-SemiBold',
-    borderColor: '#FF6514',
+    fontFamily: Fonts.Urbanist.regular,
+    borderColor: Colors.primaryOrange,
     borderWidth: 1,
     textTransform: 'uppercase',
     paddingVertical: hp('0.5%'),
@@ -208,11 +212,11 @@ const styles = StyleSheet.create({
     width: wp('20%'),
     height: wp('1%'),
     borderRadius: wp('1.5%'),
-    backgroundColor: '#666666',
+    backgroundColor: Colors.bodyText,
     marginHorizontal: wp('0.9%'),
   },
   activeDot: {
-    backgroundColor: '#FF6514',
+    backgroundColor: Colors.primaryOrange,
   },
   imageContainer: {
     flex: 3,
@@ -229,29 +233,29 @@ const styles = StyleSheet.create({
 
   title: {
     fontSize: wp('9%'),
-    color: '#FF6514',
-    fontFamily: 'Urbanist-SemiBold',
+    color: Colors.primaryOrange,
+    fontFamily: Fonts.Urbanist.semiBold,
     textAlign: 'center',
     width: wp('50%'),
     marginBottom: hp('1.9%'),
   },
   spanTittle: {
     fontSize: wp('9%'),
-    color: '#FF6514',
-    fontFamily: 'Urbanist-SemiBold',
+    color: Colors.primaryOrange,
+    fontFamily: Fonts.Urbanist.semiBold,
     textAlign: 'center',
     width: wp('100%'),
   },
 
   highlightText: {
-    color: '#FF6514',
+    color: Colors.primaryOrange,
   },
   description: {
     fontSize: wp('4.2%'),
     textAlign: 'center',
-    color: '#666666',
+    color: Colors.bodyText,
     marginBottom: hp('3%'),
-    fontFamily: 'Urbanist-Regular',
+    fontFamily: Fonts.Urbanist.regular,
     lineHeight: wp('6%'),
     fontWeight: '500',
     paddingHorizontal: wp('5%'),
@@ -272,7 +276,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     columnGap: wp('4%'),
     flexWrap: 'wrap',
-     gap: wp('4%'),
+    gap: wp('4%'),
   },
 });
 

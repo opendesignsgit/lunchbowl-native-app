@@ -25,85 +25,17 @@ type PrimaryButtonProps = {
   fontFamily?: string;
   style?: ViewStyle;
   disabled?: boolean;
-  disabledBackgroundColor?: string; 
-  disabledTextColor?: string;    
+  disabledBackgroundColor?: string;
+  disabledTextColor?: string;
 };
 
-// export default function PrimaryButton({
-//   title,
-//   onPress,
-//   backgroundColor = Colors.primaryOrange,
-//   textColor = Colors.white,
-//   borderRadius = 8,
-//   paddingVertical = 18,
-//   fontSize = 14,
-//   icon = null,
-//   textTransform = 'uppercase',
-//   fontFamily = Fonts.Urbanist.bold,
-//   disabledBackgroundColor = Colors.formdisableState, 
-//   disabledTextColor = Colors.bg,   
-//    disabled = false,  
-//   style = {},
-// }: PrimaryButtonProps) {
-//   return (
-//     <TouchableOpacity
-//       style={[
-//         styles.button,
-//         style,
-//         {
-//           backgroundColor: disabled ? disabledBackgroundColor : backgroundColor,
-//           borderRadius,
-//           paddingVertical,
-//         },
-//       ]}
-//       activeOpacity={0.8}
-//       onPress={disabled ? undefined : onPress} 
-//       disabled={disabled}>
-//       <View style={styles.content}>
-//         {icon && <View style={styles.icon}>{icon}</View>}
-//         <Text
-//           style={[
-//             styles.text,
-//             {
-//               color: disabled ? disabledTextColor : textColor,
-//               fontSize,
-//               textTransform,
-//               fontFamily,
-//             },
-//           ]}>
-//           {title}
-//         </Text>
-//       </View>
-//     </TouchableOpacity>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   button: {
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     marginVertical: hp(1.2),
-//     alignSelf: 'center',
-//     width: wp('90%'),
-//   },
-//   text: {
-//     fontWeight: '600',
-//   },
-//   content: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//   },
-//   icon: {
-//     marginRight: wp(2),
-//   },
-// });
 export default function PrimaryButton({
   title,
   onPress,
   backgroundColor = Colors.primaryOrange,
   textColor = Colors.white,
   borderRadius = wp('2%'),
-  fontSize = wp('3.8%'), 
+  fontSize = wp('3.8%'),
   icon = null,
   textTransform = 'uppercase',
   fontFamily = Fonts.Urbanist.bold,
@@ -137,9 +69,8 @@ export default function PrimaryButton({
               fontFamily,
             },
           ]}
-          numberOfLines={1} 
-          ellipsizeMode="tail" 
-        >
+          numberOfLines={1}
+          ellipsizeMode="tail">
           {title}
         </Text>
       </View>
@@ -151,10 +82,10 @@ const styles = StyleSheet.create({
   button: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: hp('1%'),
+    // marginVertical: hp('1%'),
     alignSelf: 'center',
-    width: wp('90%'),
-    height: hp('5.3%'), 
+    width: wp('100%'),
+    height: hp('5.3%'),
   },
   text: {
     fontWeight: '600',

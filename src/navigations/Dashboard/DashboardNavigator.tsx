@@ -1,4 +1,5 @@
 import {createStackNavigator} from '@react-navigation/stack';
+import {MealProvider} from 'context/MealContext';
 import React from 'react';
 import UnderConstruction from 'screens/404Screen';
 import HomeScreen from 'screens/Dashboard/HomeScreen';
@@ -8,34 +9,36 @@ import SettingsScreen from 'screens/Settings/SettingScreen';
 const Stack = createStackNavigator();
 const DashboardNavigator = () => {
   return (
-    <Stack.Navigator initialRouteName="HomeScreen">
-      <Stack.Screen
-        name="HomeScreen"
-        component={HomeScreen}
-        options={{headerShown: false}}
-      />
+    <MealProvider>
+      <Stack.Navigator initialRouteName="HomeScreen">
+        <Stack.Screen
+          name="HomeScreen"
+          component={HomeScreen}
+          options={{headerShown: false}}
+        />
 
-      <Stack.Screen
-        name="notifications"
-        component={Notifications}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="Settings"
-        component={SettingsScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="EditProfile"
-        component={EditProfileScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="UnderConstruction"
-        component={UnderConstruction}
-        options={{headerShown: false}}
-      />
-    </Stack.Navigator>
+        <Stack.Screen
+          name="notifications"
+          component={Notifications}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="EditProfile"
+          component={EditProfileScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="UnderConstruction"
+          component={UnderConstruction}
+          options={{headerShown: false}}
+        />
+      </Stack.Navigator>
+    </MealProvider>
   );
 };
 

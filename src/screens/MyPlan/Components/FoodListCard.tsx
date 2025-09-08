@@ -1,32 +1,48 @@
+import React, {useState} from 'react';
+import {FlatList, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {SvgXml} from 'react-native-svg';
+import {Colors} from 'assets/styles/colors';
+import Fonts from 'assets/styles/fonts';
+import Typography from 'components/Text/Typography';
 import NoDataMessage from 'components/Error/NoDataMessage';
-import AutoShrinkText from 'components/Text/AutoShrinkText';
-import React from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {EditIcon} from 'styles/svg-icons';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import { SvgXml } from 'react-native-svg';
-import { EditIcon } from 'styles/svg-icons';
+import BottomModal from 'components/Modal/BottomModal';
 
-interface FoodItem {
+interface Meal {
   date: string;
   food: string;
 }
 
 interface Props {
   childName: string;
-  dateRange: string;
-  list: FoodItem[];
+  meals: Meal[];
 }
 
-const FoodListCard: React.FC<Props> = ({childName, dateRange, list}) => {
-  const renderItem = ({item}: {item: FoodItem}) => (
+const FoodListCard: React.FC<Props> = ({childName, meals}) => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
+
+  const handleEdit = (meal: Meal) => {
+    setSelectedMeal(meal);
+    setModalVisible(true);
+  };
+
+  const renderItem = ({item}: {item: Meal}) => (
     <View style={styles.row}>
-      <Text style={styles.cell}>{item.date}</Text>
+      <Typography style={styles.cell} numberOfLines={1}>
+        {item.date}
+      </Typography>
       <View style={styles.foodCell}>
-        <AutoShrinkText style={styles.foodText}>{item.food}</AutoShrinkText>
-        <TouchableOpacity>
+        <Typography style={styles.foodText} numberOfLines={1}>
+          {item.food}
+        </Typography>
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={() => handleEdit(item)}>
           <SvgXml xml={EditIcon} width={wp('4%')} height={wp('4%')} />
         </TouchableOpacity>
       </View>
@@ -35,51 +51,79 @@ const FoodListCard: React.FC<Props> = ({childName, dateRange, list}) => {
 
   return (
     <View style={styles.wrapper}>
-      <Text style={styles.header}>{childName}</Text>
-      <Text style={styles.dateRange}>{dateRange}</Text>
+      <Typography style={styles.header} numberOfLines={1}>
+        {childName}
+      </Typography>
+
       <View style={styles.table}>
         <View style={styles.row}>
-          <Text style={[styles.cell, styles.tableHeader]}>DATE</Text>
-          <Text style={[styles.cell, styles.tableHeader]}>FOOD LIST</Text>
+          <Typography
+            style={[styles.cell, styles.tableHeader]}
+            numberOfLines={1}>
+            DATE
+          </Typography>
+          <Typography
+            style={[styles.cell, styles.tableHeader]}
+            numberOfLines={1}>
+            FOOD LIST
+          </Typography>
         </View>
-        <FlatList
-          data={list}
+
+       <FlatList
+          data={meals}
           keyExtractor={(_, index) => index.toString()}
           renderItem={renderItem}
           scrollEnabled={false}
           ListEmptyComponent={<NoDataMessage message="No food items found." />}
+          ItemSeparatorComponent={() => (
+            <View style={styles.separator} />
+          )}
         />
       </View>
+
+      <BottomModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}>
+        <Typography
+          style={{
+            fontSize: wp('4.5%'),
+            fontFamily: Fonts.Urbanist.bold,
+            marginBottom: hp('2%'),
+          }}>
+          Edit Meal
+        </Typography>
+        {/* <Typography>Date: {selectedMeal?.date}</Typography>
+        <Typography>Food: {selectedMeal?.food}</Typography> */}
+        {/* Add your input fields or actions here */}
+      </BottomModal>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   wrapper: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.white,
     borderRadius: wp('3%'),
-    padding: wp('4%'),
-    marginVertical: hp('1.5%'),
-    elevation: 3,
+    padding: wp('2%'),
+    marginVertical: hp('1%'),
+    elevation: 0.50,
   },
   header: {
-    fontWeight: 'bold',
     fontSize: wp('4.2%'),
-    backgroundColor: '#FFE7D8',
+    backgroundColor: Colors.lightRed,
     padding: wp('2%'),
     borderRadius: wp('2%'),
-  },
-  dateRange: {
-    marginTop: hp('0.5%'),
-    fontSize: wp('3.2%'),
-    color: '#444',
+    color: Colors.primaryOrange,
+    fontFamily:Fonts.Urbanist.bold
   },
   table: {
-    marginTop: hp('1.5%'),
+    marginTop: hp('1%'),
+    padding:('4%')
   },
   tableHeader: {
-    fontSize: wp('3.5%'),
     fontFamily: 'Urbanist-Bold',
+    fontSize: wp('3.5%'),
+    color: Colors.black,
   },
   row: {
     flexDirection: 'row',
@@ -87,25 +131,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: hp('1%'),
   },
-  cell: {
-    fontSize: wp('3.5%'),
-    flex: 1,
-  },
   foodCell: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1,
-    gap: wp('2%'),
+    marginVertical: wp('1%'),
   },
   foodText: {
-    fontSize: wp('3.5%'),
-    flexShrink: 1,
+    flex: 1,
+    fontSize: wp('4%'),
+    color: Colors.black,
+    fontFamily: Fonts.Urbanist.regular,
   },
-  emptyText: {
-    padding: wp('2.5%'),
-    fontStyle: 'italic',
-    color: '#888',
-    fontSize: wp('3.2%'),
+  editButton: {
+    marginLeft: wp('2%'),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cell: {
+    flex: 1,
+    fontSize: wp('3.5%'),
+    color: Colors.black,
+  },
+   separator: {
+    height: 1,
+    backgroundColor: Colors.Storke,
+    marginVertical: hp('0.5%'),
   },
 });
 

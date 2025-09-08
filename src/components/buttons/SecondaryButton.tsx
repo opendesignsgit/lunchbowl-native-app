@@ -1,63 +1,81 @@
+import {Colors} from 'assets/styles/colors';
+import Fonts from 'assets/styles/fonts';
 import React from 'react';
-import {TouchableOpacity, Text, StyleSheet, View} from 'react-native';
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 
-type PrimaryButtonProps = {
+type SecondaryButtonProps = {
   title: string;
   onPress: () => void;
+  borderColor?: string;
   backgroundColor?: string;
   textColor?: string;
-  borderColor?: string;
   borderRadius?: number;
   paddingVertical?: number;
   fontSize?: number;
   icon?: React.ReactNode;
   textTransform?: 'none' | 'capitalize' | 'uppercase' | 'lowercase';
   fontFamily?: string;
+  style?: ViewStyle;
+  disabled?: boolean;
+  disabledBackgroundColor?: string;
+  disabledTextColor?: string;
 };
 
 export default function SecondaryButton({
   title,
   onPress,
   backgroundColor = 'transparent',
-  textColor = '#8C8C8C',
-  borderColor = '#8C8C8C',
-  borderRadius = 8,
-  paddingVertical = 18,
-  fontSize = 14,
+  textColor = Colors.default,
+  borderColor = Colors.default,
+  borderRadius = wp('2%'),
+  fontSize = wp('3.8%'),
   icon = null,
   textTransform = 'uppercase',
-  fontFamily = 'Urbanist-Bold',
-}: PrimaryButtonProps) {
+  fontFamily = Fonts.Urbanist.bold,
+  disabledBackgroundColor = Colors.formdisableState,
+  disabledTextColor = Colors.bg,
+  disabled = false,
+  style = {},
+}: SecondaryButtonProps) {
   return (
     <TouchableOpacity
       style={[
         styles.button,
+        style,
         {
-          backgroundColor,
-          borderColor,
+          backgroundColor: disabled ? disabledBackgroundColor : backgroundColor,
           borderRadius,
-          paddingVertical,
-          borderWidth: 1,
+          borderWidth: 1, // ✅ ensure border is visible
+          borderColor: borderColor, // ✅ apply borderColor prop
         },
       ]}
       activeOpacity={0.8}
-      onPress={onPress}>
+      onPress={disabled ? undefined : onPress}
+      disabled={disabled}>
       <View style={styles.content}>
         {icon && <View style={styles.icon}>{icon}</View>}
         <Text
           style={[
             styles.text,
             {
-              color: textColor,
+              color: disabled ? disabledTextColor : textColor,
               fontSize,
               textTransform,
               fontFamily,
             },
-          ]}>
+          ]}
+          numberOfLines={1}
+          ellipsizeMode="tail">
           {title}
         </Text>
       </View>
@@ -67,20 +85,22 @@ export default function SecondaryButton({
 
 const styles = StyleSheet.create({
   button: {
-    paddingHorizontal: wp(15),
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: hp(1.2),
     alignSelf: 'center',
+    width: wp('100%'),
+    height: hp('5.3%'),
   },
   text: {
-    color: '#060101ff',
+    fontWeight: '600',
+    textAlign: 'center',
   },
   content: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
   },
   icon: {
-    marginRight: wp(2),
+    marginRight: wp('2%'),
   },
 });

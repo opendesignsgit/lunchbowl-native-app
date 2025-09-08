@@ -17,6 +17,7 @@ const App = () => {
         backgroundColor={Colors.white}
         translucent={true}
       />
+
       <SafeAreaView style={styles.safeArea}>
         <MainNavigator />
         <Toast />

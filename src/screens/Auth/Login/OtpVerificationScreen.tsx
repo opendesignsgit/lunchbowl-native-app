@@ -199,6 +199,9 @@ const OtpVerificationScreen = () => {
               <PrimaryButton
                 title="Verify One Time Password"
                 onPress={handleVerify}
+                style={{
+                  width: wp('90%'),
+                }}
               />
               <LoadingModal loading={loading} setLoading={setLoading} />
             </View>

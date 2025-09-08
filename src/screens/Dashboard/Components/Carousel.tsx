@@ -1,4 +1,5 @@
-import React, {useEffect, useRef, useState} from 'react';
+import { Colors } from 'assets/styles/colors';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -13,7 +14,7 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
-const {width: screenWidth} = Dimensions.get('window');
+const { width: screenWidth } = Dimensions.get('window');
 
 const banners = [
   {
@@ -93,15 +94,15 @@ const styles = StyleSheet.create({
   },
   imageWrapper: {
     width: screenWidth * 0.9,
-    height: hp('21%'),
+    height: hp('22%'), 
     marginRight: wp('3%'),
-    borderRadius: 12,
+    borderRadius: wp('3%'), 
     overflow: 'hidden',
   },
   image: {
     width: '100%',
     height: '100%',
-    borderRadius: 12,
+    borderRadius: wp('3%'),
   },
   paginationContainer: {
     flexDirection: 'row',
@@ -109,16 +110,17 @@ const styles = StyleSheet.create({
     marginTop: hp('1%'),
   },
   dot: {
-    width: 5,
-    height: 4,
-    borderRadius: 4,
-    backgroundColor: '#ccc',
-    marginHorizontal: 4,
+    width: wp('2%'),
+    height: hp('0.8%'),
+    borderRadius: wp('1%'),
+    backgroundColor: Colors.lightRed,
+    marginHorizontal: wp('1%'),
   },
   activeDot: {
-    backgroundColor: '#FF6514',
-    width: 15,
-    height: 4,
+    backgroundColor: Colors.primaryOrange,
+    width: wp('6%'),
+    height: hp('0.8%'),
+    borderRadius: wp('1%'),
   },
 });
 

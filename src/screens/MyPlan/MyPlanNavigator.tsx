@@ -7,12 +7,13 @@ import Toast from 'react-native-toast-message';
 import PaymentWebView from 'screens/Subscription/Components/forms/PaymentWebView';
 import Registartion from 'screens/Subscription/Registration';
 import RegistrationService from 'services/RegistartionService/registartion';
-import {CalendarDateProvider} from '../../context/calenderContext';
+// import {CalendarDateProvider} from '../../context/calenderContext';
 import MyPlanScreen from './Calender';
 import FoodScreen from './FoodScreen';
 import MenuSelectionScreen from './MenuSelection';
 import {useNetwork} from 'hooks/useNetwork';
 import OfflineScreen from 'screens/OfflineScreen';
+import {HolidayDateProvider} from 'context/calenderContext';
 const Stack = createStackNavigator();
 
 const MyPlanNavigator = () => {
@@ -39,8 +40,6 @@ const MyPlanNavigator = () => {
     } catch (error) {
       console.error('Error checking step:', error);
       setScreenToShow('Offline');
-              setScreenToShow('Registartion');
-
     }
   }
 
@@ -61,16 +60,16 @@ const MyPlanNavigator = () => {
     }
   }, [isConnected]);
 
-  // if (!isConnected || screenToShow === 'Offline') {
-  //   return <OfflineScreen />;
-  // }
+  if (!isConnected || screenToShow === 'Offline') {
+    return <OfflineScreen />;
+  }
 
   if (!screenToShow) return null;
 
   return (
     <MenuProvider>
       <UserProfileProvider>
-        <CalendarDateProvider>
+        <HolidayDateProvider>
           <Stack.Navigator initialRouteName={screenToShow}>
             <Stack.Screen
               name="MenuSelection"
@@ -98,7 +97,7 @@ const MyPlanNavigator = () => {
               options={{headerShown: false}}
             />
           </Stack.Navigator>
-        </CalendarDateProvider>
+        </HolidayDateProvider>
       </UserProfileProvider>
     </MenuProvider>
   );

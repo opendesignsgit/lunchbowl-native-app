@@ -16,6 +16,8 @@ import {
 import PrimaryButton from 'components/buttons/PrimaryButton';
 import LinearGradient from 'react-native-linear-gradient';
 import {Easing} from 'react-native';
+import {Colors} from 'assets/styles/colors';
+import Fonts from 'assets/styles/fonts';
 
 const imageRows = [
   [
@@ -186,6 +188,9 @@ const WelcomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
               <PrimaryButton
                 title="LET’S Get Started"
                 onPress={GoToWalkthrowScreen}
+                style={{
+                  width: wp('90%'),
+                }}
               />
             </View>
             <View style={WelcomeStyle.loginContainer}>
@@ -227,12 +232,12 @@ const WelcomeStyle = StyleSheet.create({
 
   safeArea: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.white,
   },
   scrollContent: {
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.white,
   },
   container: {
     alignItems: 'center',
@@ -260,18 +265,18 @@ const WelcomeStyle = StyleSheet.create({
   },
   title: {
     fontSize: wp('8%'),
-    color: '#FF6514',
-    fontFamily: 'Urbanist-SemiBold',
+    color: Colors.primaryOrange,
+    fontFamily: Fonts.Urbanist.semiBold,
     textAlign: 'center',
     width: wp('100%'),
   },
   description: {
     fontSize: wp('4.5%'),
-    color: '#67686A',
+    color: Colors.bodyText,
     textAlign: 'center',
     marginTop: hp('2%'),
     marginBottom: hp('2%'),
-    fontFamily: 'OpenSans-Regular',
+    fontFamily: Fonts.OpenSans.regular,
     width: wp('90%'),
   },
   centerRow: {
@@ -291,14 +296,14 @@ const WelcomeStyle = StyleSheet.create({
   },
   text: {
     fontSize: wp('3.9%'),
-    color: '#000000',
+    color: Colors.black,
     fontWeight: '400',
-    fontFamily: 'OpenSans-Regular',
+    fontFamily: Fonts.OpenSans.regular,
   },
   createAccountText: {
     fontSize: wp('3.9%'),
-    color: '#FF6514',
-    fontFamily: 'Urbanist-Bold',
+    color: Colors.primaryOrange,
+    fontFamily: Fonts.Urbanist.bold,
   },
 });
 
