@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
     IInitialScreencontainer: {
         flex: 1,
         justifyContent: 'space-between',
-            paddingHorizontal: wp('5%'),
+        paddingHorizontal: wp('5%'),
 
     },
     illustration: {
@@ -66,7 +66,9 @@ const styles = StyleSheet.create({
 
     StickyButton: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'center', 
+        width: '100%',
+        columnGap:10
     },
 
     formsContainer: {
@@ -102,7 +104,8 @@ const styles = StyleSheet.create({
         marginTop: hp('2%'),
     },
     childFormContainer: {
-        marginBottom: hp('27%'),
+        marginBottom: hp('35%'),
+      
     },
     addchildTabText: {
         color: Colors.primaryOrange,
@@ -116,26 +119,30 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.Urbanist.semiBold,
         color: Colors.black,
         fontSize: wp('3.7%'),
-
-
     },
     SubmitButtonContainer: {
         position: 'absolute',
-        bottom: 0,
+        bottom: 0,      
         left: 0,
         right: 0,
         backgroundColor: Colors.bg,
         padding: 15,
         borderTopWidth: 1,
         borderColor: Colors.Storke,
+        justifyContent: 'space-between',
+        columnGap: wp('4%'),
     },
     removeButton: {
-        marginTop: hp('1.5%'),
-        paddingVertical: hp('1.2%'),
-        paddingHorizontal: wp('4%'),
-        borderRadius: wp('2%'),
-        backgroundColor: Colors.red,
-        alignSelf: 'flex-start',
+     position: 'absolute',
+  bottom: 0,
+  left: 0,
+  right: 0,
+  backgroundColor: Colors.bg,
+  padding: 15,
+  borderTopWidth: 1,
+  borderColor: Colors.Storke,
+
+  alignItems: 'center',
     },
     removeButtonContainer: {
         marginBottom: hp('5%'),

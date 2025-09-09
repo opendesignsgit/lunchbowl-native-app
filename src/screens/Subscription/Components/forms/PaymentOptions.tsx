@@ -77,10 +77,10 @@ export default function PaymentOptions({prevStep, navigation}: any) {
         endpoint: ccavenueConfig.endpoint,
       });
 
-      Alert.alert(
-        'Payment Ready',
-        `Encrypted: ${encryptedData.substring(0, 20)}...`,
-      );
+      // Alert.alert(
+      //   'Payment Ready',
+      //   `Encrypted: ${encryptedData.substring(0, 20)}...`,
+      // );
     } catch (err) {
       console.error('Payment error:', err);
       Alert.alert('Error', 'Payment failed, please try again');

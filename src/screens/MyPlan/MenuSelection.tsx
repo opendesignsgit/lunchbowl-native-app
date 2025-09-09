@@ -29,8 +29,24 @@ import MenuService from 'services/MyPlansApi/MenuService';
 import {BackIcon, ForwardIcon, questionIcon} from 'styles/svg-icons';
 import menues from '../../services/MenueService/Data/menus.json';
 import {useDate} from 'context/calenderContext';
+import Tooltip from 'react-native-walkthrough-tooltip';
+import AlertModal from 'components/Modal/AlertModal';
+import { validateMenuDate } from 'utils/MenuValidation';
+import PrimaryDropdown from 'components/inputs/PrimaryDropdown';
+
+// ################### HELPER DROPDOWN #############################
+
+type DropdownOption = {
+  label: string;
+  value: string | number;
+};
 
 const allMeals = menues.meal_plan.flatMap(day => day.meals);
+const mealOptions: DropdownOption[] = allMeals.map(meal => ({
+  label: meal,
+  value: meal,
+}));
+
 
 // ################### HELPER DROPDOWN #############################
 
@@ -58,6 +74,7 @@ const MealsList = ({
           style={styles.list}
           data={allMeals}
           keyExtractor={(item, index) => index.toString()}
+          nestedScrollEnabled={true} 
           renderItem={({item}) => (
             <TouchableOpacity
               style={styles.item}
@@ -104,8 +121,6 @@ const MenuSelectionScreen = ({
     ? normalizeDate(new Date(route.params.selectedDate))
     : normalizeDate(new Date());
 
-  // console.log('passedDate,----------------', passedDate);
-
   // ################### STATES CALL HOOCKS #########################
 
   const [selectedTab, setSelectedTab] = useState<'custom' | 'dietitian'>(
@@ -122,11 +137,31 @@ const MenuSelectionScreen = ({
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
   const [selectedMonth, setSelectedMonth] = useState(new Date());
   const [selectedDietitianPlan, setSelectedDietitianPlan] = useState<any>(null);
+  const [showTip, setShowTip] = useState(false);
 
-  const handleDishSelect = (childIndex: number) => (dish: string) => {
+  //################################# ERROR HANDLING #######################
+
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertType, setAlertType] = useState<'success' | 'error' | 'warning'>(
+    'success',
+  );
+  const [alertMessage, setAlertMessage] = useState('');
+
+  // const handleDishSelect = (childIndex: number) => (dish: string) => {
+  //   setSelectedDishes(prev => {
+  //     const updated = [...prev];
+  //     updated[childIndex] = dish;
+  //     return updated;
+  //   });
+  // };
+// ################### HANDLE DISH SELECTION #######################
+
+  const handleDishSelect = (childIndex: number) => (dish: string | number) => {
+    const dishStr = String(dish);
     setSelectedDishes(prev => {
-      const updated = [...prev];
-      updated[childIndex] = dish;
+      let updated = [...prev];
+      updated[childIndex] = dishStr;
+      if (applySameDish) updated = childrenData.map(() => dishStr);
       return updated;
     });
   };
@@ -136,8 +171,6 @@ const MenuSelectionScreen = ({
   }, [selectedTab]);
 
   const {holidays} = useDate();
-
-  console.log('this is Holiday', holidays);
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('en-US', {
@@ -174,32 +207,47 @@ const MenuSelectionScreen = ({
     setSelectedMonth(next);
   };
 
-  // Convert passed date to 'YYYY-MM-DD' format
+  //################ DATE IF MATCHE SHOW PAY BUTTON ####################
+
   const selectedDateStr = new Date(route.params.selectedDate)
     .toISOString()
     .split('T')[0];
+  // Check if selected date is holiday (from API)
+  const isHolidayFromApi = holidays.some(
+    holiday => holiday.date === selectedDateStr,
+  );
+  // Check if weekend (Saturday=6, Sunday=0)
+  const dayOfWeek = new Date(route.params.selectedDate).getDay();
+  const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+  // Final holiday condition (true if holiday OR weekend)
+  const isHoliday = isHolidayFromApi || isWeekend;
 
-  const isHoliday = holidays.some(holiday => holiday.date === selectedDateStr);
-  
-
-  // ################### HANDLE API CALL #############################
+  // ################### HANDLE API CALL ###################################
 
   const SaveMenue = async () => {
-    console.log('👉 SaveMenue called');
     setLoading(true);
-
     try {
+
+      // PAST DATE FUTRE DATE VALIDATION   ####################
+
+      const errorMsg = validateMenuDate(selectedDate, holidays);
+      if (errorMsg) {   
+        Alert.alert('Not Allowed Permission Denied', errorMsg);       
+        setLoading(false);
+        return;
+      }
+
       let childrenPayload;
 
-      if (selectedTab === 'custom') {
-        // Custom Plan Save
-        childrenPayload = {
-          _id: '6899c82df8872394d8f40ba3',
-          path: 'save-meals',
-          data: {
-            userId,
-            children: childrenData.map((child, childIndex) => {
-              return {
+      switch (selectedTab) {
+        // ######################## CUSTOM PLAN #############################
+        case 'custom': {
+          childrenPayload = {
+            _id: userId,
+            path: 'save-meals',
+            data: {
+              userId,
+              children: childrenData.map((child, childIndex) => ({
                 childId: child.id,
                 meals: [
                   {
@@ -207,43 +255,62 @@ const MenuSelectionScreen = ({
                     mealName: selectedDishes[childIndex] || '',
                   },
                 ],
-              };
-            }),
-          },
-        };
-      } else {
-        // Dietitian Plan Save
-        if (!selectedDietitianPlan) {
-          Alert.alert('Error', 'Please select a Dietitian plan before saving');
-          setLoading(false);
-          return;
+              })),
+            },
+          };
+          break;
         }
 
-        childrenPayload = {
-          _id: '6899c82df8872394d8f40ba3',
-          path: 'save-meals',
-          data: {
-            userId,
-            children: childrenData.map(child => {
-              return {
+        // ######################## DIETITIAN PLAN #########################
+        case 'dietitian': {
+          if (!selectedDietitianPlan) {
+            Alert.alert(
+              'Error',
+              'Please select a Dietitian plan before saving',
+            );
+            setLoading(false);
+            return;
+          }
+          childrenPayload = {
+            _id: '6899c82df8872394d8f40ba3',
+            path: 'save-meals',
+            data: {
+              userId,
+              children: childrenData.map(child => ({
                 childId: child.id,
                 meals: selectedDietitianPlan.meals.map((meal: string) => ({
                   mealDate: selectedMonth.toISOString(),
                   mealName: meal,
                 })),
-              };
-            }),
-          },
-        };
+              })),
+            },
+          };
+          break;
+        }
+
+        // ######################## DEFAULT (UNKNOWN TAB) ###################
+        default: {
+          Alert.alert('Error', 'Invalid plan type selected');
+          setLoading(false);
+          return;
+        }
       }
+
+      console.log(
+        'sendeddata for console >>> ',
+        JSON.stringify(childrenPayload, null, 2),
+      );
 
       const response = await MenuService.saveMenuSelection(childrenPayload);
 
       if (response?.success) {
-        Alert.alert('Success', response.message || 'Menu saved successfully!');
+        setAlertType('success');
+        setAlertMessage(response.message || 'Menu saved successfully!');
       } else {
-        Alert.alert('Error', response?.error || 'Failed to save menu');
+        setAlertType('error');
+        setAlertMessage(response?.error || 'Failed to save menu');
       }
+      setAlertVisible(true);
     } catch (error) {
       console.error('🔥 Save menu error:', error);
       Alert.alert('Error', 'Something went wrong while saving the menu');
@@ -262,7 +329,6 @@ const MenuSelectionScreen = ({
     <ThemeGradientBackground>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
-          {/* Header */}
           <HeaderBackButton title="Back" />
           {/* Tabs */}
           <View style={styles.tabsContainer}>
@@ -320,7 +386,7 @@ const MenuSelectionScreen = ({
             </View>
           )}
           <Text style={styles.noteText}>
-            Note: Lorem ipsum dolor sit amet conseictetur. Eit doloor.
+            Note: Choose your child’s meals by selecting their name.
           </Text>
 
           {/* Child Menu Selection or Meal Plans */}
@@ -330,9 +396,22 @@ const MenuSelectionScreen = ({
                 ? 'Select your Child’s Menu'
                 : 'Available Dietitian Plans'}
             </SectionTitle>
-            <TouchableOpacity>
-              <SvgXml xml={questionIcon} width={20} height={20} />
-            </TouchableOpacity>
+
+            <Tooltip
+              isVisible={showTip}
+              content={
+                <Text style={{color: Colors.black, fontSize: wp('3.5%')}}>
+                  {selectedTab === 'custom'
+                    ? 'Pick meals for each child by name.'
+                    : 'Choose a dietitian plan and apply to all children.'}
+                </Text>
+              }
+              placement="bottom"
+              onClose={() => setShowTip(false)}>
+              <TouchableOpacity onPress={() => setShowTip(true)}>
+                <SvgXml xml={questionIcon} width={20} height={20} />
+              </TouchableOpacity>
+            </Tooltip>
           </View>
           <View style={styles.menuSelection}>
             {selectedTab === 'custom' ? (
@@ -343,10 +422,18 @@ const MenuSelectionScreen = ({
                 {childrenData.map((child, index) => (
                   <View key={child.id} style={styles.childForm}>
                     <Text style={styles.childName}>{child.name}</Text>
-                    <MealsList
+                    
+                    {/* <MealsList
                       placeholder={`Select ${child.name}'s Dish`}
                       selectedValue={selectedDishes[index] || ''}
                       onSelectDish={handleDishSelect(index)}
+                    /> */}
+
+                   <PrimaryDropdown
+                      options={mealOptions}
+                      placeholder={`Select ${child.name}'s Dish`}
+                      selectedValue={selectedDishes[index] || ''}
+                      onValueChange={handleDishSelect(index)}
                     />
                     {index === 0 && (
                       <View style={styles.checkboxContainer}>
@@ -364,7 +451,7 @@ const MenuSelectionScreen = ({
                 ))}
               </ScrollView>
             ) : (
-              // ---------------- Dietitian Plan ----------------
+              //  ####################### DITRATION PLAN ##########################
 
               <View style={{marginTop: 10}}>
                 {Object.entries(mealPlans).map(([key, plan]) => {
@@ -430,43 +517,55 @@ const MenuSelectionScreen = ({
               </View>
             )}
           </View>
-
-          {/* Buttons for Custom & Dietitian */}
-          {(selectedTab === 'custom' || selectedTab === 'dietitian') && (
-            <View style={styles.buttonsRow}>
-              <SecondaryButton
-                title="CANCEL"
-                onPress={() => navigation.goBack()}
-                style={{
-                  width: wp('40%'),
-                }}
-              />
-
-              {!isHoliday && (
-                <PrimaryButton
-                  title={loading ? 'Saving...' : 'SAVE'}
-                  onPress={SaveMenue}
-                  disabled={loading}
-                  style={{
-                    width: wp('40%'),
-                  }}
-                />
-              )}
-
-              {isHoliday && (
-                <PrimaryButton
-                  title="Pay Now"
-                  onPress={handlePayNow}
-                  style={{
-                    width: wp('40%'),
-                  }}
-                />
-              )}
-            </View>
-          )}
         </View>
       </ScrollView>
 
+      {/* Buttons for Custom & Dietitian */}
+      {(selectedTab === 'custom' || selectedTab === 'dietitian') && (
+        <View style={styles.stickyButtonsContainer}>
+          {isHoliday && (
+            <Text style={styles.holidayWarningText}>
+              ⚠ This date is a holiday. Additional charges may apply.
+            </Text>
+          )}
+          <View style={styles.stickyButtonsRow}>
+            <SecondaryButton
+              title="CANCEL"
+              onPress={() => navigation.goBack()}
+              style={{
+                width: wp('43%'),
+              }}
+            />
+
+            {!isHoliday && (
+              <PrimaryButton
+                title={loading ? 'Saving...' : 'SAVE'}
+                onPress={SaveMenue}
+                disabled={loading}
+                style={{
+                  width: wp('43%'),
+                }}
+              />
+            )}
+
+            {isHoliday && (
+              <PrimaryButton
+                title="Pay Now"
+                onPress={handlePayNow}
+                style={{
+                  width: wp('43%'),
+                }}
+              />
+            )}
+          </View>
+        </View>
+      )}
+      <AlertModal
+        visible={alertVisible}
+        type={alertType}
+        message={alertMessage}
+        onClose={() => setAlertVisible(false)}
+      />
       {/* Bottom Sheet for Dietitian Plan */}
       <Modal
         visible={!!selectedPlan}
@@ -500,22 +599,23 @@ export default MenuSelectionScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingBottom: hp('10%'),
-    padding: 20,
+    paddingBottom: hp('20%'),
+    padding: wp('5%'),
   },
   list: {
     borderWidth: 1,
     borderColor: Colors.lightRed,
-    marginTop: 5,
-    maxHeight: 200,
+    marginTop: hp('0.5%'),
+    maxHeight: hp('25%'),
   },
   item: {
-    padding: 10,
+    padding: hp('1.5%'),
     borderBottomWidth: 1,
     borderBottomColor: Colors.white,
   },
   itemText: {
     color: Colors.bodyText,
+    fontSize: wp('3.8%'),
   },
   backBtn: {
     flexDirection: 'row',
@@ -533,7 +633,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     borderRadius: wp('2%'),
     marginBottom: hp('3%'),
-    padding: wp('0.9%'),
+    padding: wp('1%'),
   },
   tabButton: {
     flex: 1,
@@ -562,18 +662,18 @@ const styles = StyleSheet.create({
   planHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: hp('1%'),
   },
 
   radioOuter: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: wp('5%'),
+    height: wp('5%'),
+    borderRadius: wp('2.5%'),
     borderWidth: 2,
     borderColor: Colors.primaryOrange,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 10,
+    marginRight: wp('2.5%'),
   },
 
   radioOuterSelected: {
@@ -582,9 +682,9 @@ const styles = StyleSheet.create({
   },
 
   radioInner: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: wp('2.5%'),
+    height: wp('2.5%'),
+    borderRadius: wp('1.5%'),
     backgroundColor: Colors.primaryOrange,
   },
 
@@ -594,7 +694,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: Colors.lightRed,
     borderRadius: wp('3%'),
-    paddingVertical: hp('2.0%'),
+    paddingVertical: hp('2%'),
     paddingHorizontal: wp('5%'),
     marginBottom: hp('1%'),
     borderStyle: 'dashed',
@@ -612,9 +712,9 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.Urbanist.bold,
   },
   noteText: {
-    fontSize: wp('3.5%'),
-    color: Colors.black,
-    marginBottom: hp('3%'),
+    fontSize: wp('3%'),
+    color: Colors.default,
+    marginLeft: 10,
   },
   menuSelection: {
     flex: 1,
@@ -622,14 +722,11 @@ const styles = StyleSheet.create({
     borderRadius: wp('3%'),
     padding: wp('4%'),
 
-    // ✅ Shadow for iOS
-    shadowColor: '#000',
+    shadowColor: Colors.bodyText,
     shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-
-    // ✅ Elevation for Android
-    elevation: 2,
+    shadowOpacity: 0.0,
+    shadowRadius: 1,
+    elevation: 0.5,
   },
 
   menuHeader: {
@@ -640,7 +737,6 @@ const styles = StyleSheet.create({
   formContainer: {
     flexGrow: 1,
     marginBottom: hp('2%'),
-    padding: 10,
   },
   childForm: {
     marginBottom: hp('3%'),
@@ -668,7 +764,7 @@ const styles = StyleSheet.create({
   checkbox: {
     width: wp('4%'),
     height: wp('4%'),
-    borderRadius: 3,
+    borderRadius: wp('1%'),
     borderWidth: 1,
     borderColor: Colors.lightRed,
     marginRight: wp('3%'),
@@ -681,14 +777,10 @@ const styles = StyleSheet.create({
     fontSize: wp('3.5%'),
     color: Colors.black,
   },
-  buttonsRow: {
-    marginTop:"10%",
+  stickyButtonsRow: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'space-between',
     columnGap: wp('4%'),
-    flexWrap: 'wrap',
-    // gap: wp('4%'),
   },
   cancelBtn: {
     flex: 1,
@@ -704,12 +796,25 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: wp('3.5%'),
   },
+  stickyButtonsContainer: {
+    paddingHorizontal: wp('5%'),
+    paddingVertical: hp('2%'),
+    borderTopColor: Colors.lightRed,
+  },
+  holidayWarningText: {
+    color: Colors.red,
+    fontSize: wp('3.5%'),
+    fontWeight: '600',
+    marginTop: hp('1%'),
+    marginBottom: hp('1%'),
+  },
+
   // ---------------- Dietitian Plans ----------------
   planCard: {
     backgroundColor: Colors.white,
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 15,
+    borderRadius: wp('2.5%'),
+    padding: wp('4%'),
+    marginBottom: hp('2%'),
     shadowColor: Colors.black,
     shadowOpacity: 0.1,
     shadowRadius: 5,
@@ -717,20 +822,28 @@ const styles = StyleSheet.create({
   },
   planTitle: {
     fontWeight: '700',
-    fontSize: 16,
-    marginBottom: 6,
+    fontSize: wp('4%'),
+    marginBottom: hp('1%'),
     color: Colors.primaryOrange,
   },
-  mealRow: {marginBottom: 10},
-  mealText: {fontSize: 14, color: Colors.black, marginBottom: 3},
+  mealRow: {marginBottom: hp('1.5%')},
+  mealText: {
+    fontSize: wp('3.8%'),
+    color: Colors.black,
+    marginBottom: hp('0.5%'),
+  },
   viewMoreBtn: {
     alignSelf: 'flex-start',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
+    paddingVertical: hp('0.8%'),
+    paddingHorizontal: wp('3%'),
     backgroundColor: Colors.primaryOrange,
-    borderRadius: 6,
+    borderRadius: wp('1.5%'),
   },
-  viewMoreText: {color: Colors.white, fontWeight: '600', fontSize: 13},
+  viewMoreText: {
+    color: Colors.white,
+    fontWeight: '600',
+    fontSize: wp('3.5%'),
+  },
   modalOverlay: {
     flex: 1,
     backgroundColor: Colors.white,
@@ -738,21 +851,22 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: Colors.white,
-    padding: 20,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
+    padding: wp('5%'),
+    borderTopLeftRadius: wp('4%'),
+    borderTopRightRadius: wp('4%'),
     maxHeight: '70%',
   },
   modalTitle: {
-    fontSize: 18,
+    fontSize: wp('4.5%'),
     fontWeight: '700',
-    marginBottom: 10,
+    marginBottom: hp('1.5%'),
     color: Colors.primaryOrange,
   },
   closeBtn: {
     color: Colors.primaryOrange,
     fontWeight: '700',
-    marginTop: 15,
+    marginTop: hp('2%'),
     textAlign: 'center',
+    fontSize: wp('3.8%'),
   },
 });

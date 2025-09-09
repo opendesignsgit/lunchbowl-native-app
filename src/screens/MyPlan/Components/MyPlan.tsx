@@ -1,6 +1,7 @@
 import {Colors} from 'assets/styles/colors';
 import Fonts from 'assets/styles/fonts';
 import PrimaryButton from 'components/buttons/PrimaryButton';
+import Typography from 'components/Text/Typography';
 import React from 'react';
 import {StyleSheet, Text, View, ScrollView} from 'react-native';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
@@ -30,11 +31,14 @@ const PlanCard: React.FC<PlanCardProps> = ({
       showsVerticalScrollIndicator={false}>
       <View style={styles.card}>
         <View style={styles.cardHeader}>
-          <Text style={styles.planTitle}>{userName}’s Current Plan</Text>
+          <Typography style={styles.planTitle} numberOfLines={1} maxWords={2}>
+            {`${userName}’s Current Plan`}
+          </Typography>
+
           <Text
             style={[
               styles.status,
-              status === 'Expired' && styles.statusExpired,
+              status === 'Not Paid' ? styles.statusExpired : styles.statusPaid,
             ]}>
             {status}
           </Text>
@@ -55,40 +59,45 @@ const PlanCard: React.FC<PlanCardProps> = ({
 };
 
 const styles = StyleSheet.create({
-wrapper: {
-  flexGrow: 1,
-  justifyContent: 'center',  
-  alignItems: 'center',      
-  padding: wp('1%'),
-},
-card: {
-  width: wp('86%'),         
-  maxWidth: 400,             
-  backgroundColor: Colors.white,
-  borderRadius: 12,
-  padding: wp('5%'),
-  shadowColor: Colors.black,
-  shadowOpacity: 0.1,
-  shadowRadius: 4,
-  elevation: 2,
-  borderWidth: 1,
-  borderColor: Colors.primaryOrange,
-},
+  wrapper: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: wp('1%'),
+  },
+  card: {
+    width: wp('86%'),
+    maxWidth: 400,
+    borderRadius: 25,
+    padding: wp('5%'),
+    shadowColor: Colors.black,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    borderWidth: 1,
+    borderBottomWidth: 6,
+    borderRightWidth: 6,
+    borderColor: Colors.primaryOrange,
+  },
 
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   planTitle: {
-    fontSize: 16,
+    fontSize: 22,
     color: Colors.primaryOrange,
     fontFamily: Fonts.Urbanist.bold,
   },
+  statusPaid: {
+    color: 'green',
+    fontWeight: '600',
+  },
+
   planSubText: {
-    fontSize: 14,
+    fontSize: 18,
     color: Colors.bodyText,
     marginTop: 4,
-    fontFamily: Fonts.Urbanist.semiBold,
+    fontFamily: Fonts.Urbanist.regular,
   },
   status: {
     backgroundColor: Colors.white,
@@ -112,13 +121,15 @@ card: {
   },
   expiryText: {
     marginTop: 10,
-    fontSize: 12,
+    fontSize: 16,
     color: Colors.bodyText,
+    fontFamily: Fonts.Urbanist.regular,
   },
   expiryDate: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 22,
     color: Colors.black,
+    fontFamily: Fonts.Urbanist.semiBold,
+    marginVertical: 10,
   },
 });
 

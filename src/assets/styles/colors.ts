@@ -3,7 +3,7 @@ export const Colors = {
     green: "#28A745",           // Green
     greeFadd:"#4ab23817",
     red: "#dc3546ff",             // Red
-    lightRed: "#FFE6E6",        // Light red
+    lightRed: "#FFE4D7",        // Light red
     sandal: "#F5DEB3",          // Sandal (wheat)
     white: "#FFFFFF",           // White
     black: "#000000",           // Black
@@ -14,7 +14,8 @@ export const Colors = {
     bg: "#FAFAFA",
     Storke: "#EAEAEC",
     formdisableState:"#fbcdb5",
-    endDate:"#f0f40eff"
+    endDate:"#f0f40eff",
+    hoiday:"#ffe6e6",
 
 };
 

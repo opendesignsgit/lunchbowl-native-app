@@ -39,21 +39,41 @@ export default function PaymentWebView({navigation}: any) {
         renderLoading={() => (
           <ActivityIndicator color="#000" size="large" style={styles.loader} />
         )}
-        onNavigationStateChange={navState => {
-          console.log('🌐 Payment URL: ', navState.url);
+        // onNavigationStateChange={navState => {
+        //   console.log('🌐 Payment URL: ', navState.url);
 
-          if (navState.url.includes('ccavenue/response')) {
+        //   if (navState.url.includes('ccavenue/response')) {
+        //     console.log('✅ Payment completed.');
+        //     // 👉 After success, navigate to MyPlan screen
+        //     navigation.replace('MyPlan');
+        //   }
+        //   if (
+        //     navState.url.includes('cancel') ||
+        //     navState.url.includes('subscriptionFailed')
+        //   ) {
+        //     console.log('❌ Payment cancelled.');
+        //     navigation.replace('Registartion');
+        //   }
+        // }}
+        onShouldStartLoadWithRequest={request => {
+          console.log('🌐 Intercepted URL:', request.url);
+
+          if (request.url.includes('ccavenue/response')) {
             console.log('✅ Payment completed.');
-            // 👉 After success, navigate to MyPlan screen
             navigation.replace('MyPlan');
+            return false;
           }
+
           if (
-            navState.url.includes('cancel') ||
-            navState.url.includes('subscriptionFailed')
+            request.url.includes('cancel') ||
+            request.url.includes('subscriptionFailed')
           ) {
             console.log('❌ Payment cancelled.');
             navigation.replace('Registartion');
+            return false;
           }
+
+          return true;
         }}
       />
     </View>

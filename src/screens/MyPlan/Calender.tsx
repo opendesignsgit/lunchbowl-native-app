@@ -1,5 +1,6 @@
 import {useFocusEffect} from '@react-navigation/native';
 import {Colors} from 'assets/styles/colors';
+import Fonts from 'assets/styles/fonts';
 import ThemeGradientBackground from 'components/Backgrounds/GradientBackground';
 import NoDataFound from 'components/Error/NoDataMessage';
 import {LoadingModal} from 'components/LoadingModal/LoadingModal';
@@ -11,10 +12,13 @@ import {useDate} from 'context/calenderContext';
 import React, {useCallback, useRef, useState} from 'react';
 import {
   FlatList,
+  Modal,
   NativeScrollEvent,
   NativeSyntheticEvent,
+  Pressable,
   ScrollView,
   StyleSheet,
+  Text,
   View,
 } from 'react-native';
 import {
@@ -26,8 +30,10 @@ import ToolTipSectionHeader from 'screens/Dashboard/Components/TooltipHeader';
 import MenueCalendar from 'screens/MyPlan/Components/MenueCalender';
 import {questionIcon} from 'styles/svg-icons';
 import {formatDate} from 'utils/dateUtils';
+import CalendarLegend from './Components/ColorsLegend';
 import HolidayListCard from './Components/HolidayListCard';
 import PlanCard from './Components/MyPlan';
+import WhatsAppButton from 'components/buttons/WhatsAppButton';
 
 const MyPlanScreen: React.FC<{navigation: any}> = ({navigation}) => {
   //######### STATE VARIABLES  ##############################
@@ -37,6 +43,9 @@ const MyPlanScreen: React.FC<{navigation: any}> = ({navigation}) => {
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
 
+  const [legendVisible, setLegendVisible] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const flatListRef = useRef<FlatList>(null);
   //######### GET HOLIDAYS API CALL ############################
 
   const {holidays} = useDate();
@@ -54,8 +63,6 @@ const MyPlanScreen: React.FC<{navigation: any}> = ({navigation}) => {
   function onViewFoodList(): void {
     navigation.navigate('FoodList');
   }
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const flatListRef = useRef<FlatList>(null);
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offsetX = event.nativeEvent.contentOffset.x;
@@ -69,6 +76,7 @@ const MyPlanScreen: React.FC<{navigation: any}> = ({navigation}) => {
       date.getMonth() === currentMonth && date.getFullYear() === currentYear
     );
   });
+
   const handleMonthChange = (month: number, year: number) => {
     setCurrentMonth(month);
     setCurrentYear(year);
@@ -83,11 +91,7 @@ const MyPlanScreen: React.FC<{navigation: any}> = ({navigation}) => {
           userName: profileData.parentDetails?.fatherFirstName ?? 'User',
           plan: profileData.subscriptionPlan.planId,
           amount: `₹${profileData.subscriptionPlan.price}`,
-          // status: !profileData?.paymentStatus
-          //   ? 'No Status'
-          //   : profileData.paymentStatus === 'paid'
-          //   ? 'Active'
-          //   : 'Expired',
+          status: profileData?.paymentStatus ? 'Paid' : 'Not Paid',
           expiry: formatDate(profileData.subscriptionPlan.endDate),
         },
       ]
@@ -142,6 +146,7 @@ const MyPlanScreen: React.FC<{navigation: any}> = ({navigation}) => {
             title="Select your Food Plan"
             tooltipText="Choose a plan to see your daily meals."
             icon={questionIcon}
+            onPress={() => setLegendVisible(true)}
           />
           <MenueCalendar
             onDateChange={date =>
@@ -152,6 +157,47 @@ const MyPlanScreen: React.FC<{navigation: any}> = ({navigation}) => {
             currentYear={currentYear}
             onMonthChange={handleMonthChange}
           />
+          <Modal
+            transparent
+            visible={legendVisible}
+            animationType="fade"
+            onRequestClose={() => setLegendVisible(false)}>
+            <Pressable
+              style={{
+                flex: 1,
+                  backgroundColor: Colors.black,
+                justifyContent: 'center',
+                alignItems: 'center',
+                padding: wp('5%'),
+              }}
+              onPress={() => setLegendVisible(false)}>
+              <View
+                style={{
+                  backgroundColor: Colors.white,
+                  borderRadius: 12,
+                  padding: wp('5%'),
+                  width: '100%',
+                }}>
+                <Text style={styles.calendarGuidTittle}>
+                  Calendar Color Guide
+                </Text>
+                <CalendarLegend
+                  items={[
+                    {color: [Colors.green, Colors.green], label: 'Plan Start'},
+                    {color: [Colors.red, Colors.red], label: 'Plan End'},
+                    {
+                      color: [Colors.lightRed, Colors.lightRed],
+                      label: 'Plan Ongoing',
+                    },
+                    {
+                      color: [Colors.hoiday, Colors.hoiday],
+                      label: 'Holiday / Weekend',
+                    },
+                  ]}
+                />
+              </View>
+            </Pressable>
+          </Modal>
 
           <SectionTitle>Holidays</SectionTitle>
           {filteredHolidays.length > 0 ? (
@@ -170,6 +216,7 @@ const MyPlanScreen: React.FC<{navigation: any}> = ({navigation}) => {
           </View>
         </View>
       </ScrollView>
+      <WhatsAppButton />
     </ThemeGradientBackground>
   );
 };
@@ -204,7 +251,12 @@ const styles = StyleSheet.create({
     width: wp('4%'),
     height: wp('1%'),
   },
-  foodListButton:{
-   marginVertical:wp('10%')
-  }
+  foodListButton: {
+    marginVertical: wp('10%'),
+  },
+  calendarGuidTittle: {
+    fontFamily: Fonts.Urbanist.bold,
+    fontSize: hp('1.7%'),
+    color: Colors.bodyText,
+  },
 });

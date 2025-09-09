@@ -4,9 +4,11 @@ import PrimaryFieldLabel from 'components/inputs/FieldLabel';
 import ThemeInputPrimary from 'components/inputs/ThemeInputPrimary';
 import PrimaryButton from 'components/buttons/PrimaryButton';
 import styles from '../../Components/forms/Styles/styles';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import PrimaryTextArea from 'components/inputs/TextArea';
-
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 export default function ParentDetails({
   fatherFullName,
   setFatherFullName,
@@ -28,7 +30,7 @@ export default function ParentDetails({
     );
   }, [fatherFullName, motherFullName, mobileNumber, address]);
   return (
-    <KeyboardAvoidingView   
+    <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={styles.parentFormContainer}>
         <ScrollView
@@ -73,6 +75,9 @@ export default function ParentDetails({
             title="Next"
             onPress={submitRegistration}
             disabled={!isFormValid}
+            style={{
+              width: wp('90%'),
+            }}
           />
         </View>
       </View>

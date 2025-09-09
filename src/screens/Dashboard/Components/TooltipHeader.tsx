@@ -6,6 +6,7 @@ import {
   StyleSheet,
   ViewStyle,
   TextStyle,
+  Pressable,
 } from 'react-native';
 import {SvgXml} from 'react-native-svg';
 import Tooltip from 'react-native-walkthrough-tooltip';
@@ -21,12 +22,14 @@ interface SectionHeaderProps {
   title: string;
   tooltipText?: string;
   icon?: string;
+  onPress?: () => void;
 }
 
 const ToolTipSectionHeader: React.FC<SectionHeaderProps> = ({
   title,
   tooltipText,
   icon,
+   onPress,
 }) => {
   const [tooltipVisible, setTooltipVisible] = useState(false);
 
@@ -40,9 +43,12 @@ const ToolTipSectionHeader: React.FC<SectionHeaderProps> = ({
           content={<Text style={styles.tooltipText}>{tooltipText}</Text>}
           placement="bottom"
           onClose={() => setTooltipVisible(false)}>
-          <TouchableOpacity onPress={() => setTooltipVisible(true)}>
+          {/* <TouchableOpacity onPress={() => setTooltipVisible(true)}>
             <SvgXml xml={questionIcon} width={wp('5.5%')} height={wp('5.5%')} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
+           <Pressable onPress={onPress}>
+        <SvgXml xml={icon} width={24} height={24} />
+      </Pressable>
         </Tooltip>
       )}
     </View>
@@ -63,8 +69,8 @@ const styles = StyleSheet.create({
     color: Colors.black,
   } as TextStyle,
   tooltipText: {
-    fontFamily: Fonts.OpenSans.regular,
-    fontSize: hp('1.8%'),
+    fontFamily: Fonts.Urbanist.bold,
+    fontSize: hp('1.7%'),
     color: Colors.bodyText,
   } as TextStyle,
 });

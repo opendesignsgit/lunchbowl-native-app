@@ -3,6 +3,7 @@ import SecondaryButton from 'components/buttons/SecondaryButton';
 import DateOfBirthInput from 'components/inputs/DateOfBirthInput';
 import PrimaryFieldLabel from 'components/inputs/FieldLabel';
 import PrimaryDropdown from 'components/inputs/PrimaryDropdown';
+import PrimaryTextArea from 'components/inputs/TextArea';
 import ThemeInputPrimary from 'components/inputs/ThemeInputPrimary';
 import React, {useMemo} from 'react';
 import {
@@ -13,10 +14,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
 import styles from '../../Components/forms/Styles/styles';
-import PrimaryTextArea from 'components/inputs/TextArea';
-import { Colors } from 'assets/styles/colors';
 
 const classOptions = [
   {label: 'LKG', value: 'LKG'},
@@ -96,15 +98,8 @@ export default function ChildrenDetails({
             <TouchableOpacity
               onPress={addChild}
               style={{flexDirection: 'row', alignItems: 'center'}}>
-              <Text
-                style={[
-                  styles.addchildTabPlusButton,
-                  
-                ]}>
-                +
-              </Text>
+              <Text style={[styles.addchildTabPlusButton]}>+</Text>
               <Text style={styles.addchildTabPlusButtonText}>
-                
                 Add Another Child
               </Text>
             </TouchableOpacity>
@@ -222,12 +217,20 @@ export default function ChildrenDetails({
         </ScrollView>
         <View style={styles.SubmitButtonContainer}>
           <View style={styles.StickyButton}>
-            <SecondaryButton title="BACK" onPress={prevStep} />
+            <SecondaryButton
+              title="BACK"
+              onPress={prevStep}
+              style={{
+                width: wp('45%'),
+              }}
+            />
             <PrimaryButton
               title="NEXT"
               onPress={nextStep}
-              style={styles.btn}
               disabled={!isFormValid}
+              style={{
+                width: wp('45%'),
+              }}
             />
           </View>
         </View>
