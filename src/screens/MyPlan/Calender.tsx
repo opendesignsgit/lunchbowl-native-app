@@ -9,7 +9,7 @@ import PrimaryButton from 'components/buttons/PrimaryButton';
 import {useAuth} from 'context/AuthContext';
 import {useUserProfile} from 'context/UserDataContext';
 import {useDate} from 'context/calenderContext';
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   FlatList,
   Modal,
@@ -34,6 +34,8 @@ import CalendarLegend from './Components/ColorsLegend';
 import HolidayListCard from './Components/HolidayListCard';
 import PlanCard from './Components/MyPlan';
 import WhatsAppButton from 'components/buttons/WhatsAppButton';
+import Shake from 'react-native-shake';
+import {Vibration} from 'react-native';
 
 const MyPlanScreen: React.FC<{navigation: any}> = ({navigation}) => {
   //######### STATE VARIABLES  ##############################
@@ -96,6 +98,20 @@ const MyPlanScreen: React.FC<{navigation: any}> = ({navigation}) => {
         },
       ]
     : [];
+
+  // ############### SHACK TO VIEW SOME INFOS  ######################
+  useEffect(() => {
+    const subscription = Shake.addListener(() => {
+      setLegendVisible(true);
+    });
+    Shake.addListener(() => {
+      Vibration.vibrate(100); 
+      setLegendVisible(true);
+    });
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   return (
     <ThemeGradientBackground>
@@ -165,7 +181,7 @@ const MyPlanScreen: React.FC<{navigation: any}> = ({navigation}) => {
             <Pressable
               style={{
                 flex: 1,
-                  backgroundColor: Colors.black,
+                backgroundColor: Colors.black,
                 justifyContent: 'center',
                 alignItems: 'center',
                 padding: wp('5%'),

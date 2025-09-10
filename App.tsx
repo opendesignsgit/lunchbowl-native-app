@@ -6,6 +6,7 @@ import './src/utils/firebaseConfig';
 import useFirebaseNotifications from 'utils/Notifications';
 import Toast from 'react-native-toast-message';
 import {Colors} from 'assets/styles/colors';
+import EasterEgg from 'components/Fun/EasterEgg';
 
 const App = () => {
   useFirebaseNotifications();
@@ -20,8 +21,9 @@ const App = () => {
 
       <SafeAreaView style={styles.safeArea}>
         <MainNavigator />
-        <Toast />
       </SafeAreaView>
+      <Toast />
+      <EasterEgg />
     </AuthProvider>
   );
 };

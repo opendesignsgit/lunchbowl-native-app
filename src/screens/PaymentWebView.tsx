@@ -13,12 +13,9 @@ type PaymentWebViewParams = {
 export default function PaymentWebView({navigation}: any) {
   const route = useRoute<RouteProp<PaymentWebViewParams, 'PaymentWebView'>>();
   const {encRequest, accessCode} = route.params;
-
   const webviewRef = useRef<WebView>(null);
-
   const ccAvenueUrl =
     'https://secure.ccavenue.com/transaction/transaction.do?command=initiateTransaction';
-
   const formData = `encRequest=${encodeURIComponent(
     encRequest,
   )}&access_code=${encodeURIComponent(accessCode)}`;
@@ -37,27 +34,9 @@ export default function PaymentWebView({navigation}: any) {
         domStorageEnabled
         startInLoadingState
         renderLoading={() => (
-          <ActivityIndicator color="#000" size="large" style={styles.loader} />
+          <ActivityIndicator size="large" style={styles.loader} />
         )}
-        // onNavigationStateChange={navState => {
-        //   console.log('🌐 Payment URL: ', navState.url);
-
-        //   if (navState.url.includes('ccavenue/response')) {
-        //     console.log('✅ Payment completed.');
-        //     // 👉 After success, navigate to MyPlan screen
-        //     navigation.replace('MyPlan');
-        //   }
-        //   if (
-        //     navState.url.includes('cancel') ||
-        //     navState.url.includes('subscriptionFailed')
-        //   ) {
-        //     console.log('❌ Payment cancelled.');
-        //     navigation.replace('Registartion');
-        //   }
-        // }}
         onShouldStartLoadWithRequest={request => {
-          console.log('🌐 Intercepted URL:', request.url);
-
           if (request.url.includes('ccavenue/response')) {
             console.log('✅ Payment completed.');
             navigation.replace('MyPlan');

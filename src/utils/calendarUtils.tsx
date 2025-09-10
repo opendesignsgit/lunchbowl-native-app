@@ -66,3 +66,53 @@ export const isPastDate = (day: number, year: number, month: number) => {
 
 
 
+export const isBookedDate = (
+  day: number,
+  year: number,
+  month: number,
+  foodlist: { id: string; name: string; meals: { date: string; food: string }[] }[]
+) => {
+  const dateStr = formatDate(year, month, day);
+
+  for (const child of foodlist) {
+    const meal = child.meals.find(m => m.date === dateStr);
+    if (meal) {
+      return { childName: child.name, meal: meal.food, date: dateStr };
+    }
+  }
+
+  return null;
+};
+
+// export const isBookedDate = (
+//   day: number,
+//   year: number,
+//   month: number,
+//   foodlist: { id: string; name: string; meals: { date: string; food: string }[] }[]
+// ) => {
+//   const dateStr = formatDate(year, month, day);
+
+//   // --------------------
+//   // Check 48 hours condition
+//   // --------------------
+//   const selectedDate = new Date(dateStr);
+//   const now = new Date();
+//   const hoursDiff = (selectedDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+
+//   if (hoursDiff < 48) {
+//     // Date is less than 48 hours away → cannot book
+//     return { notAllowed: true, date: dateStr };
+//   }
+
+//   for (const child of foodlist) {
+//     const meal = child.meals.find(m => m.date === dateStr);
+//     if (meal) {
+//       return { childName: child.name, meal: meal.food, date: dateStr };
+//     }
+//   }
+
+//   return null;
+// };
+
+
+

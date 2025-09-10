@@ -4,16 +4,16 @@ import {MenuProvider} from 'context/MenuContext';
 import {UserProfileProvider} from 'context/UserDataContext';
 import React, {useEffect, useState} from 'react';
 import Toast from 'react-native-toast-message';
-import PaymentWebView from 'screens/Subscription/Components/forms/PaymentWebView';
+import PaymentWebView from 'screens/PaymentWebView';
 import Registartion from 'screens/Subscription/Registration';
 import RegistrationService from 'services/RegistartionService/registartion';
-// import {CalendarDateProvider} from '../../context/calenderContext';
 import MyPlanScreen from './Calender';
 import FoodScreen from './FoodScreen';
 import MenuSelectionScreen from './MenuSelection';
 import {useNetwork} from 'hooks/useNetwork';
 import OfflineScreen from 'screens/OfflineScreen';
 import {HolidayDateProvider} from 'context/calenderContext';
+import {FoodProvider} from 'context/FoodContext';
 const Stack = createStackNavigator();
 
 const MyPlanNavigator = () => {
@@ -68,37 +68,39 @@ const MyPlanNavigator = () => {
 
   return (
     <MenuProvider>
-      <UserProfileProvider>
-        <HolidayDateProvider>
-          <Stack.Navigator initialRouteName={screenToShow}>
-            <Stack.Screen
-              name="MenuSelection"
-              component={MenuSelectionScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="FoodList"
-              component={FoodScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="MyPlan"
-              component={MyPlanScreen}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="Registartion"
-              component={Registartion}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="WebViewScreen"
-              component={PaymentWebView}
-              options={{headerShown: false}}
-            />
-          </Stack.Navigator>
-        </HolidayDateProvider>
-      </UserProfileProvider>
+      <FoodProvider>
+        <UserProfileProvider>
+          <HolidayDateProvider>
+            <Stack.Navigator initialRouteName={screenToShow}>
+              <Stack.Screen
+                name="MenuSelection"
+                component={MenuSelectionScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="FoodList"
+                component={FoodScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="MyPlan"
+                component={MyPlanScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="Registartion"
+                component={Registartion}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="WebViewScreen"
+                component={PaymentWebView}
+                options={{headerShown: false}}
+              />
+            </Stack.Navigator>
+          </HolidayDateProvider>
+        </UserProfileProvider>
+      </FoodProvider>
     </MenuProvider>
   );
 };

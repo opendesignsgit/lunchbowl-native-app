@@ -9,8 +9,8 @@ import {
 } from 'react-native-responsive-screen';
 import {StyleSheet} from 'react-native';
 
-import {SearchIcon} from 'styles/svg-icons';
-import { Colors } from 'assets/styles/colors';
+import {RightIcon, SearchIcon} from 'styles/svg-icons';
+import {Colors} from 'assets/styles/colors';
 
 type DropdownOption = {
   label: string;
@@ -34,7 +34,7 @@ const PrimaryDropdown: React.FC<Props> = ({
 
   return (
     <Dropdown
-      style={[styles.dropdown, isFocus && {borderColor:Colors.primaryOrange}]}
+      style={[styles.dropdown, isFocus && {borderColor: Colors.primaryOrange}]}
       placeholderStyle={styles.placeholderStyle}
       selectedTextStyle={styles.selectedTextStyle}
       inputSearchStyle={styles.inputSearchStyle}
@@ -57,6 +57,7 @@ const PrimaryDropdown: React.FC<Props> = ({
       //     style={styles.icon}
       //   />
       // )}
+      containerStyle={styles.dropdownList}
       renderItem={item => (
         <View
           style={
@@ -66,14 +67,18 @@ const PrimaryDropdown: React.FC<Props> = ({
           }>
           {selectedValue === item.value ? (
             <LinearGradient
-              colors={[Colors.primaryOrange, Colors.red, Colors.primaryOrange,]}
+              colors={[
+                Colors.primaryOrange,
+                Colors.primaryOrange,
+                Colors.primaryOrange,
+              ]}
               style={styles.gradientItem}>
-              {/* <SvgXml
-                xml={SearchIcon}
-                width={wp('4%')}
+              <SvgXml
+                xml={RightIcon}
+                width={wp('2%')}
                 height={hp('2%')}
                 style={styles.tickIcon}
-              /> */}
+              />
               <Text style={styles.selectedItemText}>{item.label}</Text>
             </LinearGradient>
           ) : (
@@ -92,8 +97,20 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: wp('3%'),
     marginVertical: hp('1%'),
-    backgroundColor:Colors.white,
+    backgroundColor: Colors.white,
   },
+  dropdownList: {
+    borderRadius: 8,
+    backgroundColor: Colors.white,
+    elevation: 5,
+    shadowColor: Colors.black,
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    borderWidth: 1,
+    borderColor: Colors.primaryOrange,
+  },
+
   placeholderStyle: {
     fontSize: 14,
     color: Colors.bodyText,
@@ -110,7 +127,7 @@ const styles = StyleSheet.create({
     marginRight: wp('2%'),
   },
   itemContainer: {
-    padding: hp('1%'),
+    padding: hp('2%'),
   },
   selectedItem: {
     borderRadius: 8,
@@ -121,6 +138,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: hp('1%'),
     borderRadius: 8,
+    margin: 10,
   },
   tickIcon: {
     marginRight: wp('2%'),

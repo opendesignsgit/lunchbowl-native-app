@@ -16,6 +16,7 @@ import {useMenu} from 'context/MenuContext';
 import SortButtons from 'components/Filters/SortButtons';
 import ToolTipSectionHeader from 'screens/Dashboard/Components/TooltipHeader';
 import {questionIcon} from 'styles/svg-icons';
+import { useFood } from 'context/FoodContext';
 
 type Meal = {
   childId: string;
@@ -30,11 +31,17 @@ type ChildWithMeals = {
 };
 
 const FoodScreen = () => {
-  //######### STATE ############################################
-  const [foodList, setFoodList] = useState<ChildWithMeals[]>([]);
-  const [loading, setLoading] = useState(false);
+  
+  //######### STATE ############################################  
   const [searchText, setSearchText] = useState('');
   const {userId} = useAuth();
+
+  //######### GET FOOD VIA CONTEXT ##############################
+  const {foodList, loading, onViewFoodList} = useFood();
+console.log(
+  "foodlist-------------------------",
+  JSON.stringify(foodList, null, 2)
+);
 
   //######### HOOKS ############################################
   const {childrenData} = useMenu();
@@ -46,53 +53,8 @@ const FoodScreen = () => {
     }, [userId]),
   );
 
-  //######### GET FOOD API CALL ##############################
-  const onViewFoodList = async () => {
-    try {
-      if (!userId) {
-        console.error('User ID is null or undefined');
-        return;
-      }
 
-      setLoading(true);
-      const response = await FoodService.getAllFoods('get-saved-meals', userId);
 
-      console.log(
-        'Meals API Response-------------------------------------------',
-        JSON.stringify(response, null, 2),
-      );
-
-      const menuSelections = response?.data?.menuSelections;
-
-      if (menuSelections && typeof menuSelections === 'object') {
-        const meals: Meal[] = [];
-
-        Object.entries(menuSelections).forEach(([date, childMeals]) => {
-          Object.entries(childMeals as Record<string, string>).forEach(
-            ([childId, mealName]) => {
-              meals.push({childId, date, food: mealName});
-            },
-          );
-        });
-
-        // 🔹 Match meals with childrenData
-        const mergedMeals: ChildWithMeals[] = childrenData.map(child => ({
-          ...child,
-          meals: meals.filter(meal => meal.childId === child.id),
-        }));
-
-        console.log('Merged Meals Data ----------------', mergedMeals);
-
-        setFoodList(mergedMeals);
-      } else {
-        console.error('Invalid food data format:', response);
-      }
-    } catch (error) {
-      console.error('Error fetching food list:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
   const [sortKey, setSortKey] = useState<string>('');
 
   const getSortedFoodList = () => {
@@ -119,7 +81,7 @@ const FoodScreen = () => {
   //######### RENDER ####################################
   return (
     <ThemeGradientBackground>
-      <LoadingModal loading={loading} setLoading={setLoading} />
+      <LoadingModal loading={loading} setLoading={() => {}} />
       <View style={styles.container}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <HeaderBackButton title="My Saved Meals" />

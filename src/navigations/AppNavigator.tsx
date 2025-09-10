@@ -160,6 +160,7 @@ const styles = StyleSheet.create({
     elevation: 10,
     height: hp('10%'),
     paddingBottom: hp('0.7%'),
+    overflow: 'hidden',  
   },
 
   iconWrapper: {
@@ -172,8 +173,8 @@ const styles = StyleSheet.create({
   iconWrapperFocused: {
     justifyContent: 'center',
     alignItems: 'center',
-    paddingLeft: hp('3.5%'),
-    paddingRight:hp('3.5%'),
+    paddingLeft: hp('4%'),
+    paddingRight:hp('4%'),
     paddingTop:hp('4%'),
     paddingBottom:hp('6%'),
     marginTop:hp('2.9%'),

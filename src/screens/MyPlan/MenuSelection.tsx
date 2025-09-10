@@ -3,36 +3,41 @@ import ThemeGradientBackground from 'components/Backgrounds/GradientBackground';
 import PrimaryButton from 'components/buttons/PrimaryButton';
 import SecondaryButton from 'components/buttons/SecondaryButton';
 import SectionTitle from 'components/Titles/SectionHeading';
-import {useAuth} from 'context/AuthContext';
-import React, {useEffect, useState} from 'react';
-import {Colors} from '../../assets/styles/colors';
+import { useAuth } from 'context/AuthContext';
+import React, { useEffect, useState } from 'react';
+import { Colors } from '../../assets/styles/colors';
 
 import Fonts from 'assets/styles/fonts';
-import {useMenu} from 'context/MenuContext';
+import PrimaryDropdown from 'components/inputs/PrimaryDropdown';
+import AlertModal from 'components/Modal/AlertModal';
+import { useDate } from 'context/calenderContext';
+import { useMenu } from 'context/MenuContext';
 import {
   Alert,
-  FlatList,
   Modal,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import {SvgXml} from 'react-native-svg';
+import { SvgXml } from 'react-native-svg';
+import Tooltip from 'react-native-walkthrough-tooltip';
 import HeaderBackButton from 'screens/Dashboard/Components/BackButton';
 import MenuService from 'services/MyPlansApi/MenuService';
-import {BackIcon, ForwardIcon, questionIcon} from 'styles/svg-icons';
-import menues from '../../services/MenueService/Data/menus.json';
-import {useDate} from 'context/calenderContext';
-import Tooltip from 'react-native-walkthrough-tooltip';
-import AlertModal from 'components/Modal/AlertModal';
+import { BackIcon, ForwardIcon, questionIcon } from 'styles/svg-icons';
 import { validateMenuDate } from 'utils/MenuValidation';
-import PrimaryDropdown from 'components/inputs/PrimaryDropdown';
+import {
+  createHolidayPaymentRequest,
+  encryptRequest
+} from 'utils/paymentUtils';
+import ccavenueConfig from '../../config/ccavenueConfig';
+import menues from '../../services/MenueService/Data/menus.json';
+import PlaySound from 'components/Fun/PlaySound';
 
 // ################### HELPER DROPDOWN #############################
 
@@ -46,50 +51,6 @@ const mealOptions: DropdownOption[] = allMeals.map(meal => ({
   label: meal,
   value: meal,
 }));
-
-
-// ################### HELPER DROPDOWN #############################
-
-const MealsList = ({
-  placeholder,
-  selectedValue,
-  onSelectDish,
-}: {
-  placeholder: string;
-  selectedValue: string;
-  onSelectDish: (dish: string) => void;
-}) => {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <View>
-      <TouchableOpacity style={styles.dropdown} onPress={() => setOpen(!open)}>
-        <Text style={{color: selectedValue ? '#981313ff' : '#999'}}>
-          {selectedValue || placeholder}
-        </Text>
-      </TouchableOpacity>
-
-      {open && (
-        <FlatList
-          style={styles.list}
-          data={allMeals}
-          keyExtractor={(item, index) => index.toString()}
-          nestedScrollEnabled={true} 
-          renderItem={({item}) => (
-            <TouchableOpacity
-              style={styles.item}
-              onPress={() => {
-                onSelectDish(item);
-                setOpen(false);
-              }}>
-              <Text style={styles.itemText}>{item}</Text>
-            </TouchableOpacity>
-          )}
-        />
-      )}
-    </View>
-  );
-};
 
 // ################### MEAL PLANS (Dietitian) #######################
 
@@ -147,14 +108,7 @@ const MenuSelectionScreen = ({
   );
   const [alertMessage, setAlertMessage] = useState('');
 
-  // const handleDishSelect = (childIndex: number) => (dish: string) => {
-  //   setSelectedDishes(prev => {
-  //     const updated = [...prev];
-  //     updated[childIndex] = dish;
-  //     return updated;
-  //   });
-  // };
-// ################### HANDLE DISH SELECTION #######################
+  // ################### HANDLE DISH SELECTION #######################
 
   const handleDishSelect = (childIndex: number) => (dish: string | number) => {
     const dishStr = String(dish);
@@ -167,6 +121,7 @@ const MenuSelectionScreen = ({
   };
 
   useEffect(() => {
+    PlaySound({ fileName: 'children.mp3' });
     setSelectedDishes([]);
   }, [selectedTab]);
 
@@ -212,14 +167,11 @@ const MenuSelectionScreen = ({
   const selectedDateStr = new Date(route.params.selectedDate)
     .toISOString()
     .split('T')[0];
-  // Check if selected date is holiday (from API)
   const isHolidayFromApi = holidays.some(
     holiday => holiday.date === selectedDateStr,
   );
-  // Check if weekend (Saturday=6, Sunday=0)
   const dayOfWeek = new Date(route.params.selectedDate).getDay();
   const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-  // Final holiday condition (true if holiday OR weekend)
   const isHoliday = isHolidayFromApi || isWeekend;
 
   // ################### HANDLE API CALL ###################################
@@ -227,12 +179,11 @@ const MenuSelectionScreen = ({
   const SaveMenue = async () => {
     setLoading(true);
     try {
-
       // PAST DATE FUTRE DATE VALIDATION   ####################
 
       const errorMsg = validateMenuDate(selectedDate, holidays);
-      if (errorMsg) {   
-        Alert.alert('Not Allowed Permission Denied', errorMsg);       
+      if (errorMsg) {
+        Alert.alert('Not Allowed Permission Denied', errorMsg);
         setLoading(false);
         return;
       }
@@ -319,10 +270,40 @@ const MenuSelectionScreen = ({
     }
   };
 
-  const handlePayNow = () => {
-    navigation.navigate('PaymentScreen', {
-      selectedDate: selectedDate.toISOString(),
-    });
+  const handlePayNow = async () => {
+    try {
+      if (!userId) throw new Error('User ID not found. Please login again.');
+
+      const paymentData = createHolidayPaymentRequest(
+        ccavenueConfig,
+        selectedDate,
+        childrenData,
+        userId,
+      );
+
+      const plainText = Object.entries(paymentData)
+        .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
+        .join('&');
+
+      const encryptedData = encryptRequest(
+        plainText,
+        ccavenueConfig.working_key,
+      );
+
+      navigation.navigate('WebViewScreen', {
+        encRequest: encryptedData,
+        accessCode: ccavenueConfig.access_code,
+        endpoint: ccavenueConfig.endpoint,
+      });
+
+      Alert.alert(
+        'Payment Ready',
+        `Encrypted: ${encryptedData.substring(0, 20)}...`,
+      );
+    } catch (err) {
+      console.error('Payment error:', err);
+      Alert.alert('Error', 'Payment failed, please try again');
+    }
   };
 
   return (
@@ -422,14 +403,8 @@ const MenuSelectionScreen = ({
                 {childrenData.map((child, index) => (
                   <View key={child.id} style={styles.childForm}>
                     <Text style={styles.childName}>{child.name}</Text>
-                    
-                    {/* <MealsList
-                      placeholder={`Select ${child.name}'s Dish`}
-                      selectedValue={selectedDishes[index] || ''}
-                      onSelectDish={handleDishSelect(index)}
-                    /> */}
 
-                   <PrimaryDropdown
+                    <PrimaryDropdown
                       options={mealOptions}
                       placeholder={`Select ${child.name}'s Dish`}
                       selectedValue={selectedDishes[index] || ''}
@@ -525,7 +500,7 @@ const MenuSelectionScreen = ({
         <View style={styles.stickyButtonsContainer}>
           {isHoliday && (
             <Text style={styles.holidayWarningText}>
-              ⚠ This date is a holiday. Additional charges may apply.
+              This date is a holiday. Additional charges may apply.
             </Text>
           )}
           <View style={styles.stickyButtonsRow}>
@@ -798,15 +773,13 @@ const styles = StyleSheet.create({
   },
   stickyButtonsContainer: {
     paddingHorizontal: wp('5%'),
-    paddingVertical: hp('2%'),
+    paddingVertical: hp('3%'),
     borderTopColor: Colors.lightRed,
   },
   holidayWarningText: {
-    color: Colors.red,
     fontSize: wp('3.5%'),
-    fontWeight: '600',
-    marginTop: hp('1%'),
-    marginBottom: hp('1%'),
+    fontFamily: Fonts.Urbanist.semiBold,
+    marginVertical: hp('2%'),
   },
 
   // ---------------- Dietitian Plans ----------------

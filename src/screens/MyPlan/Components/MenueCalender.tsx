@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SvgXml } from 'react-native-svg';
+import React, {useCallback, useState} from 'react';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {SvgXml} from 'react-native-svg';
 import LinearGradient from 'react-native-linear-gradient';
-import { Colors } from 'assets/styles/colors';
+import {Colors} from 'assets/styles/colors';
 import Fonts from 'assets/styles/fonts';
-import { useMenu } from 'context/MenuContext';
-import { BackIcon } from 'styles/svg-icons';
+import {useMenu} from 'context/MenuContext';
+import {BackIcon} from 'styles/svg-icons';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -24,7 +24,10 @@ import {
   isInBetweenRange,
   isWithinRange,
   isPastDate,
+  isBookedDate,
 } from '../../../utils/calendarUtils';
+import {useFood} from 'context/FoodContext';
+import {useFocusEffect} from '@react-navigation/native';
 
 // --------------------
 // Types
@@ -53,22 +56,49 @@ export default function MenueCalendar({
   currentYear,
   onMonthChange,
 }: CalendarProps) {
-  const { startDate, endDate } = useMenu();
+  const {startDate, endDate} = useMenu();
+  const {foodList} = useFood();
+  const {onViewFoodList} = useFood();
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [tooltipText, setTooltipText] = useState('');
   const [selectedDate, setSelectedDate] = useState<string>('');
+
   let holdTimeout: NodeJS.Timeout;
 
   if (!startDate || !endDate) return <Text>Loading calendar...</Text>;
 
+  // ---------------------------
+  // Better For AUTO FETCH DTA  WHEN NAVIGATION
+  // ----------------------------
+  useFocusEffect(
+    useCallback(() => {
+      onViewFoodList();
+    }, [onViewFoodList]),
+  );
+
   // --------------------
-  // UI Helpers
+  // UI Helpers Usually the strongest priority is ! change Panataha Bro!!!!!
   // --------------------
   const getGradientColors = (day: number, index: number) => {
-    if (isStartDate(day, startDate, currentYear, currentMonth)) return [Colors.green, Colors.green];
-    if (isEndDate(day, endDate, currentYear, currentMonth)) return [Colors.red, Colors.red];
-    if (isInBetweenRange(day, startDate, endDate, currentYear, currentMonth, holidays) && !isWeekend(index))
+    if (isStartDate(day, startDate, currentYear, currentMonth))
+      return [Colors.green, Colors.green];
+    if (isBookedDate(day, currentYear, currentMonth, foodList))
+      return [Colors.greeFadd, Colors.greeFadd];
+    if (isEndDate(day, endDate, currentYear, currentMonth))
+      return [Colors.red, Colors.red];
+    if (
+      isInBetweenRange(
+        day,
+        startDate,
+        endDate,
+        currentYear,
+        currentMonth,
+        holidays,
+      ) &&
+      !isWeekend(index)
+    )
       return [Colors.lightRed, Colors.lightRed];
+
     if (isHoliday(day, holidays, currentYear, currentMonth) || isWeekend(index))
       return [Colors.hoiday, Colors.hoiday];
     return ['transparent', 'transparent'];
@@ -76,22 +106,55 @@ export default function MenueCalendar({
 
   const getTooltipText = (day: number, index: number) => {
     const dateStr = formatDate(currentYear, currentMonth, day);
-    if (isStartDate(day, startDate, currentYear, currentMonth)) return `Plan Started: ${dateStr}`;
-    if (isEndDate(day, endDate, currentYear, currentMonth)) return `Plan Ends: ${dateStr}`;
-    if (isInBetweenRange(day, startDate, endDate, currentYear, currentMonth, holidays) && !isWeekend(index))
+    const booked = isBookedDate(day, currentYear, currentMonth, foodList);
+    if (booked) {
+      return `Meal Already Booked: ${booked.childName}'s : ${booked.meal} (${booked.date})`;
+    }
+    if (isStartDate(day, startDate, currentYear, currentMonth))
+      return `Plan Started: ${dateStr}`;
+    if (isEndDate(day, endDate, currentYear, currentMonth))
+      return `Plan Ends: ${dateStr}`;
+    if (
+      isInBetweenRange(
+        day,
+        startDate,
+        endDate,
+        currentYear,
+        currentMonth,
+        holidays,
+      ) &&
+      !isWeekend(index)
+    )
       return `Plan Ongoing: ${dateStr}`;
+
     if (isWeekend(index)) return `Weekend Holiday: ${dateStr}`;
     if (isHoliday(day, holidays, currentYear, currentMonth)) {
-      const holidayName = holidays.find(h => h.date === dateStr)?.name || 'Holiday';
+      const holidayName =
+        holidays.find(h => h.date === dateStr)?.name || 'Holiday';
       return `Holiday: ${holidayName} (${dateStr})`;
     }
-    return `Selected Date: ${dateStr}`;
+    if (
+      isInBetweenRange(
+        day,
+        startDate,
+        endDate,
+        currentYear,
+        currentMonth,
+        holidays,
+      ) &&
+      !isWeekend(index)
+    ) {
+      return `Available for Booking: ${dateStr}`;
+    }
+    return `This date is not part of your plan: ${dateStr}`;
   };
 
   const handleDateSelect = (day: number) => {
     const dateStr = formatDate(currentYear, currentMonth, day);
     const holiday = holidays.find(h => h.date === dateStr);
-    setTooltipText(holiday ? `Holiday: ${holiday.name}` : `Selected  Date: ${dateStr}`);
+    setTooltipText(
+      holiday ? `Holiday: ${holiday.name}` : `Selected  Date: ${dateStr}`,
+    );
     setSelectedDate(dateStr);
     onDateChange?.(dateStr);
   };
@@ -115,7 +178,10 @@ export default function MenueCalendar({
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() =>
-            onMonthChange(currentMonth === 0 ? 11 : currentMonth - 1, currentMonth === 0 ? currentYear - 1 : currentYear)
+            onMonthChange(
+              currentMonth === 0 ? 11 : currentMonth - 1,
+              currentMonth === 0 ? currentYear - 1 : currentYear,
+            )
           }>
           <SvgXml xml={BackIcon} />
         </TouchableOpacity>
@@ -124,9 +190,12 @@ export default function MenueCalendar({
         </Text>
         <TouchableOpacity
           onPress={() =>
-            onMonthChange(currentMonth === 11 ? 0 : currentMonth + 1, currentMonth === 11 ? currentYear + 1 : currentYear)
+            onMonthChange(
+              currentMonth === 11 ? 0 : currentMonth + 1,
+              currentMonth === 11 ? currentYear + 1 : currentYear,
+            )
           }>
-          <SvgXml xml={BackIcon} style={{ transform: [{ rotate: '180deg' }] }} />
+          <SvgXml xml={BackIcon} style={{transform: [{rotate: '180deg'}]}} />
         </TouchableOpacity>
       </View>
 
@@ -135,7 +204,10 @@ export default function MenueCalendar({
         {daysOfWeek.map((day, index) => (
           <Text
             key={index}
-            style={[styles.weekDay, (day === 'Sat' || day === 'Sun') && styles.weekendText]}>
+            style={[
+              styles.weekDay,
+              (day === 'Sat' || day === 'Sun') && styles.weekendText,
+            ]}>
             {day}
           </Text>
         ))}
@@ -157,7 +229,15 @@ export default function MenueCalendar({
               onPress={() => {
                 if (
                   !isPastDate(dayNumber, currentYear, currentMonth) &&
-                    isWithinRange(dayNumber, startDate, endDate, currentYear, currentMonth)) {
+                  isWithinRange(
+                    dayNumber,
+                    startDate,
+                    endDate,
+                    currentYear,
+                    currentMonth,
+                  ) &&
+                  !isBookedDate(dayNumber, currentYear, currentMonth, foodList)
+                ) {
                   handleDateSelect(dayNumber);
                 }
               }}
@@ -171,12 +251,26 @@ export default function MenueCalendar({
                 clearTimeout(holdTimeout);
                 setTooltipVisible(false);
               }}>
-              <LinearGradient colors={getGradientColors(dayNumber, index)} style={styles.dayCircle}>
+              <LinearGradient
+                colors={getGradientColors(dayNumber, index)}
+                style={styles.dayCircle}>
                 <Text
                   style={[
                     styles.dayText,
                     selected && styles.selectedText,
-                    (isHoliday(dayNumber, holidays, currentYear, currentMonth) || isWeekend(index)) &&
+                    isBookedDate(
+                      dayNumber,
+                      currentYear,
+                      currentMonth,
+                      foodList,
+                    ) && styles.bookedText,
+                    (isHoliday(
+                      dayNumber,
+                      holidays,
+                      currentYear,
+                      currentMonth,
+                    ) ||
+                      isWeekend(index)) &&
                       styles.holidayText,
                   ]}>
                   {dayNumber}
@@ -206,7 +300,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     borderRadius: 20,
     shadowColor: Colors.black,
-    shadowOffset: { width: 0, height: hp('0.2%') },
+    shadowOffset: {width: 0, height: hp('0.2%')},
     shadowOpacity: 0.1,
     shadowRadius: wp('2%'),
     elevation: 0.9,
@@ -223,7 +317,7 @@ const styles = StyleSheet.create({
     color: Colors.primaryOrange,
     fontFamily: Fonts.Urbanist.bold,
   },
-  weekRow: { flexDirection: 'row' },
+  weekRow: {flexDirection: 'row'},
   weekDay: {
     flex: 1,
     textAlign: 'center',
@@ -232,8 +326,8 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.Urbanist.bold,
     textTransform: 'uppercase',
   },
-  weekendText: { color: Colors.red },
-  daysContainer: { flexDirection: 'row', flexWrap: 'wrap' },
+  weekendText: {color: Colors.red},
+  daysContainer: {flexDirection: 'row', flexWrap: 'wrap'},
   dayCell: {
     width: `${100 / 7}%`,
     alignItems: 'center',
@@ -247,9 +341,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  dayText: { fontSize: 16, color: Colors.black },
-  selectedText: { fontWeight: 'bold', color: Colors.green },
-  holidayText: { color: Colors.red, fontWeight: 'bold' },
+  dayText: {fontSize: 16, color: Colors.black},
+  selectedText: {fontWeight: 'bold', color: Colors.green},
+  holidayText: {color: Colors.red, fontWeight: 'bold'},
   tooltip: {
     position: 'absolute',
     top: hp('2%'),
@@ -266,5 +360,10 @@ const styles = StyleSheet.create({
     color: Colors.white,
     fontFamily: Fonts.Urbanist.bold,
     fontSize: wp('4%'),
+    lineHeight: wp('6%'),
+  },
+  bookedText: {
+    color: Colors.white,
+    fontWeight: 'bold',
   },
 });
