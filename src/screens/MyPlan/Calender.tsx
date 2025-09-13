@@ -36,6 +36,7 @@ import PlanCard from './Components/MyPlan';
 import WhatsAppButton from 'components/buttons/WhatsAppButton';
 import Shake from 'react-native-shake';
 import {Vibration} from 'react-native';
+import OnboardingTip from 'components/AppTuturial/OnboardingTip';
 
 const MyPlanScreen: React.FC<{navigation: any}> = ({navigation}) => {
   //######### STATE VARIABLES  ##############################
@@ -105,7 +106,7 @@ const MyPlanScreen: React.FC<{navigation: any}> = ({navigation}) => {
       setLegendVisible(true);
     });
     Shake.addListener(() => {
-      Vibration.vibrate(100); 
+      Vibration.vibrate(100);
       setLegendVisible(true);
     });
     return () => {
@@ -197,6 +198,7 @@ const MyPlanScreen: React.FC<{navigation: any}> = ({navigation}) => {
                 <Text style={styles.calendarGuidTittle}>
                   Calendar Color Guide
                 </Text>
+
                 <CalendarLegend
                   items={[
                     {color: [Colors.green, Colors.green], label: 'Plan Start'},
@@ -209,11 +211,24 @@ const MyPlanScreen: React.FC<{navigation: any}> = ({navigation}) => {
                       color: [Colors.hoiday, Colors.hoiday],
                       label: 'Holiday / Weekend',
                     },
+                    {
+                      color: [Colors.lightRed, Colors.lightRed],
+                      label: 'Meal Booked (Editable)',
+                    }, // editable meal same as ongoing
+                    {
+                      color: [Colors.greeFadd, Colors.greeFadd],
+                      label: 'Meal Booked (Locked)',
+                    },
+                    {
+                      color: [Colors.transparent, Colors.transparent],
+                      label: 'Available / No Color',
+                    },
                   ]}
                 />
               </View>
             </Pressable>
           </Modal>
+         <OnboardingTip storageKey="MY_PLAN_TIP_SEEN" />
 
           <SectionTitle>Holidays</SectionTitle>
           {filteredHolidays.length > 0 ? (

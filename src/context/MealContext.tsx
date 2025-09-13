@@ -126,3 +126,5 @@ export const useMeals = () => {
   if (!ctx) throw new Error('useMeals must be used inside MealProvider');
   return ctx;
 };
+
+

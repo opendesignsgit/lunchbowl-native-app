@@ -24,6 +24,7 @@ import PopularMenus from './Components/PopularMenusMarquee';
 import SchoolMarquee from './Components/SchoolsServes';
 import SearchBar from './Components/Search';
 import WhatsAppButton from 'components/buttons/WhatsAppButton';
+import EasterEgg from 'components/Fun/EasterEgg';
 
 //############## BANNER MOCK DATA ################
 
@@ -113,6 +114,7 @@ const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
           <SectionTitle>Quick Actions</SectionTitle>
           <Highlights />
         </ScrollView>
+         <EasterEgg />
         <WhatsAppButton />
       </View>
     </ThemeGradientBackground>

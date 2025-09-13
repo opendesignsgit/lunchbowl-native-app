@@ -1,7 +1,5 @@
 // Save Menu validation helpers
 
-import { monthNames } from './CalendarUtils';
-
 export const formatDateISO = (date: Date) =>
   date.toISOString().split('T')[0];
 
@@ -29,6 +27,11 @@ export const isFutureLimitExceeded = (date: Date) => {
   return date > limit;
 };
 
+export const isSaturday = (date: Date) => date.getDay() === 6;
+
+export const isSunday = (date: Date) => date.getDay() === 0;
+
+
 // -------------------- Main Validation --------------------
 
 export const validateMenuDate = (
@@ -39,5 +42,7 @@ export const validateMenuDate = (
   if (isFutureLimitExceeded(date)) return 'You can only schedule meals within the next 3 months.';
   if (isWeekend(date)) return 'Weekends are not allowed for meal plans.';
   if (isHoliday(date, holidays)) return 'This date is marked as a holiday.';
+  if (isSaturday(date)) return 'Saturdays are not allowed for meal plans.';
+  if (isSunday(date)) return 'Sundays are not allowed for meal plans.';
   return null; 
 };

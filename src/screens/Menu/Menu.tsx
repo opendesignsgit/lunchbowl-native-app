@@ -15,6 +15,7 @@ import MealCard from './Components/MealCard';
 
 import { useMeals } from 'context/MealContext';
 import NoDataFound from 'components/Error/NoDataMessage';
+import OfflineNotice from 'components/Error/OfflineNotice';
 
  const MealCategoryScreen: React.FC<{navigation: any}> = ({navigation}) => {
   const { meals, categories, loading, error } = useMeals();
@@ -39,8 +40,9 @@ import NoDataFound from 'components/Error/NoDataMessage';
         <View style={styles.container}>
           <HeaderBackButton title="My Plan" />
           <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
+           <OfflineNotice />
           <SectionTitle>Select your Category</SectionTitle>
-
+         
           <FlatList
             data={categories}
             keyExtractor={item => item.title}

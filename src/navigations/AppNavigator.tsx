@@ -1,17 +1,24 @@
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import React, {useEffect} from 'react';
-import {Alert, Pressable, StyleSheet, View} from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import React, { useEffect } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import {SvgXml} from 'react-native-svg';
+import { SvgXml } from 'react-native-svg';
 
 import HistoryNavigator from 'screens/History/MyPlanNavigator';
 import MenueNavigator from 'screens/Menu/MenueNavigator';
 import MyPlanNavigator from 'screens/MyPlan/MyPlanNavigator';
 import DashboardNavigator from './Dashboard/DashboardNavigator';
 
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import { Colors } from 'assets/styles/colors';
+import Fonts from 'assets/styles/fonts';
+import { useToast } from 'components/Error/Toast/ToastProvider';
+import { RegistrationProvider } from 'context/RegistrationContext';
+import { useNetwork } from 'hooks/useNetwork';
+import LinearGradient from 'react-native-linear-gradient';
 import {
   HistoryIconActive,
   HistoryIconInactive,
@@ -22,28 +29,20 @@ import {
   MyPlanIconActive,
   MyPlanIconInactive,
 } from 'styles/svg-icons';
-import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
-import {Colors} from 'assets/styles/colors';
-import Fonts from 'assets/styles/fonts';
-import {hiddenTabRoutes, isTabHidden} from './HiddenTabRoutes';
-import LinearGradient from 'react-native-linear-gradient';
-import { useNetwork } from 'hooks/useNetwork';
-import Toast from 'react-native-toast-message';
+import { hiddenTabRoutes, isTabHidden } from './HiddenTabRoutes';
 
 const Tab = createBottomTabNavigator();
 
 const AppNavigator = () => {
-
- const { isConnected } = useNetwork();
-
+  const {isConnected} = useNetwork();
+  const { showToast } = useToast();
+  
   useEffect(() => {
     if (isConnected === false) {
-      Toast.show({
+      showToast({
         type: 'error',
-        text1: 'No Internet Connection',
-        text2: 'Please check your network settings',
-        position: 'top',
-        visibilityTime: 3000,
+        title: 'No Internet',
+        message: 'Please check your network settings',
       });
     }
   }, [isConnected]);
@@ -133,17 +132,23 @@ const AppNavigator = () => {
           return {};
         }}
       />
+     
       <Tab.Screen
         name="MyPlan"
-        component={MyPlanNavigator}
         options={({route}) => {
           const routeName = getFocusedRouteNameFromRoute(route) ?? '';
           if (hiddenTabRoutes.includes(routeName)) {
             return {tabBarStyle: {display: 'none'}};
           }
           return {};
-        }}
-      />
+        }}>
+        {() => (
+          <RegistrationProvider>
+            <MyPlanNavigator />
+          </RegistrationProvider>
+        )}
+      </Tab.Screen>
+
       <Tab.Screen name="History" component={HistoryNavigator} />
     </Tab.Navigator>
   );
@@ -160,7 +165,7 @@ const styles = StyleSheet.create({
     elevation: 10,
     height: hp('10%'),
     paddingBottom: hp('0.7%'),
-    overflow: 'hidden',  
+    overflow: 'hidden',
   },
 
   iconWrapper: {
@@ -174,10 +179,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingLeft: hp('4%'),
-    paddingRight:hp('4%'),
-    paddingTop:hp('4%'),
-    paddingBottom:hp('6%'),
-    marginTop:hp('2.9%'),
+    paddingRight: hp('4%'),
+    paddingTop: hp('4%'),
+    paddingBottom: hp('6%'),
+    marginTop: hp('2.9%'),
   },
 
   topIndicator: {

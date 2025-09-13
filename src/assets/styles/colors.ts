@@ -16,6 +16,7 @@ export const Colors = {
     formdisableState:"#fbcdb5",
     endDate:"#f0f40eff",
     hoiday:"#ffe6e6",
+    transparent: "transparent", 
 
 };
 

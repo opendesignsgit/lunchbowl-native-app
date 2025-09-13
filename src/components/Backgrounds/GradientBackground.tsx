@@ -27,7 +27,7 @@ export default function ThemeGradientBackground({ children, style }: Props) {
 const styles = StyleSheet.create({
   gradient: {
     flex: 1,
-    width: wp('100%'),
+    // width: wp('100%'),
     // alignItems: 'center',
     // justifyContent: 'center',
   },

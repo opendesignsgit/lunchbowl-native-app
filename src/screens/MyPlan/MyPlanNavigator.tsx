@@ -1,105 +1,64 @@
-import {createStackNavigator} from '@react-navigation/stack';
-import {useAuth} from 'context/AuthContext';
-import {MenuProvider} from 'context/MenuContext';
-import {UserProfileProvider} from 'context/UserDataContext';
-import React, {useEffect, useState} from 'react';
-import Toast from 'react-native-toast-message';
+import { createStackNavigator } from '@react-navigation/stack';
+import { ToastProvider } from 'components/Error/Toast/ToastProvider';
+import { LoadingModal } from 'components/LoadingModal/LoadingModal';
+import { HolidayDateProvider } from 'context/calenderContext';
+import { FoodProvider } from 'context/FoodContext';
+import { MenuProvider } from 'context/MenuContext';
+import { useRegistration } from 'context/RegistrationContext';
+import { UserProfileProvider } from 'context/UserDataContext';
+import React from 'react';
 import PaymentWebView from 'screens/PaymentWebView';
 import Registartion from 'screens/Subscription/Registration';
-import RegistrationService from 'services/RegistartionService/registartion';
 import MyPlanScreen from './Calender';
 import FoodScreen from './FoodScreen';
 import MenuSelectionScreen from './MenuSelection';
-import {useNetwork} from 'hooks/useNetwork';
-import OfflineScreen from 'screens/OfflineScreen';
-import {HolidayDateProvider} from 'context/calenderContext';
-import {FoodProvider} from 'context/FoodContext';
+
 const Stack = createStackNavigator();
 
 const MyPlanNavigator = () => {
-  const [screenToShow, setScreenToShow] = useState<string | null>(null);
-  const {userId} = useAuth();
-  const {isConnected} = useNetwork({onReconnect: decideInitialRoute});
+  
+const { currentStep, loading } = useRegistration();
+if (loading || currentStep === null) {
+  return <LoadingModal loading={true} setLoading={() => {}} />;
+}
 
-  async function decideInitialRoute() {
-    if (!userId) {
-      setScreenToShow('Registartion');
-      return;
-    }
-    const payload: any = {_id: userId, path: 'Step-Check'};
-    try {
-      const response: any = await RegistrationService.registartionCheck(
-        payload,
-      );
-      const step = Number(response?.data?.step);
-      if (Number.isFinite(step) && step >= 4) {
-        setScreenToShow('MyPlan');
-      } else {
-        setScreenToShow('Registartion');
-      }
-    } catch (error) {
-      console.error('Error checking step:', error);
-      setScreenToShow('Offline');
-    }
-  }
-
-  useEffect(() => {
-    if (isConnected) {
-      decideInitialRoute();
-    } else {
-      setScreenToShow('Offline');
-    }
-  }, [userId, isConnected]);
-
-  useEffect(() => {
-    if (!isConnected) {
-      Toast.show({type: 'error', text1: ' You are Offline'});
-      setScreenToShow('Offline');
-    } else {
-      decideInitialRoute();
-    }
-  }, [isConnected]);
-
-  if (!isConnected || screenToShow === 'Offline') {
-    return <OfflineScreen />;
-  }
-
-  if (!screenToShow) return null;
-
+const initialScreen = currentStep >= 4 ? 'MyPlan' : 'Registration';
   return (
     <MenuProvider>
       <FoodProvider>
-        <UserProfileProvider>
-          <HolidayDateProvider>
-            <Stack.Navigator initialRouteName={screenToShow}>
-              <Stack.Screen
-                name="MenuSelection"
-                component={MenuSelectionScreen}
-                options={{headerShown: false}}
-              />
-              <Stack.Screen
-                name="FoodList"
-                component={FoodScreen}
-                options={{headerShown: false}}
-              />
-              <Stack.Screen
-                name="MyPlan"
-                component={MyPlanScreen}
-                options={{headerShown: false}}
-              />
-              <Stack.Screen
-                name="Registartion"
-                component={Registartion}
-                options={{headerShown: false}}
-              />
-              <Stack.Screen
-                name="WebViewScreen"
-                component={PaymentWebView}
-                options={{headerShown: false}}
-              />
-            </Stack.Navigator>
-          </HolidayDateProvider>
-        </UserProfileProvider>
+        <ToastProvider>
+          <UserProfileProvider>
+            <HolidayDateProvider>
+              <Stack.Navigator initialRouteName={initialScreen}>
+                <Stack.Screen
+                  name="MenuSelection"
+                  component={MenuSelectionScreen}
+                  options={{headerShown: false}}
+                />
+                <Stack.Screen
+                  name="FoodList"
+                  component={FoodScreen}
+                  options={{headerShown: false}}
+                />
+                <Stack.Screen
+                  name="MyPlan"
+                  component={MyPlanScreen}
+                  options={{headerShown: false}}
+                />
+                <Stack.Screen
+                  name="Registartion"
+                  component={Registartion}
+                  options={{headerShown: false}}
+                />
+                <Stack.Screen
+                  name="WebViewScreen"
+                  component={PaymentWebView}
+                  options={{headerShown: false}}
+                />
+              </Stack.Navigator>
+            </HolidayDateProvider>
+          </UserProfileProvider>
+        </ToastProvider>
       </FoodProvider>
     </MenuProvider>
   );

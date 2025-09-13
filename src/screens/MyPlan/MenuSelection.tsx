@@ -6,8 +6,8 @@ import SectionTitle from 'components/Titles/SectionHeading';
 import { useAuth } from 'context/AuthContext';
 import React, { useEffect, useState } from 'react';
 import { Colors } from '../../assets/styles/colors';
-
 import Fonts from 'assets/styles/fonts';
+import OfflineNotice from 'components/Error/OfflineNotice';
 import PrimaryDropdown from 'components/inputs/PrimaryDropdown';
 import AlertModal from 'components/Modal/AlertModal';
 import { useDate } from 'context/calenderContext';
@@ -37,7 +37,7 @@ import {
 } from 'utils/paymentUtils';
 import ccavenueConfig from '../../config/ccavenueConfig';
 import menues from '../../services/MenueService/Data/menus.json';
-import PlaySound from 'components/Fun/PlaySound';
+import { formatLocalDate, utcToLocal } from 'utils/localTime';
 
 // ################### HELPER DROPDOWN #############################
 
@@ -67,10 +67,6 @@ const mealPlans = {
 
 // ################### MAIN SCREEN ##################################
 
-const normalizeDate = (date: Date) => {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-};
-
 const MenuSelectionScreen = ({
   navigation,
   route,
@@ -78,9 +74,11 @@ const MenuSelectionScreen = ({
   navigation: any;
   route: any;
 }) => {
-  const passedDate = route?.params?.selectedDate
-    ? normalizeDate(new Date(route.params.selectedDate))
-    : normalizeDate(new Date());
+
+
+const passedDate = route?.params?.selectedDate
+  ? utcToLocal(route.params.selectedDate) //  convert backend UTC → Local
+  : new Date();
 
   // ################### STATES CALL HOOCKS #########################
 
@@ -121,7 +119,7 @@ const MenuSelectionScreen = ({
   };
 
   useEffect(() => {
-    PlaySound({ fileName: 'children.mp3' });
+    // PlaySound({ fileName: 'bell.mp3' });
     setSelectedDishes([]);
   }, [selectedTab]);
 
@@ -175,11 +173,15 @@ const MenuSelectionScreen = ({
   const isHoliday = isHolidayFromApi || isWeekend;
 
   // ################### HANDLE API CALL ###################################
+useEffect(() => {
+  console.log("📅 Selected Date => ", selectedDate.toISOString());
+}, [selectedDate]);
 
   const SaveMenue = async () => {
     setLoading(true);
     try {
-      // PAST DATE FUTRE DATE VALIDATION   ####################
+      
+      // BASE VALIDATION   ####################
 
       const errorMsg = validateMenuDate(selectedDate, holidays);
       if (errorMsg) {
@@ -344,6 +346,7 @@ const MenuSelectionScreen = ({
           </View>
 
           {/* Date Selector */}
+           <OfflineNotice />
 
           {selectedTab === 'custom' ? (
             <View style={styles.dateSelector}>

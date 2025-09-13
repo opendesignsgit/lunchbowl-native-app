@@ -251,7 +251,7 @@
 //                 clearTimeout(holdTimeout);
 //                 setTooltipVisible(false);
 //               }}>
-                
+
 //               <Text
 //                 style={[
 //                   styles.dayText,
@@ -394,12 +394,7 @@
 //   },
 // });
 
-
-
-
 // VERSION @  2
-
-
 
 // import React, {useState} from 'react';
 // import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
@@ -774,10 +769,7 @@
 //   },
 // });
 
-
 // version 3 ######
-
-
 
 // import React, { useState } from 'react';
 // import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -791,7 +783,6 @@
 //   heightPercentageToDP as hp,
 //   widthPercentageToDP as wp,
 // } from 'react-native-responsive-screen';
-
 
 // // --------------------
 // // Types
@@ -1072,3 +1063,178 @@
 //     fontSize: wp('4%'),
 //   },
 // });
+
+// CLICAKABLE LOGIC V! 
+// onPress={() => {
+//   if (
+//     !isPastDate(dayNumber, currentYear, currentMonth) &&
+//     isWithinRange(
+//       dayNumber,
+//       startDate,
+//       endDate,
+//       currentYear,
+//       currentMonth,
+//     ) &&
+//     !isBookedDate(dayNumber, currentYear, currentMonth, foodList)
+//   ) {
+//     handleDateSelect(dayNumber);
+//   }
+// }}
+
+
+
+// VERSION @ 2
+
+ // onPress={() => {
+              //   const booked = isBookedDate(
+              //     dayNumber,
+              //     currentYear,
+              //     currentMonth,
+              //     foodList,
+              //   );
+
+              //   if (isPastDate(dayNumber, currentYear, currentMonth)) {
+              //     showToast({
+              //       type: 'warning',
+              //       title: 'Invalid Selection',
+              //       message: 'You cannot select a past date.',
+              //     });
+              //     return;
+              //   }
+
+              //   if (
+              //     !isWithinRange(
+              //       dayNumber,
+              //       startDate,
+              //       endDate,
+              //       currentYear,
+              //       currentMonth,
+              //     )
+              //   ) {
+              //     showToast({
+              //       type: 'info',
+              //       title: 'Out of Plan',
+              //       message: 'This date is not included in your plan.',
+              //     });
+              //     return;
+              //   }
+
+              //   if (booked && !booked.editable) {
+              //     showToast({
+              //       type: 'error',
+              //       title: 'Locked',
+              //       message: `Meal already booked and locked on ${booked.date}`,
+              //     });
+              //     return;
+              //   }
+
+              //   if (booked && booked.editable) {
+              //     showToast({
+              //       type: 'info',
+              //       title: 'Edit Meal',
+              //       message: `You can update booking for ${booked.date}`,
+              //     });
+              //     handleDateSelect(dayNumber);
+              //     return;
+              //   }
+
+              //   // ✅ fresh selection
+              //   handleDateSelect(dayNumber);
+              //   showToast({
+              //     type: 'success',
+              //     title: 'Date Selected',
+              //     message: `You have selected ${dayNumber}/${
+              //       currentMonth + 1
+              //     }/${currentYear}`,
+              //   });
+              // }}
+
+
+
+              
+// OLD VERSION INLINE ############# COLORS 
+  // const getGradientColors = (day: number, index: number) => {
+  //   if (isStartDate(day, startDate, currentYear, currentMonth))
+  //     return [Colors.green, Colors.green];
+  //   // if (isBookedDate(day, currentYear, currentMonth, foodList))
+  //   //   return [Colors.greeFadd, Colors.greeFadd];
+
+  //   const booked = isBookedDate(day, currentYear, currentMonth, foodList);
+  //   if (booked) {
+  //     return booked.editable
+  //       ? [Colors.green, Colors.primaryOrange] //  booked but editable
+  //       : [Colors.red, Colors.greeFadd]; //  booked & locked
+  //   }
+
+  //   if (isEndDate(day, endDate, currentYear, currentMonth))
+  //     return [Colors.red, Colors.red];
+  //   if (
+  //     isInBetweenRange(
+  //       day,
+  //       startDate,
+  //       endDate,
+  //       currentYear,
+  //       currentMonth,
+  //       holidays,
+  //     ) &&
+  //     !isWeekend(index)
+  //   )
+  //     return [Colors.lightRed, Colors.lightRed];
+
+  //   if (isHoliday(day, holidays, currentYear, currentMonth) || isWeekend(index))
+  //     return [Colors.hoiday, Colors.hoiday];
+  //   return ['transparent', 'transparent'];
+  // };
+
+
+
+
+//   OLD VERION  ###### tool tip 
+
+
+  // const getTooltipText = (day: number, index: number) => {
+  //   const dateStr = formatDate(currentYear, currentMonth, day);
+  //   const booked = isBookedDate(day, currentYear, currentMonth, foodList);
+  //   if (booked) {
+  //     return booked.editable
+  //       ? `Meal Booked (Editable): ${booked.childName}'s ${booked.meal} (${booked.date})`
+  //       : `Meal Booked (Locked): ${booked.childName}'s ${booked.meal} (${booked.date})\nOrders must be placed at least 48 hours in advance.`;
+  //   }
+  //   if (isStartDate(day, startDate, currentYear, currentMonth))
+  //     return `Plan Started: ${dateStr}`;
+  //   if (isEndDate(day, endDate, currentYear, currentMonth))
+  //     return `Plan Ends: ${dateStr}`;
+  //   if (
+  //     isInBetweenRange(
+  //       day,
+  //       startDate,
+  //       endDate,
+  //       currentYear,
+  //       currentMonth,
+  //       holidays,
+  //     ) &&
+  //     !isWeekend(index)
+  //   )
+  //     return `Plan Ongoing: ${dateStr}`;
+
+  //   if (isWeekend(index)) return `Weekend Holiday: ${dateStr}`;
+  //   if (isHoliday(day, holidays, currentYear, currentMonth)) {
+  //     const holidayName =
+  //       holidays.find(h => h.date === dateStr)?.name || 'Holiday';
+  //     return `Holiday: ${holidayName} (${dateStr})`;
+  //   }
+  //   if (
+  //     isInBetweenRange(
+  //       day,
+  //       startDate,
+  //       endDate,
+  //       currentYear,
+  //       currentMonth,
+  //       holidays,
+  //     ) &&
+  //     !isWeekend(index)
+  //   ) {
+  //     return `Available for Booking: ${dateStr}`;
+  //   }
+  //   return `This date is not part of your plan: ${dateStr}`;
+  // };

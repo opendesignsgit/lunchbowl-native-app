@@ -10,7 +10,7 @@ const EasterEgg = () => {
 
   const playSound = () => {
     try {
-      SoundPlayer.playSoundFile('children', 'mp3');
+      SoundPlayer.playSoundFile('bell', 'mp3');
     } catch (e) {
       console.log('Error playing sound', e);
     }
@@ -19,17 +19,17 @@ const EasterEgg = () => {
   useEffect(() => {
     const triggerEasterEgg = async () => {
       try {
-        const hasShown = await AsyncStorage.getItem('@easterEggShown');
+        // const hasShown = await AsyncStorage.getItem('@easterEggShown');
 
-        if (!hasShown) {
+        // if (!hasShown) {
           setShowConfetti(true);
           confettiRef.current && confettiRef.current.start();
           playSound();
 
           setTimeout(() => setShowConfetti(false), 4000);
 
-          await AsyncStorage.setItem('@easterEggShown', 'true');
-        }
+          // await AsyncStorage.setItem('@easterEggShown', 'true');
+        // }
       } catch (error) {
         console.log('EasterEgg AsyncStorage error:', error);
       }

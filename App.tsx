@@ -1,29 +1,27 @@
-import React, {useEffect} from 'react';
+import {Colors} from 'assets/styles/colors';
+import React from 'react';
+import {Platform, SafeAreaView, StatusBar, StyleSheet} from 'react-native';
+import Toast from 'react-native-toast-message';
+import useFirebaseNotifications from 'utils/Notifications';
 import {AuthProvider} from './src/context/AuthContext';
 import MainNavigator from './src/navigations/MainNavigator';
-import {StatusBar, Platform, SafeAreaView, StyleSheet} from 'react-native';
 import './src/utils/firebaseConfig';
-import useFirebaseNotifications from 'utils/Notifications';
-import Toast from 'react-native-toast-message';
-import {Colors} from 'assets/styles/colors';
-import EasterEgg from 'components/Fun/EasterEgg';
+import {ToastProvider} from 'components/Error/Toast/ToastProvider';
 
 const App = () => {
   useFirebaseNotifications();
-
   return (
     <AuthProvider>
-      <StatusBar
-        barStyle="dark-content"
-        backgroundColor={Colors.white}
-        translucent={true}
-      />
-
-      <SafeAreaView style={styles.safeArea}>
-        <MainNavigator />
-      </SafeAreaView>
-      <Toast />
-      <EasterEgg />
+      <ToastProvider>       
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor={Colors.white}
+          translucent={true}
+        />
+        <SafeAreaView style={styles.safeArea}>
+          <MainNavigator />
+        </SafeAreaView>
+      </ToastProvider>
     </AuthProvider>
   );
 };

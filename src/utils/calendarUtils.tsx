@@ -1,6 +1,7 @@
 // --------------------
 // Helpers for Menu Calendar
 // --------------------
+import { differenceInHours, parseISO } from 'date-fns';
 
 export const monthNames = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -64,8 +65,6 @@ export const isPastDate = (day: number, year: number, month: number) => {
   return d < today;
 };
 
-
-
 export const isBookedDate = (
   day: number,
   year: number,
@@ -77,42 +76,23 @@ export const isBookedDate = (
   for (const child of foodlist) {
     const meal = child.meals.find(m => m.date === dateStr);
     if (meal) {
-      return { childName: child.name, meal: meal.food, date: dateStr };
+      // Check if the date is within 48 hours from now
+      const now = new Date();
+      const bookedDate = parseISO(dateStr);
+      const diff = differenceInHours(bookedDate, now);
+
+      return {
+        childName: child.name,
+        meal: meal.food,
+        date: dateStr,
+        editable: diff >= 48, 
+      };
     }
   }
 
   return null;
 };
 
-// export const isBookedDate = (
-//   day: number,
-//   year: number,
-//   month: number,
-//   foodlist: { id: string; name: string; meals: { date: string; food: string }[] }[]
-// ) => {
-//   const dateStr = formatDate(year, month, day);
-
-//   // --------------------
-//   // Check 48 hours condition
-//   // --------------------
-//   const selectedDate = new Date(dateStr);
-//   const now = new Date();
-//   const hoursDiff = (selectedDate.getTime() - now.getTime()) / (1000 * 60 * 60);
-
-//   if (hoursDiff < 48) {
-//     // Date is less than 48 hours away → cannot book
-//     return { notAllowed: true, date: dateStr };
-//   }
-
-//   for (const child of foodlist) {
-//     const meal = child.meals.find(m => m.date === dateStr);
-//     if (meal) {
-//       return { childName: child.name, meal: meal.food, date: dateStr };
-//     }
-//   }
-
-//   return null;
-// };
 
 
 

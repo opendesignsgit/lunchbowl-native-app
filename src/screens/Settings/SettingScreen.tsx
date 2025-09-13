@@ -34,6 +34,16 @@ import {
 
 const items = [
   {
+    id: '0',
+    name: 'Parent & Child Informations',
+    routeName: 'UnderConstruction',
+    routeParams: {
+      title: 'Notifications',
+      message: '',
+    },
+    icon: NotificationBell,
+  },
+  {
     id: '1',
     name: 'Notifications',
     routeName: 'UnderConstruction',

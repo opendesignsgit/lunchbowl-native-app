@@ -1,54 +1,38 @@
-import React, {useCallback, useState} from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {SvgXml} from 'react-native-svg';
-import LinearGradient from 'react-native-linear-gradient';
 import {Colors} from 'assets/styles/colors';
 import Fonts from 'assets/styles/fonts';
 import {useMenu} from 'context/MenuContext';
+import React, {useCallback, useState} from 'react';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import {heightPercentageToDP as hp,widthPercentageToDP as wp,} from 'react-native-responsive-screen';
+import {SvgXml} from 'react-native-svg';
 import {BackIcon} from 'styles/svg-icons';
+import {useFocusEffect} from '@react-navigation/native';
+import {useToast} from 'components/Error/Toast/ToastProvider';
+import {useFood} from 'context/FoodContext';
 import {
-  heightPercentageToDP as hp,
-  widthPercentageToDP as wp,
-} from 'react-native-responsive-screen';
-
+  getGradientColors,
+  getTooltipText,
+  handleDayPress,
+} from 'screens/MyPlan/Helpers/calendarBookingHandlers';
+import {CalendarProps} from 'src/model/calendarModels';
 import {
   daysOfWeek,
-  monthNames,
   formatDate,
   getDaysInMonth,
   getFirstDayOfMonth,
-  isHoliday,
-  isStartDate,
-  isEndDate,
-  isWeekend,
-  isInBetweenRange,
-  isWithinRange,
-  isPastDate,
   isBookedDate,
+  isHoliday,
+  isPastDate,
+  isWeekend,
+  isWithinRange,
+  monthNames,
 } from '../../../utils/calendarUtils';
-import {useFood} from 'context/FoodContext';
-import {useFocusEffect} from '@react-navigation/native';
-
-// --------------------
-// Types
-// --------------------
-interface Holiday {
-  id: string;
-  name: string;
-  date: string;
-}
-
-interface CalendarProps {
-  onDateChange?: (date: string) => void;
-  holidays?: Holiday[];
-  currentMonth: number;
-  currentYear: number;
-  onMonthChange: (month: number, year: number) => void;
-}
 
 // --------------------
 // Component
 // --------------------
+
 export default function MenueCalendar({
   onDateChange,
   holidays = [],
@@ -56,98 +40,39 @@ export default function MenueCalendar({
   currentYear,
   onMonthChange,
 }: CalendarProps) {
+  // --------------------
+  // Context & Hooks
+  // --------------------
+  const {showToast} = useToast();
   const {startDate, endDate} = useMenu();
-  const {foodList} = useFood();
-  const {onViewFoodList} = useFood();
+  const {foodList, onViewFoodList} = useFood();
+
+  // --------------------
+  // Component State
+  // --------------------
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [tooltipText, setTooltipText] = useState('');
   const [selectedDate, setSelectedDate] = useState<string>('');
 
+  // --------------------
+  // Refs & Timers
+  // --------------------
   let holdTimeout: NodeJS.Timeout;
 
+  // --------------------
+  // Early Return
+  // --------------------
   if (!startDate || !endDate) return <Text>Loading calendar...</Text>;
 
   // ---------------------------
   // Better For AUTO FETCH DTA  WHEN NAVIGATION
   // ----------------------------
+  
   useFocusEffect(
     useCallback(() => {
       onViewFoodList();
     }, [onViewFoodList]),
   );
-
-  // --------------------
-  // UI Helpers Usually the strongest priority is ! change Panataha Bro!!!!!
-  // --------------------
-  const getGradientColors = (day: number, index: number) => {
-    if (isStartDate(day, startDate, currentYear, currentMonth))
-      return [Colors.green, Colors.green];
-    if (isBookedDate(day, currentYear, currentMonth, foodList))
-      return [Colors.greeFadd, Colors.greeFadd];
-    if (isEndDate(day, endDate, currentYear, currentMonth))
-      return [Colors.red, Colors.red];
-    if (
-      isInBetweenRange(
-        day,
-        startDate,
-        endDate,
-        currentYear,
-        currentMonth,
-        holidays,
-      ) &&
-      !isWeekend(index)
-    )
-      return [Colors.lightRed, Colors.lightRed];
-
-    if (isHoliday(day, holidays, currentYear, currentMonth) || isWeekend(index))
-      return [Colors.hoiday, Colors.hoiday];
-    return ['transparent', 'transparent'];
-  };
-
-  const getTooltipText = (day: number, index: number) => {
-    const dateStr = formatDate(currentYear, currentMonth, day);
-    const booked = isBookedDate(day, currentYear, currentMonth, foodList);
-    if (booked) {
-      return `Meal Already Booked: ${booked.childName}'s : ${booked.meal} (${booked.date})`;
-    }
-    if (isStartDate(day, startDate, currentYear, currentMonth))
-      return `Plan Started: ${dateStr}`;
-    if (isEndDate(day, endDate, currentYear, currentMonth))
-      return `Plan Ends: ${dateStr}`;
-    if (
-      isInBetweenRange(
-        day,
-        startDate,
-        endDate,
-        currentYear,
-        currentMonth,
-        holidays,
-      ) &&
-      !isWeekend(index)
-    )
-      return `Plan Ongoing: ${dateStr}`;
-
-    if (isWeekend(index)) return `Weekend Holiday: ${dateStr}`;
-    if (isHoliday(day, holidays, currentYear, currentMonth)) {
-      const holidayName =
-        holidays.find(h => h.date === dateStr)?.name || 'Holiday';
-      return `Holiday: ${holidayName} (${dateStr})`;
-    }
-    if (
-      isInBetweenRange(
-        day,
-        startDate,
-        endDate,
-        currentYear,
-        currentMonth,
-        holidays,
-      ) &&
-      !isWeekend(index)
-    ) {
-      return `Available for Booking: ${dateStr}`;
-    }
-    return `This date is not part of your plan: ${dateStr}`;
-  };
 
   const handleDateSelect = (day: number) => {
     const dateStr = formatDate(currentYear, currentMonth, day);
@@ -162,6 +87,7 @@ export default function MenueCalendar({
   // --------------------
   // Calendar Logic
   // --------------------
+
   const daysInMonth = getDaysInMonth(currentMonth, currentYear);
   const firstDayIndex = getFirstDayOfMonth(currentMonth, currentYear);
 
@@ -226,24 +152,37 @@ export default function MenueCalendar({
             <TouchableOpacity
               key={index}
               style={styles.dayCell}
-              onPress={() => {
-                if (
-                  !isPastDate(dayNumber, currentYear, currentMonth) &&
-                  isWithinRange(
-                    dayNumber,
-                    startDate,
-                    endDate,
-                    currentYear,
-                    currentMonth,
-                  ) &&
-                  !isBookedDate(dayNumber, currentYear, currentMonth, foodList)
-                ) {
-                  handleDateSelect(dayNumber);
-                }
-              }}
+              onPress={() =>
+                handleDayPress({
+                  dayNumber,
+                  currentYear,
+                  currentMonth,
+                  foodList,
+                  startDate,
+                  endDate,
+                  isPastDate,
+                  isWithinRange,
+                  isBookedDate,
+                  handleDateSelect,
+                  showToast,
+                })
+              }
               onPressIn={() => {
                 holdTimeout = setTimeout(() => {
-                  setTooltipText(getTooltipText(dayNumber, index));
+                  setTooltipText(
+                    getTooltipText(
+                      dayNumber,
+                      index,
+                      currentMonth,
+                      currentYear,
+                      startDate,
+                      endDate,
+                      holidays,
+                      foodList,
+                      formatDate,
+                      isBookedDate,
+                    ),
+                  );
                   setTooltipVisible(true);
                 }, 1000);
               }}
@@ -252,7 +191,17 @@ export default function MenueCalendar({
                 setTooltipVisible(false);
               }}>
               <LinearGradient
-                colors={getGradientColors(dayNumber, index)}
+                colors={getGradientColors(
+                  dayNumber,
+                  index,
+                  currentMonth,
+                  currentYear,
+                  startDate,
+                  endDate,
+                  holidays,
+                  foodList,
+                  isBookedDate,
+                )}
                 style={styles.dayCircle}>
                 <Text
                   style={[
