@@ -3,6 +3,7 @@ import {MealProvider} from 'context/MealContext';
 import React from 'react';
 import UnderConstruction from 'screens/404Screen';
 import HomeScreen from 'screens/Dashboard/HomeScreen';
+import MealDetailScreen from 'screens/Menu/MealDetailScreen';
 import Notifications from 'screens/Notification/Notifications';
 import EditProfileScreen from 'screens/Settings/EditProfile/EditProfileScreen';
 import SettingsScreen from 'screens/Settings/SettingScreen';
@@ -35,6 +36,11 @@ const DashboardNavigator = () => {
         <Stack.Screen
           name="UnderConstruction"
           component={UnderConstruction}
+          options={{headerShown: false}}
+        />
+         <Stack.Screen
+          name="MealDetailScreen"
+          component={MealDetailScreen}
           options={{headerShown: false}}
         />
       </Stack.Navigator>

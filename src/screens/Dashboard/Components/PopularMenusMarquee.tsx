@@ -19,6 +19,7 @@ import {useMeals} from 'context/MealContext';
 import Typography from 'components/Text/Typography';
 import {Colors} from 'assets/styles/colors';
 import Fonts from 'assets/styles/fonts';
+import {useNavigation} from '@react-navigation/native';
 
 const {width: screenWidth} = Dimensions.get('window');
 
@@ -26,6 +27,8 @@ const PopularMenus = () => {
   const scrollRef = useRef<ScrollView>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const {meals, loading, error} = useMeals();
+  const navigation = useNavigation<any>();
+
 
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const offsetX = event.nativeEvent.contentOffset.x;
@@ -34,7 +37,7 @@ const PopularMenus = () => {
   };
 
   function GotoMenue(mealId: string) {
-    console.log('Navigate to Meal:', mealId);
+    navigation.navigate('MealDetailScreen', {mealId});
   }
 
   if (loading) {

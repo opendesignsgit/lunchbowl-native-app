@@ -1,17 +1,17 @@
+import { BlurView } from '@react-native-community/blur';
 import CheckBox from '@react-native-community/checkbox';
+import Fonts from 'assets/styles/fonts';
 import ThemeGradientBackground from 'components/Backgrounds/GradientBackground';
 import PrimaryButton from 'components/buttons/PrimaryButton';
 import SecondaryButton from 'components/buttons/SecondaryButton';
-import SectionTitle from 'components/Titles/SectionHeading';
-import { useAuth } from 'context/AuthContext';
-import React, { useEffect, useState } from 'react';
-import { Colors } from '../../assets/styles/colors';
-import Fonts from 'assets/styles/fonts';
 import OfflineNotice from 'components/Error/OfflineNotice';
 import PrimaryDropdown from 'components/inputs/PrimaryDropdown';
 import AlertModal from 'components/Modal/AlertModal';
+import SectionTitle from 'components/Titles/SectionHeading';
+import { useAuth } from 'context/AuthContext';
 import { useDate } from 'context/calenderContext';
 import { useMenu } from 'context/MenuContext';
+import React, { useEffect, useState } from 'react';
 import {
   Alert,
   Modal,
@@ -19,7 +19,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 import {
   heightPercentageToDP as hp,
@@ -30,14 +30,12 @@ import Tooltip from 'react-native-walkthrough-tooltip';
 import HeaderBackButton from 'screens/Dashboard/Components/BackButton';
 import MenuService from 'services/MyPlansApi/MenuService';
 import { BackIcon, ForwardIcon, questionIcon } from 'styles/svg-icons';
+import { utcToLocal } from 'utils/localTime';
 import { validateMenuDate } from 'utils/MenuValidation';
-import {
-  createHolidayPaymentRequest,
-  encryptRequest
-} from 'utils/paymentUtils';
+import { createHolidayPaymentRequest, encryptRequest } from 'utils/paymentUtils';
+import { Colors } from '../../assets/styles/colors';
 import ccavenueConfig from '../../config/ccavenueConfig';
 import menues from '../../services/MenueService/Data/menus.json';
-import { formatLocalDate, utcToLocal } from 'utils/localTime';
 
 // ################### HELPER DROPDOWN #############################
 
@@ -59,10 +57,10 @@ const mealPlans = {
     name: 'Meal Plan 1',
     meals: allMeals,
   },
-  2: {
-    name: 'Meal Plan 2',
-    meals: [...allMeals].reverse(),
-  },
+  // 2: {
+  //   name: 'Meal Plan 2',
+  //   meals: [...allMeals].reverse(),
+  // },
 };
 
 // ################### MAIN SCREEN ##################################
@@ -74,11 +72,9 @@ const MenuSelectionScreen = ({
   navigation: any;
   route: any;
 }) => {
-
-
-const passedDate = route?.params?.selectedDate
-  ? utcToLocal(route.params.selectedDate) //  convert backend UTC → Local
-  : new Date();
+  const passedDate = route?.params?.selectedDate
+    ? utcToLocal(route.params.selectedDate)
+    : new Date();
 
   // ################### STATES CALL HOOCKS #########################
 
@@ -119,7 +115,6 @@ const passedDate = route?.params?.selectedDate
   };
 
   useEffect(() => {
-    // PlaySound({ fileName: 'bell.mp3' });
     setSelectedDishes([]);
   }, [selectedTab]);
 
@@ -173,14 +168,13 @@ const passedDate = route?.params?.selectedDate
   const isHoliday = isHolidayFromApi || isWeekend;
 
   // ################### HANDLE API CALL ###################################
-useEffect(() => {
-  console.log("📅 Selected Date => ", selectedDate.toISOString());
-}, [selectedDate]);
+  useEffect(() => {
+    console.log('📅 Selected Date => ', selectedDate.toISOString());
+  }, [selectedDate]);
 
   const SaveMenue = async () => {
     setLoading(true);
     try {
-      
       // BASE VALIDATION   ####################
 
       const errorMsg = validateMenuDate(selectedDate, holidays);
@@ -346,7 +340,7 @@ useEffect(() => {
           </View>
 
           {/* Date Selector */}
-           <OfflineNotice />
+          <OfflineNotice />
 
           {selectedTab === 'custom' ? (
             <View style={styles.dateSelector}>
@@ -418,7 +412,10 @@ useEffect(() => {
                         <CheckBox
                           value={applySameDish}
                           onValueChange={newValue => setApplySameDish(newValue)}
-                          tintColors={{true: '#FF6600', false: '#ccc'}}
+                          tintColors={{
+                            true: Colors.primaryOrange,
+                            false: Colors.default,
+                          }}
                         />
                         <Text style={styles.checkboxLabel}>
                           Apply the Same dish for all children
@@ -442,53 +439,41 @@ useEffect(() => {
                         isSelected && styles.selectedPlanCard,
                       ]}
                       onPress={() => setSelectedDietitianPlan(plan)}>
-                      {/* Radio + Title Row */}
                       <View style={styles.planHeader}>
-                        <View
-                          style={[
-                            styles.radioOuter,
-                            isSelected && styles.radioOuterSelected,
-                          ]}>
-                          {isSelected && <View style={styles.radioInner} />}
-                        </View>
-                        <Text
-                          style={[
-                            styles.planTitle,
-                            isSelected && {color: '#fff'},
-                          ]}>
-                          {plan.name}
-                        </Text>
-                      </View>
-
-                      {/* Meals preview */}
-                      <View style={styles.mealRow}>
-                        {plan.meals.slice(0, 3).map((meal, idx) => (
-                          <Text
-                            key={idx}
+                        {/* Left side - radio + title */}
+                        <View style={styles.planInfo}>
+                          <View
                             style={[
-                              styles.mealText,
-                              isSelected && {color: '#fff'},
+                              styles.radioOuter,
+                              isSelected && styles.radioOuterSelected,
                             ]}>
-                            • {meal}
+                            {isSelected && <View style={styles.radioInner} />}
+                          </View>
+                          <Text
+                            style={[
+                              styles.planTitle,
+                              isSelected && {color: Colors.primaryOrange},
+                            ]}>
+                            {plan.name}
                           </Text>
-                        ))}
-                      </View>
+                        </View>
 
-                      {/* View More Button */}
-                      <TouchableOpacity
-                        style={[
-                          styles.viewMoreBtn,
-                          isSelected && {backgroundColor: '#fff'},
-                        ]}
-                        onPress={() => setSelectedPlan(plan)}>
-                        <Text
+                        {/* Right side - button */}
+                        <TouchableOpacity
                           style={[
-                            styles.viewMoreText,
-                            isSelected && {color: '#FF6600'},
-                          ]}>
-                          View More
-                        </Text>
-                      </TouchableOpacity>
+                            styles.viewMoreBtn,
+                            isSelected && styles.viewMoreBtnSelected,
+                          ]}
+                          onPress={() => setSelectedPlan(plan)}>
+                          <Text
+                            style={[
+                              styles.viewMoreText,
+                              isSelected && styles.viewMoreTextSelected,
+                            ]}>
+                            View More
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
                     </TouchableOpacity>
                   );
                 })}
@@ -545,11 +530,18 @@ useEffect(() => {
         onClose={() => setAlertVisible(false)}
       />
       {/* Bottom Sheet for Dietitian Plan */}
+
       <Modal
         visible={!!selectedPlan}
         transparent
         animationType="slide"
         onRequestClose={() => setSelectedPlan(null)}>
+        <BlurView
+          style={styles.modalOverlay}
+          blurType="light"
+          blurAmount={10} 
+          reducedTransparencyFallbackColor="rgba(0,0,0,0.5)" 
+        >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>{selectedPlan?.name}</Text>
@@ -560,11 +552,18 @@ useEffect(() => {
                 </Text>
               ))}
             </ScrollView>
-            <TouchableOpacity onPress={() => setSelectedPlan(null)}>
-              <Text style={styles.closeBtn}>Close</Text>
-            </TouchableOpacity>
+
+            <PrimaryButton
+              title={loading ? 'Saving...' : 'SAVE'}
+              onPress={() => setSelectedPlan(null)}
+              disabled={loading}
+              style={{
+                width: wp('90%'),
+              }}
+            />
           </View>
         </View>
+        </BlurView>
       </Modal>
     </ThemeGradientBackground>
   );
@@ -630,17 +629,42 @@ const styles = StyleSheet.create({
   },
   activeTabText: {
     color: Colors.white,
-    fontWeight: '600',
   },
   selectedPlanCard: {
-    backgroundColor: Colors.primaryOrange,
     borderColor: Colors.primaryOrange,
     borderWidth: 2,
   },
+
   planHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: hp('1%'),
+    justifyContent: 'space-between',
+  },
+
+  planInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: wp('2%'),
+  },
+
+  viewMoreBtn: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+  },
+  viewMoreBtnSelected: {
+    backgroundColor: Colors.white,
+  },
+  viewMoreText: {
+    fontSize: 14,
+    color: Colors.primaryOrange,
+    textDecorationLine: 'underline',
+
+    fontFamily: Fonts.Urbanist.semiBold,
+  },
+  viewMoreTextSelected: {
+    color: Colors.primaryOrange,
+    textDecorationLine: 'underline',
   },
 
   radioOuter: {
@@ -655,7 +679,7 @@ const styles = StyleSheet.create({
   },
 
   radioOuterSelected: {
-    borderColor: Colors.white,
+    borderColor: Colors.primaryOrange,
     backgroundColor: Colors.white,
   },
 
@@ -679,6 +703,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.primaryOrange,
   },
+
   arrowText: {
     fontSize: wp('6%'),
     color: Colors.primaryOrange,
@@ -808,21 +833,10 @@ const styles = StyleSheet.create({
     color: Colors.black,
     marginBottom: hp('0.5%'),
   },
-  viewMoreBtn: {
-    alignSelf: 'flex-start',
-    paddingVertical: hp('0.8%'),
-    paddingHorizontal: wp('3%'),
-    backgroundColor: Colors.primaryOrange,
-    borderRadius: wp('1.5%'),
-  },
-  viewMoreText: {
-    color: Colors.white,
-    fontWeight: '600',
-    fontSize: wp('3.5%'),
-  },
+
   modalOverlay: {
     flex: 1,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.black,
     justifyContent: 'flex-end',
   },
   modalContent: {

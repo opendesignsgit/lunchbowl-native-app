@@ -1,14 +1,21 @@
+import React from 'react';
+import {View, Text, StyleSheet} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import {Colors} from 'assets/styles/colors';
 import PrimaryButton from 'components/buttons/PrimaryButton';
-import {View, Text, StyleSheet} from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 
-const FreeTrialCard: React.FC<{navigation: any}> = ({navigation}) => {
+const FreeTrialCard: React.FC = () => {
+  const navigation = useNavigation<any>(); // 👈 use navigation hook
+
   function FreeTrail(): void {
-    navigation.navigate('UnderConstruction');
+    navigation.navigate('UnderConstruction', {
+      title: 'Free Trial',
+      message: 'Free trial feature is under construction. Please check later!',
+    });
   }
 
   return (
