@@ -1,153 +1,178 @@
-import React from 'react';
+import { Colors } from 'assets/styles/colors';
+import Fonts from 'assets/styles/fonts';
+import AnimatedBell from 'components/Animations/AnimatedBell';
+import ThemeGradientBackground from 'components/Backgrounds/GradientBackground';
+import React, { useEffect, useState } from 'react';
 import {
+  FlatList,
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
-  View,
+  View
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import ThemeGradientBackground from 'components/Backgrounds/GradientBackground';
+import { SvgXml } from 'react-native-svg';
+import HeaderBackButton from 'screens/Dashboard/Components/BackButton';
+import {
+  NONotificationBell,
+  NotificationBell
+} from 'styles/svg-icons';
 
 interface Notification {
   id: string;
   title: string;
-  message: string;
+  description: string;
   time: string;
 }
 
-const notifications: Notification[] = [
+const MOCK_NOTIFICATIONS: Notification[] = [
   {
     id: '1',
-    title: 'New Message',
-    message: 'You have a new message from John.',
-    time: '2 mins ago',
+    title: 'Notification Lorem ipsum dolor',
+    description: 'Lorem ipsum dolor sit amet consectetur.',
+    time: '10 Hours ago',
   },
   {
     id: '2',
-    title: 'Order Update',
-    message: 'Your order #1234 has been shipped.',
-    time: '1 hour ago',
-  },
-  {
-    id: '3',
-    title: 'Reminder',
-    message: "Don't forget to attend the meeting tomorrow.",
-    time: '5 hours ago',
-  },
-  {
-    id: '4',
-    title: 'Promo Alert',
-    message: 'Get 20% off on your next purchase!',
-    time: '1 day ago',
+    title: 'Notification Lorem ipsum dolor',
+    description: 'Lorem ipsum dolor sit amet consectetur.',
+    time: '14 Hours ago',
   },
 ];
 
-const Notifications: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const handleLogout = async () => {
-    try {
-      await AsyncStorage.clear();
-      navigation.replace('Login');
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
+export default function NotificationScreen() {
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+
+  const SHOW_NOTIFICATIONS = true;
+
+  useEffect(() => {
+    setNotifications(SHOW_NOTIFICATIONS ? MOCK_NOTIFICATIONS : []);
+  }, []);
+
+  const renderNotification = ({item}: {item: Notification}) => (
+    <View style={styles.notificationCard}>
+      <View style={styles.iconCircle}>
+        <AnimatedBell xml={NotificationBell} width={40} height={40} />
+      </View>
+      <View style={styles.notificationContent}>
+        <Text style={styles.notificationTitle}>{item.title}</Text>
+        <Text style={styles.notificationDescription}>{item.description}</Text>
+        <Text style={styles.notificationTime}>{item.time}</Text>
+      </View>
+    </View>
+  );
+
+  const EmptyState = () => (
+    <View style={styles.emptyContainer}>
+      <View style={styles.illustration}>
+        <SvgXml xml={NONotificationBell} />
+      </View>
+      <View style={styles.ContentContainer}>
+        <Text style={styles.emptyTitle}>No Notification</Text>
+        <Text style={styles.emptyDescription}>
+          You don’t have any notifications yet. All your alerts will appear
+          here.
+        </Text>
+      </View>
+    </View>
+  );
 
   return (
     <ThemeGradientBackground>
       <ScrollView
-        contentContainerStyle={styles.container}
-        showsVerticalScrollIndicator={false}
-      >
-        <LinearGradient
-          colors={['#EEEEEE', '#EEEEEE']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.divider}
-        />
-
-        {notifications.map((item) => (
-          <TouchableOpacity
-            key={item.id}
-            style={styles.notificationItem}
-            onPress={() => console.log(item.message)}
-          >
-            <View style={styles.notificationContent}>
-              <Text style={styles.notificationTitle}>{item.title}</Text>
-              <Text style={styles.notificationMessage}>{item.message}</Text>
-              <Text style={styles.notificationTime}>{item.time}</Text>
-            </View>
-          </TouchableOpacity>
-        ))}
-
-        <View style={styles.logoutContainer}>
-          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-            <Text style={styles.logoutText}>Logout</Text>
-          </TouchableOpacity>
-        </View>
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}>
+        <HeaderBackButton title="Notification" />
+        {notifications.length > 0 ? (
+          <FlatList
+            data={notifications}
+            renderItem={renderNotification}
+            keyExtractor={item => item.id}
+            contentContainerStyle={{paddingBottom: hp('10%')}}
+          />
+        ) : (
+          <EmptyState />
+        )}
       </ScrollView>
     </ThemeGradientBackground>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  container: {
-
+  scrollContent: {
+    paddingHorizontal: wp('5%'),
+    paddingBottom: hp('5%'),
   },
-  divider: {
-    height: 1,
-    width: '100%',
-    backgroundColor: '#E0E0E0',
-    marginVertical: hp('1.5%'),
-  },
-  notificationItem: {
-    backgroundColor: '#fff',
+  notificationCard: {
+    flexDirection: 'row',
+    backgroundColor: Colors.white,
     padding: wp('4%'),
-    borderRadius: wp('2%'),
-    marginBottom: hp('1.5%'),
-    elevation: 1,
+    borderRadius: 12,
+    marginBottom: hp('2%'),
+    shadowColor: Colors.black,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  iconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#FFE0B2',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: wp('3%'),
+  },
+  iconText: {
+    fontSize: hp('2.2%'),
   },
   notificationContent: {
-    flexDirection: 'column',
+    flex: 1,
   },
-  notificationTitle: {
-    fontSize: wp('4.2%'),
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: hp('0.5%'),
-  },
-  notificationMessage: {
-    fontSize: wp('3.8%'),
-    color: '#666',
-    marginBottom: hp('0.8%'),
-  },
-  notificationTime: {
-    fontSize: wp('3.2%'),
-    color: '#999',
-  },
-  logoutContainer: {
-    alignItems: 'flex-end',
+  ContentContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
     marginTop: hp('2%'),
   },
-  logoutButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FF6B6B',
-    paddingVertical: hp('1%'),
-    paddingHorizontal: wp('4%'),
-    borderRadius: wp('2%'),
+
+  notificationTitle: {
+    fontSize: hp('2%'),
+    fontFamily: Fonts.Urbanist.bold,
+    color: Colors.black,
+    marginBottom: hp('0.5%'),
   },
-  logoutText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: wp('3.8%'),
+  notificationDescription: {
+    fontSize: hp('1.7%'),
+    fontFamily: Fonts.Urbanist.medium,
+    color: Colors.bodyText,
+    marginBottom: hp('0.5%'),
+  },
+  notificationTime: {
+    fontSize: hp('1.5%'),
+    fontFamily: Fonts.Urbanist.medium,
+    color: Colors.bodyText,
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    marginTop: hp('10%'),
+  },
+  illustration: {
+    alignItems: 'center',
+  },
+  emptyTitle: {
+    fontSize: hp('2.2%'),
+    fontFamily: Fonts.Urbanist.bold,
+    color: Colors.black,
+  },
+  emptyDescription: {
+    fontSize: hp('1.7%'),
+    fontFamily: Fonts.Urbanist.medium,
+    color: Colors.bodyText,
+    textAlign: 'center',
+    marginTop: hp('1%'),
+    maxWidth: wp('80%'),
   },
 });
-
-export default Notifications;
-

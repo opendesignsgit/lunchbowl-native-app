@@ -7,6 +7,8 @@ import {
   StyleSheet,
   View,
   ViewStyle,
+  StyleProp,
+  TextStyle,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -23,7 +25,8 @@ type PrimaryButtonProps = {
   icon?: React.ReactNode;
   textTransform?: 'none' | 'capitalize' | 'uppercase' | 'lowercase';
   fontFamily?: string;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>; 
   disabled?: boolean;
   disabledBackgroundColor?: string;
   disabledTextColor?: string;
@@ -48,11 +51,11 @@ export default function PrimaryButton({
     <TouchableOpacity
       style={[
         styles.button,
-        style,
         {
           backgroundColor: disabled ? disabledBackgroundColor : backgroundColor,
           borderRadius,
         },
+         style,
       ]}
       activeOpacity={0.8}
       onPress={disabled ? undefined : onPress}

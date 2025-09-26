@@ -1,55 +1,62 @@
 import React from 'react';
-import { Text, StyleSheet, TouchableOpacity, FlatList, View } from 'react-native';
-import { SvgXml } from 'react-native-svg';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import {Text, StyleSheet, TouchableOpacity, FlatList, View} from 'react-native';
+import {SvgXml} from 'react-native-svg';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
+
+import {Calender, Helthy, irrattaiilai, MultiCusine} from 'styles/svg-icons';
 import { Colors } from 'assets/styles/colors';
 import Fonts from 'assets/styles/fonts';
-import {  Calender, MultiCusine } from 'styles/svg-icons'; 
 
-const highlightsData = [
+const QuickActionsMock = [
   {
     id: '1',
-    title: 'Nutritionist Approved',
-    description: 'Expert designed meal plans.',
-    icon: Calender,
+    title: 'Healthy',
+    description: 'Relax and stretch your muscles.',
+    icon: Helthy,
     color: '#FFE4D7',
   },
   {
     id: '2',
-    title: 'Pure Veg & Jain Food',
-    description: 'Fresh and healthy ingredients.',
-    icon: Calender,
+    title: 'Diet Plan',
+    description: 'Eat healthy, stay healthy.',
+    icon: irrattaiilai,
     color: '#DDFFD7',
   },
   {
     id: '3',
     title: 'Flexible Plans',
-    description: 'Adjust meals as per your schedule.',
+    description: 'Drink 8+ glasses daily.',
     icon: Calender,
     color: '#FFE6E6',
   },
   {
     id: '4',
     title: 'Multi Cuisine Food',
-    description: 'Variety of cuisines to enjoy.',
+    description: 'Track your sleep schedule.',
     icon: MultiCusine,
     color: '#FFF4D7',
   },
 ];
 
-const Highlights: React.FC<{ navigation: any }> = ({ navigation }) => {
-  const handleCardPress = (item: any) => {
-    console.log('Card pressed:', item.title);
-    navigation.navigate('DietaryTipsScreen', { highlight: item });
+const QuickActions: React.FC<{navigation: any}> = ({navigation}) => {
+  const handleCardPress = () => {
+    navigation.navigate('DietaryTipsScreen');
   };
 
-  const renderCard = ({ item }: { item: any }) => (
+  const renderCard = ({item}: {item: any}) => (
     <TouchableOpacity
       activeOpacity={0.8}
-      onPress={() => handleCardPress(item)}
-      style={[styles.card, { backgroundColor: item.color }]}
-    >
-      <SvgXml xml={item.icon} width={wp('15%')} height={wp('15%')} style={styles.icon} />
+      onPress={handleCardPress}
+      style={[styles.card, {backgroundColor: item.color}]}>
+      <SvgXml
+        xml={item.icon}
+        width={wp('15%')}
+        height={wp('15%')}
+        style={styles.icon}
+      />
       <Text style={styles.title}>{item.title}</Text>
       <Text style={styles.description}>{item.description}</Text>
     </TouchableOpacity>
@@ -57,7 +64,7 @@ const Highlights: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   return (
     <FlatList
-      data={highlightsData}
+      data={QuickActionsMock}
       numColumns={2}
       renderItem={renderCard}
       keyExtractor={item => item.id}
@@ -67,7 +74,7 @@ const Highlights: React.FC<{ navigation: any }> = ({ navigation }) => {
   );
 };
 
-export default Highlights;
+export default QuickActions;
 
 const styles = StyleSheet.create({
   container: {},
@@ -92,7 +99,7 @@ const styles = StyleSheet.create({
     marginBottom: hp('0.3%'),
     color: Colors.black,
     width: 'auto',
-    fontFamily: Fonts.Urbanist.bold,
+    fontFamily: Fonts.Urbanist.bold
   },
   description: {
     fontSize: wp('3.2%'),

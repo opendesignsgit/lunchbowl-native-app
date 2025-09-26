@@ -35,8 +35,8 @@ import {
 const items = [
   {
     id: '0',
-    name: 'Parent & Child Informations',
-    routeName: 'UnderConstruction',
+    name: 'Child Info',
+    routeName: 'ParentChildInfoScreen',
     routeParams: {
       title: 'Notifications',
       message: '',
@@ -46,7 +46,7 @@ const items = [
   {
     id: '1',
     name: 'Notifications',
-    routeName: 'UnderConstruction',
+    routeName: 'NotificationScreen',
     routeParams: {
       title: 'Notifications',
       message: 'This feature is not available yet',
@@ -56,7 +56,7 @@ const items = [
   {
     id: '2',
     name: 'Offers & Coupons',
-    routeName: 'UnderConstruction',
+    routeName: 'OffersScreen',
     routeParams: {
       title: 'Offers',
       message: 'This feature is not available yet',
@@ -66,7 +66,7 @@ const items = [
   {
     id: '3',
     name: 'History',
-    routeName: 'UnderConstruction',
+    routeName: 'OrderHistory',
     routeParams: {
       title: 'History',
       message: 'This feature is not available yet',
@@ -78,15 +78,15 @@ const items = [
     name: 'Payments',
     routeName: 'UnderConstruction',
     routeParams: {
-      title: 'History',
-      message: 'This feature is not available yet',
+      title: '',
+      message: '',
     },
     icon: NotificationBell,
   },
   {
     id: '5',
     name: 'About Us',
-    routeName: 'UnderConstruction',
+    routeName: 'AboutUsScreen',
     routeParams: {
       title: 'Offers',
       message: 'This feature is not available yet',
@@ -97,7 +97,7 @@ const items = [
   {
     id: '6',
     name: 'FAQ’s',
-    routeName: 'UnderConstruction',
+    routeName: 'FaqScreen',
     routeParams: {
       title: 'FAQ’s',
       message: 'This feature is not available yet',
@@ -108,7 +108,7 @@ const items = [
   {
     id: '7',
     name: 'T&C, Privacy Policy',
-    routeName: 'UnderConstruction',
+    routeName: 'TermsAndPolicyScreen',
     routeParams: {
       title: 'About',
       message: 'This feature is not available yet',
@@ -119,7 +119,7 @@ const items = [
   {
     id: '8',
     name: ' Help Center',
-    routeName: 'UnderConstruction',
+    routeName: 'HelpCenterScreen',
     routeParams: {
       title: 'Help',
       message: 'This feature is not available yet',
@@ -165,9 +165,8 @@ const SettingsScreen: React.FC<{navigation: any}> = ({navigation}) => {
   };
 
   function EditProfile(): void {
-    navigation.navigate('UnderConstruction');
+    navigation.navigate('EditProfile');
   }
-
   return (
     <ThemeGradientBackground>
       <ScrollView

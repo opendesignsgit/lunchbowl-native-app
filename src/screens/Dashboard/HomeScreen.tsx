@@ -19,12 +19,14 @@ import {
 import PromoBanner from './Components/Carousel';
 import FreeTrialCard from './Components/FreeTrialCard';
 import Header from './Components/Header';
-import Highlights from './Components/Highlights';
 import PopularMenus from './Components/PopularMenusMarquee';
 import SchoolMarquee from './Components/SchoolsServes';
 import SearchBar from './Components/Search';
 import WhatsAppButton from 'components/buttons/WhatsAppButton';
 import EasterEgg from 'components/Fun/EasterEgg';
+import HomeSkeleton from 'components/skeletons/HomeSkeleton';
+import QuickActions from './Components/QuickActions';
+import Highlights from './Components/Highlights';
 
 //############## BANNER MOCK DATA ################
 
@@ -57,6 +59,7 @@ export const mockChallenges = [
 
 const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
   const [userName, setUserName] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const getUserRole = async () => {
@@ -76,6 +79,8 @@ const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
       } catch (error) {
         console.error('Error fetching user:', error);
         setUserName(null);
+      } finally {
+        setTimeout(() => setLoading(false), 2000);
       }
     };
 
@@ -84,6 +89,17 @@ const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
   function onPressViewAll(event: GestureResponderEvent): void {
     throw new Error('Function not implemented.');
   }
+
+  if (loading) {
+    return (
+      <ThemeGradientBackground>
+        <View style={styles.container}>
+          <HomeSkeleton />
+        </View>
+      </ThemeGradientBackground>
+    );
+  }
+
   return (
     <ThemeGradientBackground>
       <View style={styles.container}>
@@ -97,11 +113,11 @@ const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
               throw new Error('Function not implemented.');
             }}
           />
-          <PromoBanner />
+          <PromoBanner navigation={navigation} />
           <SectionTitle> Kick Start your Free Trial</SectionTitle>
-         <FreeTrialCard />
+          <FreeTrialCard />
           <SectionTitle>Lunch Bowl’s Highlights</SectionTitle>
-          <Highlights />
+          <Highlights navigation={navigation} />
           <SectionTitle>Schools We Serve</SectionTitle>
           <SchoolMarquee />
           <View style={styles.headerContainer}>
@@ -112,9 +128,9 @@ const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
           </View>
           <PopularMenus />
           <SectionTitle>Quick Actions</SectionTitle>
-          <Highlights />
+          <QuickActions navigation={navigation} />
         </ScrollView>
-         <EasterEgg />
+        <EasterEgg />
         <WhatsAppButton />
       </View>
     </ThemeGradientBackground>

@@ -6,7 +6,20 @@ export const hiddenTabRoutes: string[] = [
   'MealDetailScreen',
   'Settings',
   'FoodList',
-  'MenuSelection'
+  'MenuSelection',
+  'EditProfile',
+  'FaqScreen',
+  'OfferDetailScreen',
+  'OffersScreen',
+  'EditProfileScreen',
+  'ParentChildInfoScreen',
+  'NotificationScreen',
+  'AboutUsScreen',
+  'HelpCenterScreen',
+  'DietaryTipDetailsScreen',
+  'DietaryTipsScreen',
+  'HistoryDetailPage'
+
 ];
 
 export const isTabHidden = (routeName?: string): boolean => {

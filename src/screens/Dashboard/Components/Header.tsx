@@ -20,7 +20,7 @@ export default function Header({userName, navigation}: HeaderProps) {
     navigation.navigate('Settings');
   };
   const goNotification = () => {
-    navigation.navigate('UnderConstruction');
+    navigation.navigate('NotificationScreen');
   };
 
   return (

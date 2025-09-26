@@ -1,6 +1,5 @@
 import ThemeGradientBackground from 'components/Backgrounds/GradientBackground';
 import ErrorMessage from 'components/Error/BoostrapStyleError';
-import { LoadingModal } from 'components/LoadingModal/LoadingModal';
 import SectionTitle from 'components/Titles/SectionHeading';
 import React, { useState } from 'react';
 import { FlatList, ScrollView, StyleSheet, View } from 'react-native';
@@ -13,12 +12,16 @@ import SearchBar from 'screens/Dashboard/Components/Search';
 import CategoryItem from './Components/CategoryItem';
 import MealCard from './Components/MealCard';
 
-import { useMeals } from 'context/MealContext';
 import NoDataFound from 'components/Error/NoDataMessage';
 import OfflineNotice from 'components/Error/OfflineNotice';
+import {
+  CategorySkeleton,
+  MealListSkeleton,
+} from 'components/skeletons/MealCategorySkeleton';
+import { useMeals } from 'context/MealContext';
 
- const MealCategoryScreen: React.FC<{navigation: any}> = ({navigation}) => {
-  const { meals, categories, loading, error } = useMeals();
+const MealCategoryScreen: React.FC<{navigation: any}> = ({navigation}) => {
+  const {meals, categories, loading, error} = useMeals();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -34,57 +37,64 @@ import OfflineNotice from 'components/Error/OfflineNotice';
 
   return (
     <ThemeGradientBackground>
-      <LoadingModal loading={loading} setLoading={() => {}} />
       {error && <ErrorMessage error={error} onClose={() => {}} />}
-      {!loading && (
-        <View style={styles.container}>
-          <HeaderBackButton title="My Plan" />
-          <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
-           <OfflineNotice />
-          <SectionTitle>Select your Category</SectionTitle>
-         
-          <FlatList
-            data={categories}
-            keyExtractor={item => item.title}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{
-              paddingHorizontal: wp('4%'),
-              marginBottom: hp('2%'),
-              height: hp('22%'),
-            }}
-            renderItem={({ item }) => (
-              <CategoryItem
-                title={item.title}
-                image={item.image}
-                dishImage2={item.dishImage2}
-                selected={item.title === selectedCategory}
-                onPress={() => setSelectedCategory(item.title)}
-              />
-            )}
-          />
 
-         <ScrollView
-            contentContainerStyle={styles.mealList}
-            showsVerticalScrollIndicator={false}>
-            {filteredMeals.length > 0 ? (
-              filteredMeals.map(meal => (
-                <MealCard
-                  key={meal.id}
-                  image={meal.image}
-                  title={meal.title}
-                  description={meal.description}
-                  onPress={() =>
-                    navigation.navigate('MealDetailScreen', { mealId: meal.id })
-                  }
+      <View style={styles.container}>
+        <HeaderBackButton title="My Plan" />
+        <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
+        <OfflineNotice />
+        <SectionTitle>Select your Category</SectionTitle>
+
+        {loading ? (
+          <>
+            <CategorySkeleton />
+            <MealListSkeleton />
+          </>
+        ) : (
+          <>
+            <FlatList
+              data={categories}
+              keyExtractor={item => item.title}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                paddingHorizontal: wp('4%'),
+                marginBottom: hp('2%'),
+                height: hp('22%'),
+              }}
+              renderItem={({item}) => (
+                <CategoryItem
+                  title={item.title}
+                  image={item.image}
+                  dishImage2={item.dishImage2}
+                  selected={item.title === selectedCategory}
+                  onPress={() => setSelectedCategory(item.title)}
                 />
-              ))
-            ) : (
-              <NoDataFound message="No meals found for this category." />
-            )}
-          </ScrollView>
-        </View>
-      )}
+              )}
+            />
+
+            <ScrollView
+              contentContainerStyle={styles.mealList}
+              showsVerticalScrollIndicator={false}>
+              {filteredMeals.length > 0 ? (
+                filteredMeals.map(meal => (
+                  <MealCard
+                    key={meal.id}
+                    image={meal.image}
+                    title={meal.title}
+                    description={meal.description}
+                    onPress={() =>
+                      navigation.navigate('MealDetailScreen', {mealId: meal.id})
+                    }
+                  />
+                ))
+              ) : (
+                <NoDataFound message="No meals found for this category." />
+              )}
+            </ScrollView>
+          </>
+        )}
+      </View>
     </ThemeGradientBackground>
   );
 };

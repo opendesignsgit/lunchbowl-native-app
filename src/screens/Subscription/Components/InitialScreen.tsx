@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {View, Text} from 'react-native';
 import {SvgXml} from 'react-native-svg';
 import ThemeGradientBackground from 'components/Backgrounds/GradientBackground';
@@ -9,7 +9,7 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import styles from './forms/Styles/styles';
-import { LoadingModal } from 'components/LoadingModal/LoadingModal';
+import {LoadingModal} from 'components/LoadingModal/LoadingModal';
 interface EmptyPlanStateProps {
   navigation: any;
   vabourCub: string;
@@ -34,7 +34,6 @@ const InitialsScreen: React.FC<EmptyPlanStateProps> = ({
         <View style={styles.illustration}>
           <SvgXml xml={vabourCub} />
         </View>
-
         <View style={styles.textContainer}>
           <Text style={styles.title}>
             Looks like you're not Subscribed to any Plan

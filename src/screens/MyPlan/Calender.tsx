@@ -1,15 +1,17 @@
-import {useFocusEffect} from '@react-navigation/native';
-import {Colors} from 'assets/styles/colors';
+import { useFocusEffect } from '@react-navigation/native';
+import { Colors } from 'assets/styles/colors';
 import Fonts from 'assets/styles/fonts';
+import OnboardingTip from 'components/AppTuturial/OnboardingTip';
 import ThemeGradientBackground from 'components/Backgrounds/GradientBackground';
 import NoDataFound from 'components/Error/NoDataMessage';
-import {LoadingModal} from 'components/LoadingModal/LoadingModal';
 import SectionTitle from 'components/Titles/SectionHeading';
 import PrimaryButton from 'components/buttons/PrimaryButton';
-import {useAuth} from 'context/AuthContext';
-import {useUserProfile} from 'context/UserDataContext';
-import {useDate} from 'context/calenderContext';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import WhatsAppButton from 'components/buttons/WhatsAppButton';
+import MyPlanSkeleton from 'components/skeletons/MyPlanSkeleton';
+import { useAuth } from 'context/AuthContext';
+import { useUserProfile } from 'context/UserDataContext';
+import { useDate } from 'context/calenderContext';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   FlatList,
   Modal,
@@ -19,24 +21,22 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  Vibration,
   View,
 } from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import Shake from 'react-native-shake';
 import HeaderBackButton from 'screens/Dashboard/Components/BackButton';
 import ToolTipSectionHeader from 'screens/Dashboard/Components/TooltipHeader';
 import MenueCalendar from 'screens/MyPlan/Components/MenueCalender';
-import {questionIcon} from 'styles/svg-icons';
-import {formatDate} from 'utils/dateUtils';
+import { questionIcon } from 'styles/svg-icons';
+import { formatDate } from 'utils/dateUtils';
 import CalendarLegend from './Components/ColorsLegend';
 import HolidayListCard from './Components/HolidayListCard';
 import PlanCard from './Components/MyPlan';
-import WhatsAppButton from 'components/buttons/WhatsAppButton';
-import Shake from 'react-native-shake';
-import {Vibration} from 'react-native';
-import OnboardingTip from 'components/AppTuturial/OnboardingTip';
 
 const MyPlanScreen: React.FC<{navigation: any}> = ({navigation}) => {
   //######### STATE VARIABLES  ##############################
@@ -49,6 +49,7 @@ const MyPlanScreen: React.FC<{navigation: any}> = ({navigation}) => {
   const [legendVisible, setLegendVisible] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
+  
   //######### GET HOLIDAYS API CALL ############################
 
   const {holidays} = useDate();
@@ -116,12 +117,12 @@ const MyPlanScreen: React.FC<{navigation: any}> = ({navigation}) => {
 
   return (
     <ThemeGradientBackground>
-      <LoadingModal loading={loading} setLoading={() => {}} />
+      {/* <LoadingModal loading={loading} setLoading={() => {}} /> */}
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
           <HeaderBackButton title="My Plan" />
           {loading ? (
-            <NoDataFound message="Loading subscription..." />
+            <MyPlanSkeleton />
           ) : subscriptionPlan.length > 0 ? (
             <>
               <FlatList
@@ -228,7 +229,7 @@ const MyPlanScreen: React.FC<{navigation: any}> = ({navigation}) => {
               </View>
             </Pressable>
           </Modal>
-         <OnboardingTip storageKey="MY_PLAN_TIP_SEEN" />
+          <OnboardingTip storageKey="MY_PLAN_TIP_SEEN" />
 
           <SectionTitle>Holidays</SectionTitle>
           {filteredHolidays.length > 0 ? (

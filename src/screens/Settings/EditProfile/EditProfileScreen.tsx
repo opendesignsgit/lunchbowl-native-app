@@ -1,32 +1,34 @@
 import React, {useEffect, useState} from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
   Image,
-  ScrollView,
-  KeyboardAvoidingView,
-  TouchableWithoutFeedback,
   Keyboard,
+  KeyboardAvoidingView,
   Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from 'react-native';
 import {launchImageLibrary} from 'react-native-image-picker';
 
-import {useAuth} from 'context/AuthContext';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-import {SvgXml} from 'react-native-svg';
 import PrimaryButton from 'components/buttons/PrimaryButton';
-import {camaraIcon} from 'styles/svg-icons';
-import HeaderBackButton from 'screens/Dashboard/Components/BackButton';
-import {ApiResponseModel} from 'src/model/apiResponseModel';
-import {UserInterface} from 'src/model/userSchema';
-import UserService from 'services/userService';
 import IconInput from 'components/inputs/IconInput';
 import {LoadingModal} from 'components/LoadingModal/LoadingModal';
+import {useAuth} from 'context/AuthContext';
+import {
+  heightPercentageToDP as hp,
+  widthPercentageToDP as wp,
+} from 'react-native-responsive-screen';
+import {SvgXml} from 'react-native-svg';
+import HeaderBackButton from 'screens/Dashboard/Components/BackButton';
+import UserService from 'services/userService';
+import {ApiResponseModel} from 'src/model/apiResponseModel';
+import {UserInterface} from 'src/model/userSchema';
+import {camaraIcon} from 'styles/svg-icons';
+import ThemeGradientBackground from 'components/Backgrounds/GradientBackground';
+import {Colors} from 'assets/styles/colors';
 
 const EditProfileScreen: React.FC<{navigation: any}> = ({navigation}) => {
   const {user, userId, userRole} = useAuth();
@@ -142,75 +144,77 @@ const EditProfileScreen: React.FC<{navigation: any}> = ({navigation}) => {
     <KeyboardAvoidingView
       style={{flex: 1}}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ScrollView
-          contentContainerStyle={styles.mainScrollContainer}
-          keyboardShouldPersistTaps="handled">
-          <View style={styles.mainContainer}>
-            <HeaderBackButton title="Edit Profile" />
-
-            <View style={styles.profileImageContainer}>
-              <Image
-                source={
-                  imageUri
-                    ? {uri: imageUri}
-                    : require('assets/images/Settings/UserDefault.png')
-                }
-                style={styles.profileImage}
-              />
-              <TouchableOpacity
-                style={styles.cameraIcon}
-                onPress={selectImageFromGallery}>
-                <SvgXml xml={camaraIcon} width={30} height={30} />
-              </TouchableOpacity>
-            </View>
+      <ThemeGradientBackground>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <ScrollView
+            contentContainerStyle={styles.mainScrollContainer}
+            keyboardShouldPersistTaps="handled">
             <View style={styles.mainContainer}>
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>First Name</Text>
-                <IconInput
-                  placeholder="First Name"
-                  value={firstName}
-                  onChangeText={setFirstName}
-                  iconXml={''}
-                />
-                {errors.firstName && (
-                  <Text style={styles.errorText}>{errors.firstName}</Text>
-                )}
+              <HeaderBackButton title="Edit Profile" />
 
-                <Text style={styles.label}>Last Name</Text>
-                <IconInput
-                  placeholder="Last Name"
-                  value={lastName}
-                  onChangeText={setLastName}
-                  iconXml={''}
+              <View style={styles.profileImageContainer}>
+                <Image
+                  source={
+                    imageUri
+                      ? {uri: imageUri}
+                      : require('assets/images/Settings/UserDefault.png')
+                  }
+                  style={styles.profileImage}
                 />
-                {errors.lastName && (
-                  <Text style={styles.errorText}>{errors.lastName}</Text>
-                )}
-
-                <Text style={styles.label}>Email</Text>
-                <IconInput
-                  placeholder="Email"
-                  value={email}
-                  onChangeText={setEmail}
-                  iconXml={''}
-                />
-                {errors.email && (
-                  <Text style={styles.errorText}>{errors.email}</Text>
-                )}
-
-                <View style={styles.ButtonContainer}>
-                  <PrimaryButton
-                    title="Save Changes"
-                    onPress={saveProfile}
-                    style={{height: hp('6%')}}
+                <TouchableOpacity
+                  style={styles.cameraIcon}
+                  onPress={selectImageFromGallery}>
+                  <SvgXml xml={camaraIcon} width={30} height={30} />
+                </TouchableOpacity>
+              </View>
+              <View style={styles.mainContainer}>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>First Name</Text>
+                  <IconInput
+                    placeholder="First Name"
+                    value={firstName}
+                    onChangeText={setFirstName}
+                    iconXml={''}
                   />
+                  {errors.firstName && (
+                    <Text style={styles.errorText}>{errors.firstName}</Text>
+                  )}
+
+                  <Text style={styles.label}>Last Name</Text>
+                  <IconInput
+                    placeholder="Last Name"
+                    value={lastName}
+                    onChangeText={setLastName}
+                    iconXml={''}
+                  />
+                  {errors.lastName && (
+                    <Text style={styles.errorText}>{errors.lastName}</Text>
+                  )}
+
+                  <Text style={styles.label}>Email</Text>
+                  <IconInput
+                    placeholder="Email"
+                    value={email}
+                    onChangeText={setEmail}
+                    iconXml={''}
+                  />
+                  {errors.email && (
+                    <Text style={styles.errorText}>{errors.email}</Text>
+                  )}
+
+                  <View style={styles.ButtonContainer}>
+                    <PrimaryButton
+                      title="Save Changes"
+                      onPress={saveProfile}
+                      style={styles.profileUpdateButton}
+                    />
+                  </View>
                 </View>
               </View>
             </View>
-          </View>
-        </ScrollView>
-      </TouchableWithoutFeedback>
+          </ScrollView>
+        </TouchableWithoutFeedback>
+      </ThemeGradientBackground>
     </KeyboardAvoidingView>
   );
 };
@@ -218,7 +222,6 @@ const EditProfileScreen: React.FC<{navigation: any}> = ({navigation}) => {
 const styles = StyleSheet.create({
   mainScrollContainer: {
     flexGrow: 1,
-    backgroundColor: '#ffff',
   },
   mainContainer: {
     padding: wp('3%'),
@@ -247,7 +250,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: wp('4%'),
     fontWeight: 'bold',
-    color: '#000',
+    color: Colors.black,
     marginBottom: hp('1%'),
   },
   errorText: {
@@ -258,6 +261,9 @@ const styles = StyleSheet.create({
   ButtonContainer: {
     marginTop: hp('2%'),
     height: hp('6%'),
+  },
+  profileUpdateButton: {
+    width: wp('90%'),
   },
 });
 

@@ -8,6 +8,7 @@ import {
   Dimensions,
   NativeScrollEvent,
   NativeSyntheticEvent,
+  TouchableOpacity,
 } from 'react-native';
 import {
   heightPercentageToDP as hp,
@@ -17,17 +18,16 @@ import {
 const { width: screenWidth } = Dimensions.get('window');
 
 const banners = [
-  {
-    id: 1,
-    image: require('../../../assets/images/Banners/banner5.png'),
-  },
-  {
-    id: 2,
-    image: require('../../../assets/images/Banners/banner2.png'),
-  },
+  { id: 1, image: require('../../../assets/images/Banners/banner5.png') },
+  { id: 2, image: require('../../../assets/images/Banners/banner2.png') },
+  { id: 3, image: require('../../../assets/images/Banners/banner6.png') },
 ];
 
-const PromoBanners = () => {
+interface PromoBannersProps {
+  navigation: any; // pass from parent
+}
+
+const PromoBanners: React.FC<PromoBannersProps> = ({ navigation }) => {
   const scrollRef = useRef<ScrollView>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -51,6 +51,11 @@ const PromoBanners = () => {
     setCurrentIndex(index);
   };
 
+  const handleBannerPress = (bannerId: number) => {
+    console.log('Banner clicked:', bannerId);
+    navigation.navigate('OffersScreen', { bannerId });
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -60,15 +65,21 @@ const PromoBanners = () => {
         onScroll={onScroll}
         showsHorizontalScrollIndicator={false}
         scrollEventThrottle={16}
-        contentContainerStyle={styles.scrollContainer}>
+        contentContainerStyle={styles.scrollContainer}
+      >
         {banners.map(banner => (
-          <View key={banner.id} style={styles.imageWrapper}>
+          <TouchableOpacity
+            key={banner.id}
+            activeOpacity={0.8}
+            onPress={() => handleBannerPress(banner.id)}
+            style={styles.imageWrapper}
+          >
             <Image
               source={banner.image}
               style={styles.image}
               resizeMode="cover"
             />
-          </View>
+          </TouchableOpacity>
         ))}
       </ScrollView>
 
@@ -86,29 +97,17 @@ const PromoBanners = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    paddingVertical: hp('2%'),
-  },
-  scrollContainer: {
-    alignItems: 'center',
-  },
+  container: { paddingVertical: hp('2%') },
+  scrollContainer: { alignItems: 'center' },
   imageWrapper: {
     width: screenWidth * 0.9,
-    height: hp('22%'), 
+    height: hp('22%'),
     marginRight: wp('3%'),
-    borderRadius: wp('3%'), 
+    borderRadius: wp('3%'),
     overflow: 'hidden',
   },
-  image: {
-    width: '100%',
-    height: '100%',
-    borderRadius: wp('3%'),
-  },
-  paginationContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: hp('1%'),
-  },
+  image: { width: '100%', height: '100%', borderRadius: wp('3%') },
+  paginationContainer: { flexDirection: 'row', justifyContent: 'center', marginTop: hp('1%') },
   dot: {
     width: wp('2%'),
     height: hp('0.8%'),

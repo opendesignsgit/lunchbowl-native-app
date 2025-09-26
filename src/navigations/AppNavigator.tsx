@@ -1,23 +1,23 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import React, { useEffect } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import React, {useEffect} from 'react';
+import {Pressable, StyleSheet, View} from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
-import { SvgXml } from 'react-native-svg';
+import {SvgXml} from 'react-native-svg';
 
-import HistoryNavigator from 'screens/History/MyPlanNavigator';
+import HistoryNavigator from 'screens/History/HistoryNavigator';
 import MenueNavigator from 'screens/Menu/MenueNavigator';
 import MyPlanNavigator from 'screens/MyPlan/MyPlanNavigator';
 import DashboardNavigator from './Dashboard/DashboardNavigator';
 
-import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
-import { Colors } from 'assets/styles/colors';
+import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
+import {Colors} from 'assets/styles/colors';
 import Fonts from 'assets/styles/fonts';
-import { useToast } from 'components/Error/Toast/ToastProvider';
-import { RegistrationProvider } from 'context/RegistrationContext';
-import { useNetwork } from 'hooks/useNetwork';
+import {useToast} from 'components/Error/Toast/ToastProvider';
+import {RegistrationProvider} from 'context/RegistrationContext';
+import {useNetwork} from 'hooks/useNetwork';
 import LinearGradient from 'react-native-linear-gradient';
 import {
   HistoryIconActive,
@@ -29,14 +29,15 @@ import {
   MyPlanIconActive,
   MyPlanIconInactive,
 } from 'styles/svg-icons';
-import { hiddenTabRoutes, isTabHidden } from './HiddenTabRoutes';
+import {hiddenTabRoutes, isTabHidden} from './HiddenTabRoutes';
+import CustomerNavigator from './Dashboard/Child/CustomerNavigator';
 
 const Tab = createBottomTabNavigator();
 
 const AppNavigator = () => {
   const {isConnected} = useNetwork();
-  const { showToast } = useToast();
-  
+  const {showToast} = useToast();
+
   useEffect(() => {
     if (isConnected === false) {
       showToast({
@@ -132,7 +133,7 @@ const AppNavigator = () => {
           return {};
         }}
       />
-     
+
       <Tab.Screen
         name="MyPlan"
         options={({route}) => {

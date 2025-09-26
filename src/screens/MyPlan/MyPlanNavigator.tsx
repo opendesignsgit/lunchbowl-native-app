@@ -22,7 +22,7 @@ if (loading || currentStep === null) {
   return <LoadingModal loading={true} setLoading={() => {}} />;
 }
 
-const initialScreen = currentStep >= 4 ? 'MyPlan' : 'Registration';
+const initialScreen = currentStep >= 4 ? 'MyPlan' : 'Registartion';
   return (
     <MenuProvider>
       <FoodProvider>
