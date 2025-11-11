@@ -52,6 +52,22 @@ class UserService {
       };
     }
   }
+
+  static async getChildInformation(userId: string): Promise<ApiResponseModel> {
+    try {
+      const respose = await UserApi.getChildData(userId);
+      return respose.data as ApiResponseModel
+    }
+    catch (error: any) {
+      return {
+        success: false,
+        message: 'Error updating user details',
+        data: null,
+        error: handleApiError(error),
+      };
+
+    }
+  }
 }
 
 export default UserService;

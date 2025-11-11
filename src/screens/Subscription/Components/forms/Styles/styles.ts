@@ -66,9 +66,9 @@ const styles = StyleSheet.create({
 
     StickyButton: {
         flexDirection: 'row',
-        justifyContent: 'center', 
+        justifyContent: 'center',
         width: '100%',
-        columnGap:10
+        columnGap: 10
     },
 
     formsContainer: {
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     },
     childFormContainer: {
         marginBottom: hp('35%'),
-      
+
     },
     addchildTabText: {
         color: Colors.primaryOrange,
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     },
     SubmitButtonContainer: {
         position: 'absolute',
-        bottom: 0,      
+        bottom: 0,
         left: 0,
         right: 0,
         backgroundColor: Colors.bg,
@@ -131,18 +131,32 @@ const styles = StyleSheet.create({
         borderColor: Colors.Storke,
         justifyContent: 'space-between',
         columnGap: wp('4%'),
+        // marginBottom: hp('33%'),
+    },
+       parentSubmitButtonContainer: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: Colors.bg,
+        padding: 15,
+        borderTopWidth: 1,
+        borderColor: Colors.Storke,
+        justifyContent: 'space-between',
+        columnGap: wp('4%'),
+        marginBottom: hp('33%'),
     },
     removeButton: {
-     position: 'absolute',
-  bottom: 0,
-  left: 0,
-  right: 0,
-  backgroundColor: Colors.bg,
-  padding: 15,
-  borderTopWidth: 1,
-  borderColor: Colors.Storke,
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: Colors.bg,
+        padding: 15,
+        borderTopWidth: 1,
+        borderColor: Colors.Storke,
 
-  alignItems: 'center',
+        alignItems: 'center',
     },
     removeButtonContainer: {
         marginBottom: hp('5%'),

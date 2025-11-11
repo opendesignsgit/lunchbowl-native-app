@@ -12,6 +12,7 @@ import Registartion from 'screens/Subscription/Registration';
 import MyPlanScreen from './Calender';
 import FoodScreen from './FoodScreen';
 import MenuSelectionScreen from './MenuSelection';
+import { ChildProvider } from 'context/ChildContext';
 
 const Stack = createStackNavigator();
 
@@ -27,6 +28,7 @@ const initialScreen = currentStep >= 4 ? 'MyPlan' : 'Registartion';
     <MenuProvider>
       <FoodProvider>
         <ToastProvider>
+          <ChildProvider>
           <UserProfileProvider>
             <HolidayDateProvider>
               <Stack.Navigator initialRouteName={initialScreen}>
@@ -58,6 +60,7 @@ const initialScreen = currentStep >= 4 ? 'MyPlan' : 'Registartion';
               </Stack.Navigator>
             </HolidayDateProvider>
           </UserProfileProvider>
+          </ChildProvider>
         </ToastProvider>
       </FoodProvider>
     </MenuProvider>

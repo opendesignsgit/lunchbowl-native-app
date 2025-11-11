@@ -19,45 +19,78 @@ import PaymentOptions from './Components/forms/PaymentOptions';
 import styles from './Components/forms/Styles/styles';
 import SubscriptionPlan from './Components/forms/Subscription';
 import InitialsScreen from './Components/InitialScreen';
+import { useUserProfile } from 'context/UserDataContext';
+import { useChildData } from 'context/ChildContext';
 
 type Step = 1 | 2 | 3 | 4;
 
-export default function Registration({navigation}: any) {
+export default function Registration({ navigation }: any) {
+  const { userId } = useAuth();
+const { profileData, refreshProfileData } = useUserProfile();
+const { childrenList, refreshChildren } = useChildData();
 
-  //################# PARENT STATES ####################
+console.log("profileData from -----------------------------------------",profileData)
 
-  const [fatherFullName, setFatherFullName] = useState('');
-  const [motherFullName, setMotherFullName] = useState('');
+  // ########################### PARENT STATES ##############################
+
+  const [fatherFirstName, setFatherFirstName] = useState('');
+  const [fatherLastName, setFatherLastName] = useState('');
+  const [motherFirstName, setMotherFirstName] = useState('');
+  const [motherLastName, setMotherLastName] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
+  const [email, setEmail] = useState('');
   const [address, setAddress] = useState('');
-  const {userId} = useAuth();
+  const [pincode, setPincode] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [country, setCountry] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-// ---------------- Restriction Check ----------------
+  // ########################### FEED DATA FROM CONTEXT #########################
 
   useEffect(() => {
-    const checkStepStatus = async () => {
-      if (!userId) return;
+    if (profileData?.parentDetails) {
+      const parent = profileData.parentDetails;
 
-      try {
-        const payload: any = { _id: userId, path: 'Step-Check' };
-        const response: any = await RegistrationService.registartionCheck(payload);
-        const currentStep = Number(response?.data?.step);
+      setFatherFirstName(parent.fatherFirstName || '');
+      setFatherLastName(parent.fatherLastName || '');
 
-        if (Number.isFinite(currentStep) && currentStep >= 4) {
-          navigation.replace('MyPlan');
-        }
-      } catch (err) {
-        console.error('Step check failed:', err);
-      }
-    };
+      setMotherFirstName(parent.motherFirstName || '');
+      setMotherLastName(parent.motherLastName || '');
 
-    checkStepStatus();
-  }, [userId]);
+      setMobileNumber(parent.mobile || '');
+      setAddress(parent.address || '');
+      setEmail(parent.email || '');
+      setCity(parent.city || '');
+      setState(parent.state || '');
+      setCountry(parent.country || '');
+      setPincode(parent.pincode || '');
+    }
+     if (profileData?.step) {
+      setStep(profileData.step as Step);
+      setShowForm(true);
+    }
+  }, [profileData]);
 
 
-  //################# CHILD STATES ######################
+ useEffect(() => {
+    if (childrenList.length > 0) {
+      const formattedChildren = childrenList.map(child => ({
+        childName: `${child.childFirstName} ${child.childLastName}`.trim(),
+        dob: child.dob ? new Date(child.dob).toISOString().split('T')[0] : '',
+        school: child.school || '',
+        location: child.location || '',
+        lunchTime: child.lunchTime || '',
+        childClass: child.childClass || '',
+        section: child.section || '',
+        allergies: child.allergies || '',
+      }));
+      setChildren(formattedChildren);
+    }
+  }, [childrenList]);
+
+  // ########################### CHILD STATES #################################
   const [children, setChildren] = useState([
     {
       childName: '',
@@ -74,37 +107,30 @@ export default function Registration({navigation}: any) {
   const [showForm, setShowForm] = useState(false);
   const [step, setStep] = useState<Step>(1);
 
-  //################# ERROR STATES ######################
+  // ############################ ERROR STATES ##################################
 
   const [parentErrors, setParentErrors] = useState<any>({});
   const [childrenErrors, setChildrenErrors] = useState<any>({});
 
-  //#################### PLAN STATES #####################
+  // ################################## PLAN STATES #############################
   const [selectedPlan, setSelectedPlan] = useState('');
-  const nextStep = () =>
-    setStep(prev => (prev < 4 ? ((prev + 1) as Step) : prev));
 
-  const prevStep = () =>
-    setStep(prev => (prev > 1 ? ((prev - 1) as Step) : prev));
+  const nextStep = () => setStep(prev => (prev < 4 ? ((prev + 1) as Step) : prev));
+  const prevStep = () => setStep(prev => (prev > 1 ? ((prev - 1) as Step) : prev));
 
-  const handleChildChange = (
-    index: number,
-    field: string | null,
-    value: any,
-  ) => {
+
+
+  const handleChildChange = (index: number, field: string | null, value: any) => {
     setChildren(prev => {
       const newChildren = [...prev];
-      if (field === null) {
-        newChildren[index] = {...newChildren[index], ...value}; 
-      } else {
-        newChildren[index] = {...newChildren[index], [field]: value};
-      }
+      if (field === null) newChildren[index] = { ...newChildren[index], ...value };
+      else newChildren[index] = { ...newChildren[index], [field]: value };
       return newChildren;
     });
   };
 
-  //#################### HELPER FUNCTIONS ##################
-  
+  // ################################### SCHOOLS #################################
+
   const [schools, setSchools] = useState<any[]>([]);
   const [loadingSchools, setLoadingSchools] = useState(false);
 
@@ -113,18 +139,16 @@ export default function Registration({navigation}: any) {
       setLoadingSchools(true);
       try {
         const response: any = await RegistrationService.getAllSchools();
-        if (response) {
-          setSchools(response);
-        }
+        if (response) setSchools(response);
       } catch (error) {
         console.error('Error fetching schools:', error);
       } finally {
         setLoadingSchools(false);
       }
     };
-
     loadSchools();
   }, []);
+
 
   const addChild = () =>
     setChildren([
@@ -141,11 +165,15 @@ export default function Registration({navigation}: any) {
       },
     ]);
 
+  const removeChild = (index: number) => {
+    const updated = [...children];
+    updated.splice(index, 1);
+    setChildren(updated);
+  };
+
   const parseDate = (dob: string) => {
     if (!dob) return null;
-    if (/^\d{4}-\d{2}-\d{2}/.test(dob)) {
-      return new Date(dob).toISOString();
-    }
+    if (/^\d{4}-\d{2}-\d{2}/.test(dob)) return new Date(dob).toISOString();
     const parts = dob.split('/');
     if (parts.length === 3) {
       const [day, month, year] = parts;
@@ -154,14 +182,8 @@ export default function Registration({navigation}: any) {
     return new Date(dob).toISOString();
   };
 
-  const removeChild = (index: number) => {
-    const updated = [...children];
-    updated.splice(index, 1);
-    setChildren(updated);
-  };
-
-  //###################### INITILA SCREEN ###################
-
+  // ################################## INITIAL SCREEN #######################
+  
   if (!showForm) {
     return (
       <InitialsScreen
@@ -174,71 +196,57 @@ export default function Registration({navigation}: any) {
       />
     );
   }
-  //###################### FORM TITLES #####################
-  const formInfo = {
-    1: {
-      title: 'Parent’s Details',
-      description: 'Enter your details to continue.',
-    },
-    2: {
-      title: 'Childrens Details',
-      description: 'Enter your details to continue.',
-    },
-    3: {
-      title: 'Subscription Plan',
-      description: 'Select your plan to continue.',
-    },
-    4: {
-      title: 'Payment Options',
-      description: 'Make a payment to activate your plan.',
-    },
-  };
 
-  // #################### SUBMIT FUNCTIONS ##################
+
+// ########################### SUBMIT PARENT DETAILS #########################
 
   const submitParentDetails = async () => {
     const errors = validateParentDetails({
-      fatherFullName,
-      motherFullName,
+      fatherFirstName,
+      fatherLastName,
+      motherFirstName,
+      motherLastName,
       mobileNumber,
+      email,
       address,
-      email: '',
+      pincode,
+      city,
+      state,
+      country,
     });
 
     if (Object.keys(errors).length > 0) {
       setParentErrors(errors);
       return;
     }
-    setParentErrors({});
 
+    setParentErrors({});
     try {
       setLoading(true);
 
       const payload = {
         formData: {
-          fatherFirstName: fatherFullName.split(' ')[0] || fatherFullName,
-          fatherLastName: fatherFullName.split(' ')[1] || '',
-          motherFirstName: motherFullName.split(' ')[0] || motherFullName,
-          motherLastName: motherFullName.split(' ')[1] || '',
+          fatherFirstName,
+          fatherLastName,
+          motherFirstName,
+          motherLastName,
           mobile: mobileNumber,
+          email,
           address,
+          pincode,
+          city,
+          state,
+          country,
           children: [],
-          country: '',
-          city: '',
-          state: ' ',
-          pincode: '',
-          email: '',
         },
         step: 1,
         path: 'step-Form-ParentDetails',
         _id: userId || '',
       };
 
-      const response: any = await RegistrationService.createParentRegistration(
-        payload,
-      );
-
+      const response: any = await RegistrationService.createParentRegistration(payload);
       if (response && response.data) {
+        await refreshProfileData();
         console.log('Parent saved:', response.data);
         nextStep();
       } else {
@@ -251,95 +259,171 @@ export default function Registration({navigation}: any) {
     }
   };
 
+  // ################### SUBMIT CHILDREN DETAILS ##############################
+
+  // const submitChildrenDetails = async () => {
+  //   setLoading(true);
+
+  //   const errors = validateChildrenDetails(children);
+  //   if (Object.keys(errors).length > 0) {
+  //     setChildrenErrors(errors);
+  //     return;
+  //   }
+
+  //   setChildrenErrors({});
+  //   try {
+  //     const formattedChildren = children.map(child => {
+  //       const [firstName, ...lastParts] = child.childName.trim().split(' ');
+  //       return {
+  //         childFirstName: firstName || child.childName,
+  //         childLastName: lastParts.join(' ') || '',
+  //         dob: parseDate(child.dob),
+  //         lunchTime: child.lunchTime,
+  //         school: child.school,
+  //         location: child.location,
+  //         childClass: child.childClass,
+  //         section: child.section,
+  //         allergies: child.allergies,
+  //       };
+  //     });
+
+  //     const payloadChildData = {
+  //       formData: formattedChildren,
+  //       step: 2,
+  //       path: 'step-Form-ChildDetails',
+  //       _id: userId || '',
+  //     };
+
+  //     const response: any = await RegistrationService.createChildRegistration(payloadChildData);
+  //     if (response && response.data) {
+  //       await refreshChildren();
+  //       console.log('Children saved:', response.data);
+  //       nextStep();
+  //     } else {
+  //       console.error('Invalid child response', response);
+  //       setError(response?.message || 'Something went wrong.');
+  //     }
+  //   } catch (error) {
+  //     setError('Error saving plan. Please try again.');
+  //     console.error('Error saving children:', error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const submitChildrenDetails = async () => {
-    setLoading(true);
+  setLoading(true);
 
-    const errors = validateChildrenDetails(children);
-    if (Object.keys(errors).length > 0) {
-      setChildrenErrors(errors);
-      return;
-    }
-    setChildrenErrors({});
-    try {
-      const formattedChildren = children.map(child => {
-        const [firstName, ...lastParts] = child.childName.trim().split(' ');
+  // ✅ Validate children data
+  const errors = validateChildrenDetails(children);
+  if (Object.keys(errors).length > 0) {
+    setChildrenErrors(errors);
+    setLoading(false);
+    return;
+  }
 
-        return {
-          childFirstName: firstName || child.childName,
-          childLastName: lastParts.join(' ') || '',
-          dob: parseDate(child.dob),
-          lunchTime: child.lunchTime,
-          school: child.school,
-          location: child.location,
-          childClass: child.childClass,
-          section: child.section,
-          allergies: child.allergies,
-        };
-      });
-
-      const payloadChildData = {
-        formData: formattedChildren,
-        step: 2,
-        path: 'step-Form-ChildDetails',
-        _id: userId || '',
+  setChildrenErrors({});
+  try {
+    // ✅ Format data for backend
+    const formattedChildren = children.map(child => {
+      const [firstName, ...lastParts] = child.childName.trim().split(' ');
+      return {
+        childFirstName: firstName || child.childName,
+        childLastName: lastParts.join(' ') || '',
+        dob: child.dob, // already "YYYY-MM-DD" format — don’t convert to ISO
+        lunchTime: child.lunchTime,
+        school: child.school,
+        location: child.location,
+        childClass: child.childClass,
+        section: child.section,
+        allergies: child.allergies,
       };
+    });
 
-      console.log('sending child data', payloadChildData);
+    // ✅ Match backend's expected structure exactly
+    const payloadChildData = {
+      formData: formattedChildren,
+      step: 2,
+      path: 'step-Form-ChildDetails',
+      _id: userId || '',
+    };
 
-      const response: any = await RegistrationService.createChildRegistration(
-        payloadChildData,
-      );
+    console.log('Payload to backend:------------------------------------------------------------------------------------------', JSON.stringify(payloadChildData, null, 2));
 
-      if (response && response.data) {
-        console.log('Children saved:', response.data);
-        nextStep();
-      } else {
-        console.error('Invalid child response', response);
-        setError(response || 'Something went wrong.');
-      }
-    } catch (error) {
-      setError('Error saving plan. Please try again.');
-      console.error('Error saving children:', error);
-    } finally {
-      setLoading(false);
+    const response: any = await RegistrationService.createChildRegistration(payloadChildData);
+
+    // ✅ Handle backend response properly
+    if (response?.success) {
+      await refreshChildren();
+      console.log('✅ Children saved successfully:', response.data);
+      nextStep();
+    } else {
+      console.error('❌ Invalid child response:', response);
+      setError(response?.message || 'Something went wrong while saving children.');
     }
+
+  } catch (error: any) {
+    console.error('❌ Error saving children:', error);
+    setError(error?.message || 'Error saving children. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+};
+
+// ############################### FORM HEADERS #################################
+
+  const formInfo = {
+    1: { title: 'Parent’s Details', description: 'Enter your details to continue.' },
+    2: { title: 'Children’s Details', description: 'Enter your details to continue.' },
+    3: { title: 'Subscription Plan', description: 'Select your plan to continue.' },
+    4: { title: 'Payment Options', description: 'Make a payment to activate your plan.' },
   };
 
-  //###################### FORMS SCREEN ######################
-
-  const handleCloseError = () => {
-    setError(null);
-  };
+  const handleCloseError = () => setError(null);
 
   return (
     <ThemeGradientBackground>
       <LoadingModal loading={loading} setLoading={setLoading} />
-      {error && <ErrorMessage error={error} onClose={handleCloseError} />}
       <View style={styles.formsContainer}>
         <HeaderBackButton title="Back" onPress={prevStep} />
         <PaginationDots totalSteps={4} currentStep={step} />
-        {/* -------- Step Title + Description -------- */}
+
         <View style={styles.pageHeader}>
           <Typography style={styles.stepTitle}>{formInfo[step].title}</Typography>
-          <Typography style={styles.stepDescription}>
-            {formInfo[step].description}
-          </Typography>
+          <Typography style={styles.stepDescription}>{formInfo[step].description}</Typography>
+                {error && <ErrorMessage error={error} onClose={handleCloseError} />}
+
         </View>
 
         {step === 1 && (
           <ParentDetails
-            fatherFullName={fatherFullName}
-            setFatherFullName={setFatherFullName}
-            motherFullName={motherFullName}
-            setMotherFullName={setMotherFullName}
+            fatherFirstName={fatherFirstName}
+            setFatherFirstName={setFatherFirstName}
+            fatherLastName={fatherLastName}
+            setFatherLastName={setFatherLastName}
+            motherFirstName={motherFirstName}
+            setMotherFirstName={setMotherFirstName}
+            motherLastName={motherLastName}
+            setMotherLastName={setMotherLastName}
             mobileNumber={mobileNumber}
             setMobileNumber={setMobileNumber}
+            email={email}
+            setEmail={setEmail}
             address={address}
             setAddress={setAddress}
+            pincode={pincode}
+            setPincode={setPincode}
+            city={city}
+            setCity={setCity}
+            state={state}
+            setState={setState}
+            country={country}
+            setCountry={setCountry}
             submitRegistration={submitParentDetails}
             errors={parentErrors}
           />
         )}
+
         {step === 2 && (
           <ChildrenDetails
             children={children}
@@ -348,11 +432,12 @@ export default function Registration({navigation}: any) {
             removeChild={removeChild}
             prevStep={prevStep}
             nextStep={submitChildrenDetails}
-            errors={parentErrors}
+            errors={childrenErrors}
             schools={schools}
             loadingSchools={loadingSchools}
           />
         )}
+
         {step === 3 && (
           <SubscriptionPlan
             selectedPlan={selectedPlan}
@@ -362,9 +447,8 @@ export default function Registration({navigation}: any) {
             childCount={children.length}
           />
         )}
-        {step === 4 && (
-          <PaymentOptions prevStep={prevStep} navigation={navigation} />
-        )}
+
+        {step === 4 && <PaymentOptions prevStep={prevStep} navigation={navigation} />}
       </View>
     </ThemeGradientBackground>
   );

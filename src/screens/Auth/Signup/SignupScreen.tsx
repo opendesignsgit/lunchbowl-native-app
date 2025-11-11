@@ -1,5 +1,10 @@
+import CheckBox from '@react-native-community/checkbox';
+import {Colors} from 'assets/styles/colors';
+import Fonts from 'assets/styles/fonts';
+import ThemeGradientBackground from 'components/Backgrounds/GradientBackground';
 import PrimaryButton from 'components/buttons/PrimaryButton';
 import ErrorMessage from 'components/Error/BoostrapStyleError';
+import ThemeInputPrimary from 'components/inputs/ThemeInputPrimary';
 import {LoadingModal} from 'components/LoadingModal/LoadingModal';
 import React, {useEffect, useRef, useState} from 'react';
 import {
@@ -13,19 +18,15 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import PhoneInput from 'react-native-phone-number-input';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import {SvgXml} from 'react-native-svg';
+import {validateSignUpForm} from 'screens/validations';
 import {facebookIcon, googleIcon, logo} from 'styles/svg-icons';
 import {useAuth} from '../../../context/AuthContext';
-import ThemeInputPrimary from 'components/inputs/ThemeInputPrimary';
-import CheckBox from '@react-native-community/checkbox';
-import Fonts from 'assets/styles/fonts';
-import {Colors} from 'assets/styles/colors';
 
 const SignUpScreen = ({navigation, route}: {navigation: any; route: any}) => {
   const [error, setError] = useState<string | null>(null);
@@ -34,11 +35,11 @@ const SignUpScreen = ({navigation, route}: {navigation: any; route: any}) => {
   const {message, success} = route.params || {message: null, success: null};
   const [loginSuccess, setLoginSuccess] = useState(false);
   const phoneInputRef = useRef<PhoneInput>(null);
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [phoneKey, setPhoneKey] = useState(Date.now());
+  const [mobile, setPhoneNumber] = useState('');
   const [formattedValue, setFormattedValue] = useState('');
   const [isPrivacyChecked, setIsPrivacyChecked] = useState(false);
-  const [firstName, setFullName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setemail] = useState('');
 
   useEffect(() => {
@@ -52,35 +53,22 @@ const SignUpScreen = ({navigation, route}: {navigation: any; route: any}) => {
   }, [error]);
 
   const halndleSignUp = async () => {
-    const lastName = '';
 
-    if (!email) {
-      setError('Please enter a valid email');
-      return;
-    }
-    if (!firstName || firstName.trim().length < 2) {
-      setError('Please enter your full name.');
-      return;
-    }
+   
 
-    if (!isPrivacyChecked) {
-      setError('Please agree to the privacy policy to continue.');
-      return;
-    }
-    if (!formattedValue) {
-      setError('Please enter a valid phone number.');
-      return;
-    }
-    let mobile = formattedValue.replace('+', '');
+    const err = validateSignUpForm({
+      firstName,
+      lastName,
+      email,
+      formattedValue: mobile,
+      isPrivacyChecked,
+    });
+    if (err) return setError(err);
 
-    if (mobile.startsWith('91') && mobile.length === 12) {
-      mobile = mobile.slice(2);
-    }
-    const path = 'signUp';
     try {
       setLoading(true);
+      const path = "signUp"
       const LoginData = {firstName, lastName, email, mobile, path};
-      console.log('Login Data-----------------------:', LoginData);
       const response = await SendOtp(LoginData);
       if (response?.success && response?.smsLogId?.variables?.[0]) {
         navigation.navigate('OtpVerificationScreen', {
@@ -109,17 +97,21 @@ const SignUpScreen = ({navigation, route}: {navigation: any; route: any}) => {
     setError(null);
   };
 
+   const isFormValid =
+      firstName.trim() &&
+      lastName.trim() &&
+      email.trim() &&
+      mobile.trim().length === 10 &&
+      isPrivacyChecked;
+
   return (
-    <LinearGradient
-      colors={['#FF651429', '#4AB23814', '#FAFAFA00']}
-      start={{x: 0.5, y: 0}}
-      end={{x: 0.5, y: 1}}
-      style={styles.gradientContainer}>
+    <ThemeGradientBackground>
       <KeyboardAvoidingView
         style={{flex: 1}}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
           <ScrollView
+            showsVerticalScrollIndicator={false}
             contentContainerStyle={{flexGrow: 1}}
             keyboardShouldPersistTaps="handled">
             <View style={styles.container}>
@@ -127,32 +119,49 @@ const SignUpScreen = ({navigation, route}: {navigation: any; route: any}) => {
                 <SvgXml xml={logo} style={styles.logo} />
               </View>
 
+              {/*######### TITEL  ########### */}
+
               <View style={styles.titleContainer}>
-                <Text style={styles.titleText}>sign up</Text>
+                <Text style={styles.titleText}>Sign up</Text>
                 <Text style={styles.subtitleText}>
                   Enter your details to continue.{' '}
                 </Text>
               </View>
+              
+              {/*######## EROR THROW  ######### */}
+
               {error && (
                 <ErrorMessage error={error} onClose={handleCloseError} />
               )}
+
+              {/*######## FIRST NAME ######### */}
               <View style={styles.inputContainer}>
-                <Text style={styles.label}>Full Name</Text>
+                <Text style={styles.label}>First Name</Text>
                 <ThemeInputPrimary
                   value={firstName}
-                  onChangeText={setFullName}
+                  onChangeText={setFirstName}
                   label="Full Name* (with Initial or Surname)"
                   placeholder="Enter Full name"
                 />
               </View>
 
-              {error && (
-                <ErrorMessage error={error} onClose={handleCloseError} />
-              )}
+              {/*######## LAST NAME ######### */}
+
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Last Name</Text>
+                <ThemeInputPrimary
+                  value={lastName}
+                  onChangeText={setLastName}
+                  label="Last Name* (with Initial or Surname)"
+                  placeholder="Enter Last name"
+                />
+              </View>
+
+
+              {/*########## EMAIL  ########### */}
 
               <View style={styles.inputContainer}>
                 <Text style={styles.label}>Email</Text>
-
                 <ThemeInputPrimary
                   value={email}
                   onChangeText={setemail}
@@ -161,51 +170,29 @@ const SignUpScreen = ({navigation, route}: {navigation: any; route: any}) => {
                 />
               </View>
 
-              {error && (
-                <ErrorMessage error={error} onClose={handleCloseError} />
-              )}
+              {/*####### PHONE NUMBER  ######### */}
+
               <View style={styles.inputContainer}>
                 <Text style={styles.label}>Phone Number</Text>
-                <PhoneInput
-                  key={phoneKey}
-                  ref={phoneInputRef}
-                  defaultValue={phoneNumber}
-                  defaultCode="IN"
-                  layout="first"
-                  onChangeText={text => setPhoneNumber(text)}
-                  onChangeFormattedText={text => setFormattedValue(text)}
-                  withShadow
-                  autoFocus={false}
+                <ThemeInputPrimary
+                  value={mobile}
+                  onChangeText={setPhoneNumber}
+                  keyboardType="numeric"
+                  maxLength={10}
                   placeholder="Enter Mobile Number"
-                  containerStyle={{
-                    width: '100%',
-                    borderWidth: 1,
-                    borderColor: Colors.lightRed,
-                    borderRadius: 5,
-                    paddingVertical: 0,
-                    marginTop: 0,
-                    elevation: 0,
-                    marginBottom: 10,
-                  }}
-                  textContainerStyle={{
-                    backgroundColor: Colors.white,
-                    borderRadius: 5,
-                    height: 50,
-                    paddingVertical: 10,
-                  }}
-                  textInputStyle={{
-                    fontSize: 16,
-                    paddingVertical: 8,
-                    height: 40,
-                  }}
                 />
               </View>
+
+              {/*######### CHECKBOX ############# */}
 
               <View style={[styles.checkboxContainer]}>
                 <CheckBox
                   value={isPrivacyChecked}
                   onValueChange={setIsPrivacyChecked}
-                  tintColors={{true: '#FF6514', false: '#FF6514'}}
+                  tintColors={{
+                    true: Colors.primaryOrange,
+                    false: Colors.primaryOrange,
+                  }}
                 />
                 <Text style={styles.checkboxLabel}>
                   By clicking, I accept the{' '}
@@ -217,22 +204,24 @@ const SignUpScreen = ({navigation, route}: {navigation: any; route: any}) => {
                 </Text>
               </View>
 
-              <PrimaryButton
+              {/*######### BUTTON FIELD ######### */}
+
+               <PrimaryButton
                 title="Send One Time Password"
                 onPress={halndleSignUp}
-                style={styles.signInButton}
-                borderRadius={wp('2%')}
-                paddingVertical={hp('1.5%')}
-                fontSize={wp('4%')}
-                textTransform="uppercase"
-                fontFamily="Poppins-SemiBold"
+                 style={styles.signInButton}
+                disabled={!isFormValid || loading}
               />
+
+              {/*######### DIVIDER  ############# */}
 
               <View style={styles.dividerContainer}>
                 <View style={styles.line} />
                 <Text style={styles.orText}>or Login with</Text>
                 <View style={styles.line} />
               </View>
+
+              {/*###### CONTINUE SOCIAL  ######## */}
 
               <View style={styles.socialButtonRow}>
                 <TouchableOpacity
@@ -248,21 +237,26 @@ const SignUpScreen = ({navigation, route}: {navigation: any; route: any}) => {
                 </TouchableOpacity>
               </View>
 
+              {/*######### FOOTER  ############### */}
+
               <View style={styles.footer}>
                 <View style={styles.footerRow}>
                   <Text style={styles.footerText}>Don’t have an Account?</Text>
                   <TouchableOpacity
-                    onPress={() => navigation.navigate('Signup')}>
-                    <Text style={styles.createAccountLink}>Signup</Text>
+                    onPress={() => navigation.navigate('Login')}>
+                    <Text style={styles.createAccountLink}>Login</Text>
                   </TouchableOpacity>
                 </View>
               </View>
+
+              {/*######### LOADING  ############## */}
+
               <LoadingModal loading={loading} setLoading={setLoading} />
             </View>
           </ScrollView>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
-    </LinearGradient>
+    </ThemeGradientBackground>
   );
 };
 
@@ -317,7 +311,6 @@ const styles = StyleSheet.create({
 
   inputContainer: {
     width: '100%',
-    // marginBottom: hp('2%'),
     marginVertical: hp('0.5%'),
     gap: hp('1%'),
     fontSize: wp('14%'),
@@ -330,8 +323,9 @@ const styles = StyleSheet.create({
   },
   checkboxContainer: {
     width: '100%',
-    marginVertical: hp('1.5%'),
-    alignItems: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: hp('2%'),
   },
 
   checkbox: {

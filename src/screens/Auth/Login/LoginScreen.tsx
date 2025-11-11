@@ -1,9 +1,12 @@
 import CheckBox from '@react-native-community/checkbox';
+import {Colors} from 'assets/styles/colors';
+import Fonts from 'assets/styles/fonts';
 import ThemeGradientBackground from 'components/Backgrounds/GradientBackground';
 import PrimaryButton from 'components/buttons/PrimaryButton';
 import ErrorMessage from 'components/Error/BoostrapStyleError';
+import ThemeInputPrimary from 'components/inputs/ThemeInputPrimary';
 import {LoadingModal} from 'components/LoadingModal/LoadingModal';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Keyboard,
   KeyboardAvoidingView,
@@ -15,28 +18,23 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import PhoneInput from 'react-native-phone-number-input';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import {SvgXml} from 'react-native-svg';
+import {validateLoginForm} from 'screens/validations';
 import {facebookIcon, googleIcon, logo} from 'styles/svg-icons';
 import {useAuth} from '../../../context/AuthContext';
-import {Colors} from 'assets/styles/colors';
-import Fonts from 'assets/styles/fonts';
 
 const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
   const [error, setError] = useState<string | null>(null);
   const {SendOtp, isProfileSetupDone, userId} = useAuth();
   const [loading, setLoading] = useState(false);
   const {message, success} = route.params || {message: null, success: null};
-  const [loginSuccess, setLoginSuccess] = useState(false);
-  const phoneInputRef = useRef<PhoneInput>(null);
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [phoneKey, setPhoneKey] = useState(Date.now());
-  const [formattedValue, setFormattedValue] = useState('');
+  const [mobile, setPhoneNumber] = useState('');
   const [isPrivacyChecked, setIsPrivacyChecked] = useState(false);
+  const [isPhoneValid, setIsPhoneValid] = useState(false);
 
   useEffect(() => {
     if (error) {
@@ -48,33 +46,21 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
     }
   }, [error]);
 
-  const halndleSendOtp = async () => {
-    if (!isPrivacyChecked) {
-      setError('Please agree to the privacy policy to continue.');
-      return;
-    }
-    if (!formattedValue) {
-      setError('Please enter a valid phone number.');
-      return;
-    }
-
-    let mobile = formattedValue.replace('+', '');
-
-    if (mobile.startsWith('91') && mobile.length === 12) {
-      mobile = mobile.slice(2);
-    }
-
+  const SendOtpFromLunchBowl = async () => {
+    const err = validateLoginForm({
+      formattedValue: mobile,
+      isPrivacyChecked,
+    });
+    if (err) return setError(err);
+    const cleanNumber = mobile.replace(/\D/g, '');
     const path = 'logIn';
-    console.log('mobile', mobile);
-
     try {
       setLoading(true);
-      const LoginData = {mobile, path};
-      console.log('Login Data:', LoginData);
+      const LoginData = {mobile: cleanNumber, path};
       const response = await SendOtp(LoginData);
       if (response?.success) {
         navigation.navigate('OtpVerificationScreen', {
-          mobile,
+          mobile: cleanNumber,
           path: 'logIn-otp',
         });
       } else {
@@ -98,6 +84,13 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
     setError(null);
   };
 
+  const handlePhoneChange = (text: string) => {
+  setPhoneNumber(text);
+  const cleanNumber = text.replace(/\D/g, '');
+  setIsPhoneValid(cleanNumber.length === 10);
+};
+
+
   return (
     <ThemeGradientBackground>
       <KeyboardAvoidingView
@@ -108,9 +101,14 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
             contentContainerStyle={{flexGrow: 1}}
             keyboardShouldPersistTaps="handled">
             <View style={styles.container}>
+              {/*########## LOGO   ############ */}
+
               <View style={styles.logoContainer}>
                 <SvgXml xml={logo} style={styles.logo} />
               </View>
+
+              {/*########## TITLE   ############ */}
+
               <View style={styles.titleContainer}>
                 <Text style={styles.titleText}>Log in</Text>
                 <Text style={styles.subtitleText}>
@@ -118,43 +116,25 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
                 </Text>
               </View>
 
+              {/*########## EROOR SHOW   ############ */}
+
               {error && (
                 <ErrorMessage error={error} onClose={handleCloseError} />
               )}
+
               <View style={styles.inputContainer}>
-                <Text style={styles.label}>Mobile Number*</Text>
-                <PhoneInput
-                  key={phoneKey}
-                  ref={phoneInputRef}
-                  defaultValue={phoneNumber}
-                  defaultCode="IN"
-                  layout="first"
-                  onChangeText={text => setPhoneNumber(text)}
-                  onChangeFormattedText={text => setFormattedValue(text)}
-                  withShadow
-                  autoFocus={false}
-                  containerStyle={{
-                    width: '100%',
-                    borderWidth: 1,
-                    borderColor: Colors.sandal,
-                    borderRadius: 5,
-                    paddingVertical: 0,
-                    marginTop: 0,
-                    elevation: 0,
-                    marginBottom: 10,
-                  }}
-                  textContainerStyle={{
-                    backgroundColor: Colors.white,
-                    borderRadius: 5,
-                    height: 50,
-                    paddingVertical: 10,
-                  }}
-                  textInputStyle={{
-                    fontSize: 16,
-                    paddingVertical: 8,
-                    height: 40,
-                  }}
+                {/*####### PHONE NUMBER  ############## */}
+
+                <Text style={styles.label}>Phone Number</Text>
+
+                <ThemeInputPrimary
+                  value={mobile}
+                  onChangeText={handlePhoneChange}
+                  keyboardType="numeric"
+                  maxLength={10}
+                  placeholder="Enter Mobile Number"
                 />
+                {/*####### CHECKBOX CONTAINER  ######### */}
 
                 <View style={[styles.checkboxContainer]}>
                   <CheckBox
@@ -177,19 +157,25 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
                   </Text>
                 </View>
 
+                {/*########## SUBMIT BUTTON  ############ */}
+
                 <PrimaryButton
                   title="Send One Time Password"
-                  onPress={halndleSendOtp}
-                  style={{
-                    width: wp('85%'),
-                  }}
+                  onPress={SendOtpFromLunchBowl}
+                  disabled={!isPhoneValid}
+                  style={[styles.signInButton]}
                 />
               </View>
+
+              {/*########## DEVIDER   ############ */}
+
               <View style={styles.dividerContainer}>
                 <View style={styles.line} />
                 <Text style={styles.orText}>or Login with</Text>
                 <View style={styles.line} />
               </View>
+
+              {/*########## SOCIAL BUTTON   ######### */}
 
               <View style={styles.socialButtonRow}>
                 <TouchableOpacity
@@ -205,6 +191,8 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
                 </TouchableOpacity>
               </View>
 
+              {/*########## FOOTER   ######### */}
+
               <View style={styles.footer}>
                 <View style={styles.footerRow}>
                   <Text style={styles.footerText}>Don’t have an Account?</Text>
@@ -214,6 +202,9 @@ const LoginScreen = ({navigation, route}: {navigation: any; route: any}) => {
                   </TouchableOpacity>
                 </View>
               </View>
+
+              {/*########## LOADER    ######### */}
+
               <LoadingModal loading={loading} setLoading={setLoading} />
             </View>
           </ScrollView>
@@ -292,6 +283,11 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.OpenSans.regular,
     flexShrink: 1,
   },
+  signInButton: {
+    height: hp('6%'),
+    justifyContent: 'center',
+    width: '100%',
+  },
   linkText: {
     color: Colors.primaryOrange,
     fontWeight: '600',
@@ -351,11 +347,7 @@ const styles = StyleSheet.create({
     color: Colors.bodyText,
     fontFamily: Fonts.OpenSans.regular,
   },
-  signInButton: {
-    height: hp('6%'),
-    justifyContent: 'center',
-    width: '100%',
-  },
+
   footer: {
     marginTop: hp('15%'),
   },
@@ -363,7 +355,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    
   },
   footerText: {
     fontSize: wp('4%'),

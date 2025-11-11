@@ -69,7 +69,7 @@ const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
           const parsedUser = JSON.parse(storedUser);
           setUserName(parsedUser.fullname?.trim() || null);
           console.log(
-            'User xnxnxnxnxnxnx -------------------------- :',
+            'User Data From Storge -------------------------- :',
             parsedUser.fullname,
           );
           console.log('User loaded :', parsedUser);
@@ -86,6 +86,7 @@ const HomeScreen: React.FC<{navigation: any}> = ({navigation}) => {
 
     getUserRole();
   }, []);
+  
   function onPressViewAll(event: GestureResponderEvent): void {
     throw new Error('Function not implemented.');
   }

@@ -3,17 +3,27 @@ import httpAxiosClient from '../config/httpclient';
 
 class UserApi {
   private userEndpoint: string;
+  private childEndpoint:string
 
   constructor() {
     this.userEndpoint = '/customer/account-details';
+    this.childEndpoint = '/customer/get-all-children';
+
   }
 
 async getUserData(userId: string) {
   return await httpAxiosClient.post(
-    `${this.userEndpoint}`,   
+    `${this.childEndpoint}`,   
     { userId }                
   );
 }
+
+  async getChildData(userId: string) {
+    return await httpAxiosClient.post(
+      `${this.userEndpoint}`,
+      { userId }
+    )
+  }
 
 
 
