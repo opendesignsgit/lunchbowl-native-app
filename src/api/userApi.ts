@@ -13,14 +13,14 @@ class UserApi {
 
 async getUserData(userId: string) {
   return await httpAxiosClient.post(
-    `${this.childEndpoint}`,   
+    `${this.userEndpoint}`,   
     { userId }                
   );
 }
 
   async getChildData(userId: string) {
     return await httpAxiosClient.post(
-      `${this.userEndpoint}`,
+      `${this.childEndpoint}`,
       { userId }
     )
   }

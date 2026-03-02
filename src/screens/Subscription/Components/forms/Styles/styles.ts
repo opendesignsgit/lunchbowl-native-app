@@ -131,9 +131,8 @@ const styles = StyleSheet.create({
         borderColor: Colors.Storke,
         justifyContent: 'space-between',
         columnGap: wp('4%'),
-        // marginBottom: hp('33%'),
     },
-       parentSubmitButtonContainer: {
+    parentSubmitButtonContainer: {
         position: 'absolute',
         bottom: 0,
         left: 0,
@@ -146,25 +145,32 @@ const styles = StyleSheet.create({
         columnGap: wp('4%'),
         marginBottom: hp('33%'),
     },
-    removeButton: {
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: Colors.bg,
-        padding: 15,
-        borderTopWidth: 1,
-        borderColor: Colors.Storke,
-
+    TitleRow: {
+        flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'space-between',
+
     },
+
     removeButtonContainer: {
-        marginBottom: hp('5%'),
+        alignItems: 'center',
+        marginVertical: hp('2%'),
+        zIndex: 10,
     },
-    removeButtontext: {
-        color: Colors.bg,
-        fontFamily: Fonts.Urbanist.bold,
-    }
+
+    removeButtonRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '100%',
+    },
+
+    removeButtonText: {
+        color: Colors.red,
+        fontSize: wp('4%'),
+        fontFamily: Fonts.Urbanist.semiBold,
+        marginLeft: wp('1.3%'),
+        textAlign: 'center',
+    },
 
 });
 export default styles;

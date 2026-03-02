@@ -19,6 +19,8 @@ import {
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
 import styles from '../../Components/forms/Styles/styles';
+import {SvgXml} from 'react-native-svg';
+import {RemoveTrash, WhatAppIcon} from 'styles/svg-icons';
 
 const classOptions = [
   {label: 'LKG', value: 'LKG'},
@@ -67,7 +69,8 @@ export default function ChildrenDetails({
   const isFormValid = useMemo(() => {
     return children.every(
       (child: any) =>
-        child.childName?.trim() &&
+        child.childFirstName?.trim() &&
+        child.childLastName?.trim() &&
         child.dob?.trim() &&
         child.school?.trim() &&
         child.location?.trim() &&
@@ -107,25 +110,53 @@ export default function ChildrenDetails({
           <View style={styles.hrLine} />
 
           {children.map((child: any, index: number) => (
-            <View key={index}>
-              <PrimaryFieldLabel
-                label={`Child ${index + 1} Full Name`}
-                required
+            <View key={index} style={{marginBottom: hp('4%')}}>
+              <View style={styles.TitleRow}>
+                <PrimaryFieldLabel
+                  label={`Child ${index + 1} First Name`}
+                  required
+                />
+
+                {children.length > 1 && (
+                  <View style={styles.removeButtonContainer}>
+                    <TouchableOpacity
+                      onPress={() => removeChild(index)}
+                      style={styles.removeButtonRow}>
+                      <SvgXml
+                        xml={RemoveTrash}
+                        width={wp('5%')}
+                        height={wp('5%')}
+                      />
+                      <Text style={styles.removeButtonText}>
+                        Remove {child.childName}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
+
+            <ThemeInputPrimary
+                value={child.childFirstName}
+                onChangeText={(val: string) => handleChildChange(index, 'childFirstName', val)}
+                placeholder="Child's First Name"
+                error={errors?.[index]?.childFirstName}
               />
+
+              <PrimaryFieldLabel label={`Child ${index + 1} Last Name`} required />
               <ThemeInputPrimary
-                value={child.childName}
-                onChangeText={(val: string) =>
-                  handleChildChange(index, 'childName', val)
-                }
-                placeholder="Child's Full Name"
-                error={errors?.[index]?.childName}
+                value={child.childLastName}
+                onChangeText={(val: string) => handleChildChange(index, 'childLastName', val)}
+                placeholder="Child's Last Name"
+                error={errors?.[index]?.childLastName}
               />
+
               <PrimaryFieldLabel label="Date of Birth" required />
               <DateOfBirthInput
                 value={child.dob}
                 onChange={(val: string) => handleChildChange(index, 'dob', val)}
                 error={errors?.[index]?.dob}
               />
+
               <PrimaryFieldLabel label="School" required />
               {loadingSchools ? (
                 <Text>Loading schools...</Text>
@@ -150,6 +181,7 @@ export default function ChildrenDetails({
                   }}
                 />
               )}
+
               <PrimaryFieldLabel label="Location" required />
               <ThemeInputPrimary
                 value={child.location}
@@ -164,12 +196,13 @@ export default function ChildrenDetails({
               <PrimaryFieldLabel label="Lunch Time" required />
               <PrimaryDropdown
                 options={lunchTimes}
-                placeholder="Select Class"
+                placeholder="Select Lunch Time"
                 selectedValue={child.lunchTime}
                 onValueChange={val =>
                   handleChildChange(index, 'lunchTime', String(val))
                 }
               />
+
               <View style={styles.flexLabel}>
                 <View style={{flex: 1}}>
                   <PrimaryFieldLabel label="Class" required />
@@ -195,6 +228,7 @@ export default function ChildrenDetails({
                   />
                 </View>
               </View>
+
               <PrimaryFieldLabel label="Does child have any allergies?" />
               <PrimaryTextArea
                 label=""
@@ -203,15 +237,6 @@ export default function ChildrenDetails({
                 onChangeText={val => handleChildChange(index, 'allergies', val)}
                 error={errors?.[index]?.allergies}
               />
-              {children.length > 1 && (
-                <View style={styles.removeButtonContainer}>
-                  <TouchableOpacity
-                    onPress={() => removeChild(index)}
-                    style={styles.removeButton}>
-                    <Text style={styles.removeButtontext}>Remove Child</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
             </View>
           ))}
         </ScrollView>

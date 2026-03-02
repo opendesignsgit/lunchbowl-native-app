@@ -29,7 +29,7 @@ export default function Registration({ navigation }: any) {
 const { profileData, refreshProfileData } = useUserProfile();
 const { childrenList, refreshChildren } = useChildData();
 
-console.log("profileData from -----------------------------------------",profileData)
+console.log("profileData from ---------",profileData)
 
   // ########################### PARENT STATES ##############################
 
@@ -77,7 +77,8 @@ console.log("profileData from -----------------------------------------",profile
  useEffect(() => {
     if (childrenList.length > 0) {
       const formattedChildren = childrenList.map(child => ({
-        childName: `${child.childFirstName} ${child.childLastName}`.trim(),
+        childFirstName: child.childFirstName.trim() || '',
+        childLastName: child.childLastName.trim() || '',
         dob: child.dob ? new Date(child.dob).toISOString().split('T')[0] : '',
         school: child.school || '',
         location: child.location || '',
@@ -90,10 +91,13 @@ console.log("profileData from -----------------------------------------",profile
     }
   }, [childrenList]);
 
+  
+
   // ########################### CHILD STATES #################################
   const [children, setChildren] = useState([
     {
-      childName: '',
+      childFirstName: '',
+      childLastName:'',
       dob: '',
       school: '',
       location: '',
@@ -261,115 +265,71 @@ console.log("profileData from -----------------------------------------",profile
 
   // ################### SUBMIT CHILDREN DETAILS ##############################
 
-  // const submitChildrenDetails = async () => {
-  //   setLoading(true);
-
-  //   const errors = validateChildrenDetails(children);
-  //   if (Object.keys(errors).length > 0) {
-  //     setChildrenErrors(errors);
-  //     return;
-  //   }
-
-  //   setChildrenErrors({});
-  //   try {
-  //     const formattedChildren = children.map(child => {
-  //       const [firstName, ...lastParts] = child.childName.trim().split(' ');
-  //       return {
-  //         childFirstName: firstName || child.childName,
-  //         childLastName: lastParts.join(' ') || '',
-  //         dob: parseDate(child.dob),
-  //         lunchTime: child.lunchTime,
-  //         school: child.school,
-  //         location: child.location,
-  //         childClass: child.childClass,
-  //         section: child.section,
-  //         allergies: child.allergies,
-  //       };
-  //     });
-
-  //     const payloadChildData = {
-  //       formData: formattedChildren,
-  //       step: 2,
-  //       path: 'step-Form-ChildDetails',
-  //       _id: userId || '',
-  //     };
-
-  //     const response: any = await RegistrationService.createChildRegistration(payloadChildData);
-  //     if (response && response.data) {
-  //       await refreshChildren();
-  //       console.log('Children saved:', response.data);
-  //       nextStep();
-  //     } else {
-  //       console.error('Invalid child response', response);
-  //       setError(response?.message || 'Something went wrong.');
-  //     }
-  //   } catch (error) {
-  //     setError('Error saving plan. Please try again.');
-  //     console.error('Error saving children:', error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   const submitChildrenDetails = async () => {
-  setLoading(true);
+    setLoading(true);
 
-  // ✅ Validate children data
-  const errors = validateChildrenDetails(children);
-  if (Object.keys(errors).length > 0) {
-    setChildrenErrors(errors);
-    setLoading(false);
-    return;
-  }
-
-  setChildrenErrors({});
-  try {
-    // ✅ Format data for backend
-    const formattedChildren = children.map(child => {
-      const [firstName, ...lastParts] = child.childName.trim().split(' ');
-      return {
-        childFirstName: firstName || child.childName,
-        childLastName: lastParts.join(' ') || '',
-        dob: child.dob, // already "YYYY-MM-DD" format — don’t convert to ISO
-        lunchTime: child.lunchTime,
-        school: child.school,
-        location: child.location,
-        childClass: child.childClass,
-        section: child.section,
-        allergies: child.allergies,
-      };
-    });
-
-    // ✅ Match backend's expected structure exactly
-    const payloadChildData = {
-      formData: formattedChildren,
-      step: 2,
-      path: 'step-Form-ChildDetails',
-      _id: userId || '',
-    };
-
-    console.log('Payload to backend:------------------------------------------------------------------------------------------', JSON.stringify(payloadChildData, null, 2));
-
-    const response: any = await RegistrationService.createChildRegistration(payloadChildData);
-
-    // ✅ Handle backend response properly
-    if (response?.success) {
-      await refreshChildren();
-      console.log('✅ Children saved successfully:', response.data);
-      nextStep();
-    } else {
-      console.error('❌ Invalid child response:', response);
-      setError(response?.message || 'Something went wrong while saving children.');
+    const errors = validateChildrenDetails(children);
+    if (Object.keys(errors).length > 0) {
+      setChildrenErrors(errors);
+      return;
     }
 
-  } catch (error: any) {
-    console.error('❌ Error saving children:', error);
-    setError(error?.message || 'Error saving children. Please try again.');
-  } finally {
-    setLoading(false);
-  }
-};
+    setChildrenErrors({});
+    try {
+      const formattedChildren = children.map(child => {
+        
+        return {
+          childFirstName: child.childFirstName,
+          childLastName:  child.childLastName,
+          dob: parseDate(child.dob),
+          lunchTime: child.lunchTime,
+          school: child.school,
+          location: child.location,
+          childClass: child.childClass,
+          section: child.section,
+          allergies: child.allergies,
 
+
+          allergies: 'dsfdfsdfsdf',
+          _id: '69130af0ee650804b2bfdca7',
+          childFirstName: 'asoka',
+          childLastName: 'asdsd',
+          dob: '2025-10-02',
+          lunchTime: '11:00 AM - 12:00 PM',
+          school: 'ST Francis Xavier English Medium Matriculation School',
+          location: 'Alwarpet',
+          childClass: 'Class 5',
+          section: 'E',
+          user: '6912bf2ca3bfaeee7dbb5566',
+          __v: 0,
+        };
+      });
+
+      const payloadChildData = {
+        formData: formattedChildren,
+        step: 2,
+        path: 'step-Form-ChildDetails',
+        _id:  '6912bf2ca3bfaeee7dbb5566',
+      };
+    console.log("childe data send from server $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$",payloadChildData)
+      const response: any = await RegistrationService.createChildRegistration(payloadChildData);
+      if (response && response.data) {
+        await refreshChildren();
+        console.log('Children saved:', response.data);
+        nextStep();
+      } else {
+        console.error('Invalid child response', response);
+        setError(response?.message || 'Something went wrong.');
+      }
+    } catch (error) {
+      setError('Error saving plan. Please try again.');
+      console.error('Error saving children:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  
 // ############################### FORM HEADERS #################################
 
   const formInfo = {
@@ -391,7 +351,8 @@ console.log("profileData from -----------------------------------------",profile
         <View style={styles.pageHeader}>
           <Typography style={styles.stepTitle}>{formInfo[step].title}</Typography>
           <Typography style={styles.stepDescription}>{formInfo[step].description}</Typography>
-                {error && <ErrorMessage error={error} onClose={handleCloseError} />}
+
+           {/* {error && <ErrorMessage error={error} onClose={handleCloseError} />} */}
 
         </View>
 
