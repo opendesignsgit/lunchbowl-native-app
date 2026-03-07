@@ -40,6 +40,34 @@ export const createPaymentRequest = (userId: string, user: any, parentDetails: a
 };
 
 
+export const createFreeTrialPaymentRequest = (
+  userId: string,
+  user: any,
+  ccavenueConfigParam: any,
+) => {
+  const orderId = generateOrderId();
+  return {
+    merchant_id: ccavenueConfigParam.merchant_id,
+    order_id: orderId,
+    amount: 150,
+    currency: ccavenueConfigParam.currency,
+    redirect_url: ccavenueConfigParam.redirect_url,
+    cancel_url: ccavenueConfigParam.cancel_url,
+    language: ccavenueConfigParam.language,
+    billing_name: (user?.fullname || 'Customer').substring(0, 50),
+    billing_email: (user?.email || 'no-email@example.com').substring(0, 50),
+    billing_tel: (user?.phone_number || '0000000000').substring(0, 20),
+    billing_address: 'Free Trial',
+    billing_city: 'Chennai',
+    billing_state: 'Tamil Nadu',
+    billing_zip: '600001',
+    billing_country: 'India',
+    merchant_param1: userId,
+    merchant_param2: 'FREE_TRIAL',
+    merchant_param3: orderId,
+  };
+};
+
 export const createHolidayPaymentRequest = (ccavenueConfig: any , selectedDate:any ,childrenData:any,userId:any) => {
 
  const orderId = `LB-HOLIDAY-${Date.now()}`;
