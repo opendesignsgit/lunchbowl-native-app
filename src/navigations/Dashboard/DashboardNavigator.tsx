@@ -3,6 +3,7 @@ import {MealProvider} from 'context/MealContext';
 import React from 'react';
 import UnderConstruction from 'screens/404Screen';
 import HomeScreen from 'screens/Dashboard/HomeScreen';
+import PaymentWebView from 'screens/PaymentWebView';
 import HistoryDetailPage from 'screens/History/HistoryDetailPage';
 import OrderHistoryScreen from 'screens/History/OrderHistoryScreen';
 import MealDetailScreen from 'screens/Menu/MealDetailScreen';
@@ -108,6 +109,11 @@ const DashboardNavigator = () => {
         <Stack.Screen
           name="HistoryDetailPage"
           component={HistoryDetailPage}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="WebViewScreen"
+          component={PaymentWebView}
           options={{headerShown: false}}
         />
       </Stack.Navigator>
